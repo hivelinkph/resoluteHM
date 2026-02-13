@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | HIMAP Directory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Graphik:wght@700&family=Roboto:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --primary: #363F4D;
+            /* Kyte Navy */
+            --accent: #2DD1AC;
+            /* Kyte Teal */
+            --white: #FFFFFF;
+            --text-dark: #363F4D;
+            --text-light: #5F6B7A;
+            --bg-light: #F9FAFB;
+            --success: #2E7D32;
+            --error: #C62828;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Georgia', sans-serif;
+            color: var(--text-dark);
+            background: var(--bg-light);
+        }
+
+        /* Header */
+        .header {
+            background: var(--primary);
+            padding: 20px 40px;
+            color: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-family: 'Graphik', Arial, sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .user-info {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .btn-logout {
+            padding: 10px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            border: 1px solid var(--white);
+            border-radius: 4px;
+            /* Kyte standard */
+            font-family: 'Graphik', Arial, sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .btn-logout:hover {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 40px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #E0E0E0;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 16px 32px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-family: 'Graphik', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab:hover {
+            color: var(--primary);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Card */
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .card h2 {
+            font-family: 'Graphik', Arial, sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-dark);
+        }
+
+        /* Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            font-family: 'Raleway', Arial, sans-serif;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="email"],
+        input[type="text"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #E0E0E0;
+            border-radius: 4px;
+            font-family: 'Roboto', 'Georgia', sans-serif;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(220, 42, 145, 0.1);
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            /* Standardized padding */
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            /* Kyte standard */
+            font-family: 'Graphik', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary:hover {
+            background: #24b896;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Message */
+        .message {
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.success {
+            background: #E8F5E9;
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+
+        .message.error {
+            background: #FFE5E5;
+            color: var(--error);
+            border-left: 4px solid var(--error);
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--bg-light);
+            padding: 14px;
+            text-align: left;
+            font-family: 'Raleway', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-dark);
+            border-bottom: 2px solid #E0E0E0;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #E0E0E0;
+            font-size: 14px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-family: 'Raleway', Arial, sans-serif;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .badge.admin {
+            background: #FFF3E0;
+            color: #EF6C00;
+        }
+
+        .badge.member {
+            background: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .badge.active {
+            background: #E8F5E9;
+            color: var(--success);
+        }
+
+        .badge.inactive {
+            background: #FFEBEE;
+            color: var(--error);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--text-light);
+            border-radius: 4px;
+            font-family: 'Graphik', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 12px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-small:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(54, 63, 77, 0.05);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>🔐 Admin Dashboard</h1>
+        <div class="header-actions">
+            <span class="user-info" id="userEmail"></span>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('create')">Create Member</button>
+            <button class="tab" onclick="switchTab('members')">Manage Members</button>
+        </div>
+
+        <!-- Tab: Create Member -->
+        <div id="tab-create" class="tab-content active">
+            <div class="card">
+                <h2>Create New Member Account</h2>
+
+                <div class="message" id="createMessage"></div>
+
+                <form id="createForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Temporary Password *</label>
+                            <input type="password" id="password" required minlength="6">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="company">Assign to Company *</label>
+                            <select id="company" required>
+                                <option value="">Select a company...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="createBtn">Create Member Account</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tab: Manage Members -->
+        <div id="tab-members" class="tab-content">
+            <div class="card">
+                <h2>Member Accounts</h2>
+
+                <div class="table-container">
+                    <div id="loadingMembers" class="loading">Loading members...</div>
+                    <table id="membersTable" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Full Name</th>
+                                <th>Company</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+
+        // Initialize Supabase client (stored on window, no const to prevent redeclaration)
+        if (!window.supabaseClient) {
+            window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+
+        let currentUser = null;
+        let companies = [];
+
+        // Check authentication
+        async function checkAuth() {
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+
+            if (!session) {
+                window.location.href = 'login.html?role=admin';
+                return false;
+            }
+
+            // Verify admin role
+            const { data: profile } = await window.supabaseClient
+                .from('user_profiles')
+                .select('*')
+                .eq('user_id', session.user.id)
+                .single();
+
+            if (!profile || profile.role !== 'admin' || !profile.is_active) {
+                alert('Access denied. Admin privileges required.');
+                await window.supabaseClient.auth.signOut();
+                window.location.href = 'login.html';
+                return false;
+            }
+
+            currentUser = profile;
+            document.getElementById('userEmail').textContent = profile.email;
+            return true;
+        }
+
+        // Load companies
+        async function loadCompanies() {
+            const { data } = await window.supabaseClient
+                .from('bpos')
+                .select('id, company_name')
+                .eq('is_active', true)
+                .order('company_name');
+
+            companies = data || [];
+
+            const select = document.getElementById('company');
+            companies.forEach(company => {
+                const option = document.createElement('option');
+                option.value = company.id;
+                option.textContent = company.company_name;
+                select.appendChild(option);
+            });
+        }
+
+        // Create member form
+        document.getElementById('createForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const fullName = document.getElementById('fullName').value;
+            const bpoId = document.getElementById('company').value;
+            const btn = document.getElementById('createBtn');
+            const msg = document.getElementById('createMessage');
+
+            btn.disabled = true;
+            btn.textContent = 'Creating...';
+            msg.style.display = 'none';
+
+            try {
+                // Get the current session for authentication
+                const { data: { session } } = await window.supabaseClient.auth.getSession();
+                if (!session) {
+                    throw new Error('Not authenticated');
+                }
+
+                // Call Edge Function to create user using Supabase client
+                // This automatically handles the authorization headers securely
+                const { data: result, error: invokeError } = await window.supabaseClient.functions.invoke('create-member', {
+                    body: {
+                        email,
+                        password,
+                        fullName,
+                        bpoId,
+                    }
+                });
+
+                if (invokeError) {
+                    console.error('Edge Function Error:', invokeError);
+                    // Check if it's a specific error from our function
+                    const errorMessage = invokeError.message || 'Failed to create member account';
+
+                    // Try to parse if it's a JSON error string
+                    try {
+                        const parsed = JSON.parse(invokeError.message);
+                        if (parsed.error) throw new Error(parsed.error);
+                    } catch (e) {
+                        // misuse of error handling but safe
+                    }
+
+                    throw new Error(errorMessage);
+                }
+
+                if (result && result.error) {
+                    throw new Error(result.error);
+                }
+
+                msg.className = 'message success';
+                msg.textContent = `✓ Member account created successfully for ${email}`;
+                msg.style.display = 'block';
+
+                document.getElementById('createForm').reset();
+                loadMembers(); // Refresh members list
+
+            } catch (error) {
+                console.error('Error:', error);
+                msg.className = 'message error';
+                msg.textContent = error.message || 'Failed to create member account';
+                msg.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Create Member Account';
+            }
+        });
+
+        // Load members
+        async function loadMembers() {
+            const loading = document.getElementById('loadingMembers');
+            const table = document.getElementById('membersTable');
+            const tbody = document.getElementById('membersBody');
+
+            loading.style.display = 'block';
+            table.style.display = 'none';
+
+            const { data: profiles } = await window.supabaseClient
+                .from('user_profiles')
+                .select(`
+                    *,
+                    bpos (company_name)
+                `)
+                .order('created_at', { ascending: false });
+
+            tbody.innerHTML = profiles.map(p => `
+                <tr>
+                    <td>${p.email}</td>
+                    <td>${p.full_name || '-'}</td>
+                    <td>${p.bpos?.company_name || 'Not assigned'}</td>
+                    <td><span class="badge ${p.role}">${p.role}</span></td>
+                    <td><span class="badge ${p.is_active ? 'active' : 'inactive'}">${p.is_active ? 'Active' : 'Inactive'}</span></td>
+                    <td>${new Date(p.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn-small" onclick="toggleStatus('${p.id}', ${!p.is_active})">
+                            ${p.is_active ? 'Deactivate' : 'Activate'}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            loading.style.display = 'none';
+            table.style.display = 'table';
+        }
+
+        // Toggle user status
+        async function toggleStatus(profileId, activate) {
+            if (!confirm(`Are you sure you want to ${activate ? 'activate' : 'deactivate'} this user?`)) {
+                return;
+            }
+
+            const { error } = await window.supabaseClient
+                .from('user_profiles')
+                .update({ is_active: activate })
+                .eq('id', profileId);
+
+            if (error) {
+                alert('Error updating user status');
+            } else {
+                loadMembers();
+            }
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            // Add active class to clicked tab and corresponding content
+            const tabs = document.querySelectorAll('.tab');
+            if (tab === 'create') {
+                tabs[0].classList.add('active');
+            } else if (tab === 'members') {
+                tabs[1].classList.add('active');
+            }
+
+            document.getElementById(`tab-${tab}`).classList.add('active');
+
+            if (tab === 'members') {
+                loadMembers();
+            }
+        }
+
+        // Logout
+        async function logout() {
+            await window.supabaseClient.auth.signOut();
+            window.location.href = 'login.html';
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (await checkAuth()) {
+                await loadCompanies();
+            }
+        });
+    </script>
+</body>
+
+</html>

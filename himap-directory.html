@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIMAP Members Directory | Healthcare BPO Philippines</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Graphik:wght@700&family=Roboto:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --primary: #363F4D;
+            /* Kyte Navy */
+            --accent: #2DD1AC;
+            /* Kyte Teal */
+            --white: #FFFFFF;
+            --text-dark: #363F4D;
+            --text-light: #5F6B7A;
+            --bg-light: #F9FAFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Georgia', sans-serif;
+            color: var(--text-dark);
+            background: var(--bg-light);
+        }
+
+        /* Header */
+        .header {
+            background: var(--accent);
+            /* Kyte Teal as requested */
+            padding: 40px 60px;
+            color: var(--white);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .header-logo {
+            height: 56px;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+        }
+
+        .header-text h1 {
+            font-family: 'Graphik', Arial, sans-serif;
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header-text p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+
+        /* Login Dropdown */
+        .login-dropdown {
+            position: relative;
+        }
+
+        .login-btn {
+            padding: 12px 24px;
+            background: var(--white);
+            border-radius: 4px;
+            border: none;
+            /* Kyte style */
+            font-family: 'Graphik', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--accent);
+            /* Green text as requested */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 10px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .login-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .login-menu-item {
+            display: block;
+            padding: 16px 20px;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-family: 'Raleway', Arial, sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .login-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .login-menu-item:hover {
+            background: var(--bg-gradient);
+            color: var(--primary);
+        }
+
+        /* Search Section */
+        .search-section {
+            background: var(--white);
+            padding: 40px 60px;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .search-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 16px 24px;
+            border: 1px solid #E2E8F0;
+            border-radius: 4px;
+            /* Kyte style */
+            font-family: 'Roboto', Georgia, serif;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(220, 42, 145, 0.1);
+        }
+
+        .search-btn {
+            padding: 16px 40px;
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            /* Kyte style */
+            font-family: 'Graphik', Arial, sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: none;
+            /* Flat style */
+            text-transform: uppercase;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-1px);
+            background: #24b896;
+            /* Darker teal */
+        }
+
+        /* Members Section */
+        .members-section {
+            padding: 60px;
+        }
+
+        .members-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .results-count {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 32px;
+        }
+
+        .member-card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 32px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .member-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: 0 16px 48px rgba(241, 90, 34, 0.15);
+        }
+
+        .member-logo-container {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .member-logo-placeholder {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--white);
+        }
+
+        .member-info h3 {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .member-location {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 16px;
+        }
+
+        .member-description {
+            font-size: 15px;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .member-stats {
+            display: flex;
+            gap: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(220, 42, 145, 0.1);
+        }
+
+        .stat {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .loading,
+        .no-results {
+            text-align: center;
+            padding: 60px;
+            font-size: 18px;
+            color: var(--text-light);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+
+            .header,
+            .search-section,
+            .members-section {
+                padding: 30px;
+            }
+
+            .header-logo {
+                height: 60px;
+            }
+
+            .header-text h1 {
+                font-size: 28px;
+            }
+
+            .members-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="healthcare-bpo-landing.html" style="display: inline-block; cursor: pointer;">
+                <img src="ResoluteWhiteTransparent.png" alt="Resolute Logo" class="header-logo">
+            </a>
+            <div class="header-text">
+                <h1>Members Directory</h1>
+                <p>Discover the leading healthcare BPO companies in the Philippines</p>
+            </div>
+            <div class="login-dropdown" style="margin-left: auto;">
+                <button class="login-btn" id="loginMenuBtn">Login</button>
+                <div class="login-menu" id="loginMenu">
+                    <a href="login.html?role=member" class="login-menu-item">Member Login</a>
+                    <a href="login.html?role=admin" class="login-menu-item">Admin Login</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input"
+                    placeholder="Search by company name, location...">
+                <button onclick="performSearch()" class="search-btn">Search</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Members Grid -->
+    <section class="members-section">
+        <div class="members-container">
+            <div class="results-count" id="resultsCount">Loading members...</div>
+            <div class="members-grid" id="membersGrid">
+                <div class="loading">Loading HIMAP members...</div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        console.log('🚀 Script starting...');
+
+        // Supabase Configuration
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+        // Initialize Supabase
+        console.log('🔧 Creating Supabase client...');
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('✅ Supabase client created');
+
+        let allMembers = [];
+        let filteredMembers = [];
+
+        // Load companies data from Supabase
+        async function loadCompanies() {
+            console.log('📥 Loading companies from Supabase...');
+
+            const grid = document.getElementById('membersGrid');
+            const count = document.getElementById('resultsCount');
+
+            try {
+                // Fetch companies
+                const { data, error } = await supabaseClient
+                    .from('bpos')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('company_name');
+
+                if (error) {
+                    console.error('❌ Error:', error);
+                    grid.innerHTML = `<div class="no-results">Error: ${error.message}</div>`;
+                    count.textContent = 'Error loading data';
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    grid.innerHTML = '<div class="no-results">No members found</div>';
+                    count.textContent = 'No results';
+                    return;
+                }
+
+                console.log(`✅ Loaded ${data.length} companies`);
+
+                // Fetch all logos
+                const { data: logos, error: logoError } = await supabaseClient
+                    .from('bpo_media')
+                    .select('bpo_id, file_url')
+                    .eq('media_type', 'logo')
+                    .eq('is_primary', true);
+
+                if (logoError) {
+                    console.warn('⚠️ Could not fetch logos:', logoError);
+                } else {
+                    console.log(`✅ Loaded ${logos?.length || 0} logos`);
+
+                    // Create logo lookup map
+                    const logoMap = {};
+                    if (logos) {
+                        logos.forEach(logo => {
+                            logoMap[logo.bpo_id] = logo.file_url;
+                        });
+                    }
+
+                    // Attach logos to companies
+                    data.forEach(company => {
+                        company.logo_url = logoMap[company.id] || null;
+                    });
+                }
+
+                allMembers = data;
+                filteredMembers = data;
+                displayMembers(data);
+
+            } catch (err) {
+                console.error('💥 Exception:', err);
+                grid.innerHTML = `<div class="no-results">Exception: ${err.message}</div>`;
+                count.textContent = 'Error';
+            }
+        }
+
+        // Display members
+        function displayMembers(members) {
+            const grid = document.getElementById('membersGrid');
+            const count = document.getElementById('resultsCount');
+
+            count.textContent = `${members.length} ${members.length === 1 ? 'member' : 'members'} found`;
+
+            grid.innerHTML = members.map(m => `
+                <a href="member-detail.html?id=${m.id}" class="member-card">
+                    <div class="member-logo-container">
+                        ${m.logo_url
+                    ? `<img src="${m.logo_url}" alt="${m.company_name} logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">`
+                    : `<div class="member-logo-placeholder">${m.company_name.charAt(0)}</div>`
+                }
+                    </div>
+                    <div class="member-info">
+                        <h3>${m.trade_name || m.company_name}</h3>
+                        <div class="member-location">
+                            📍 ${m.city || 'Philippines'}${m.province ? ', ' + m.province : ''}
+                        </div>
+                        <p class="member-description">
+                            ${m.company_description || 'Leading healthcare BPO solutions provider'}
+                        </p>
+                    </div>
+                    ${m.total_employees || m.healthcare_fte_count ? `
+                        <div class="member-stats">
+                            ${m.total_employees ? `
+                                <div class="stat">
+                                    <span class="stat-value">${m.total_employees.toLocaleString()}</span>
+                                    <span class="stat-label">Total Employees</span>
+                                </div>
+                            ` : ''}
+                            ${m.healthcare_fte_count ? `
+                                <div class="stat">
+                                    <span class="stat-value">${m.healthcare_fte_count.toLocaleString()}</span>
+                                    <span class="stat-label">Healthcare FTEs</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                </a>
+            `).join('');
+        }
+
+        // Search functionality
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+
+            if (!query) {
+                filteredMembers = allMembers;
+            } else {
+                filteredMembers = allMembers.filter(m =>
+                    (m.company_name && m.company_name.toLowerCase().includes(query)) ||
+                    (m.trade_name && m.trade_name.toLowerCase().includes(query)) ||
+                    (m.city && m.city.toLowerCase().includes(query)) ||
+                    (m.province && m.province.toLowerCase().includes(query))
+                );
+            }
+
+            displayMembers(filteredMembers);
+        }
+
+        // Real-time search
+        document.getElementById('searchInput').addEventListener('input', () => {
+            performSearch();
+        });
+
+        // Enter key support (optional now since input handles it, but keeps behavior for form submit feel)
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Load on page ready
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 DOM loaded, loading companies...');
+            loadCompanies();
+
+            // Login dropdown toggle
+            const loginBtn = document.getElementById('loginMenuBtn');
+            const loginMenu = document.getElementById('loginMenu');
+
+            loginBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                loginMenu.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', () => {
+                loginMenu.classList.remove('show');
+            });
+        });
+    </script>
+</body>
+
+</html>

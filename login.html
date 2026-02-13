@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | HIMAP Directory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Graphik:wght@700&family=Roboto:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --primary: #363F4D;
+            /* Kyte Navy */
+            --accent: #2DD1AC;
+            /* Kyte Teal */
+            --white: #FFFFFF;
+            --text-dark: #363F4D;
+            --text-light: #5F6B7A;
+            --bg-light: #F9FAFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Georgia', sans-serif;
+            color: var(--text-dark);
+            background: var(--bg-light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: var(--white);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            padding: 60px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .logo {
+            display: block;
+            max-width: 105px;
+            margin: 0 auto 30px;
+        }
+
+        h1 {
+            font-family: 'Graphik', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 32px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-light);
+            margin-bottom: 40px;
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            font-family: 'Graphik', Arial, sans-serif;
+            display: block;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            font-family: 'Roboto', 'Georgia', sans-serif;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(220, 42, 145, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            /* Kyte style */
+            font-family: 'Graphik', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: none;
+            /* Flat style */
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            background: #24b896;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .forgot-password a {
+            color: var(--primary);
+            text-decoration: none;
+            font-family: 'Raleway', Arial, sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #E0E0E0;
+        }
+
+        .back-link a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link a:hover {
+            color: var(--primary);
+        }
+
+        .error-message {
+            background: #FFE5E5;
+            color: #C62828;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: var(--white);
+            border-radius: 20px;
+            font-family: 'Raleway', Arial, sans-serif;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-left: 10px;
+        }
+
+        .top-nav {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            z-index: 10;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--white);
+            font-family: 'Graphik', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 12px 24px;
+            background: var(--accent);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-1px);
+            background: #24b896;
+            color: var(--white);
+        }
+
+        @media (max-width: 768px) {
+            .top-nav {
+                top: 20px;
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-nav">
+        <a href="himap-directory.html" class="back-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5" />
+                <path d="M12 19l-7-7 7-7" />
+            </svg>
+            Back to Directory
+        </a>
+    </div>
+
+    <div class="login-container">
+        <img src="ResoluteTransparent.png" alt="Resolute Logo" class="logo">
+        <h1>Welcome Back <span class="role-badge" id="roleBadge"></span></h1>
+        <p class="subtitle">Sign in to access your dashboard</p>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required autocomplete="email">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn-primary" id="loginBtn">Sign In</button>
+        </form>
+
+        <div class="forgot-password">
+            <a href="reset-password.html">Forgot your password?</a>
+        </div>
+
+        <div class="back-link">
+            <a href="himap-directory.html">← Back to Directory</a>
+        </div>
+    </div>
+
+    <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+        // Initialize Supabase client once (stored on window to prevent duplicate declarations)
+        if (!window.supabaseClient) {
+            window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+
+        // Get role from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const expectedRole = urlParams.get('role') || 'member';
+
+        // Update role badge
+        document.getElementById('roleBadge').textContent = expectedRole;
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMsg = document.getElementById('errorMessage');
+
+            // Disable button and show loading
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Signing in...';
+            errorMsg.style.display = 'none';
+
+            try {
+                console.log('🔄 Attempting login with:', email);
+
+                // Sign in with Supabase Auth
+                const { data: authData, error: authError } = await window.supabaseClient.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+                if (authError) {
+                    console.error('❌ Auth error:', authError);
+
+                    // Handle specific error types
+                    if (authError.message.includes('Email not confirmed')) {
+                        throw new Error('Please confirm your email address before logging in. Check your inbox for a confirmation link.');
+                    } else if (authError.message.includes('Invalid login credentials')) {
+                        throw new Error('Invalid email or password. Please check your credentials and try again.');
+                    } else {
+                        throw authError;
+                    }
+                }
+
+                console.log('✅ Authentication successful, user:', authData.user.id);
+
+                // Wait a moment to ensure session is fully established
+                await new Promise(resolve => setTimeout(resolve, 100));
+
+                // Verify session is set
+                const { data: { session } } = await window.supabaseClient.auth.getSession();
+                console.log('Session check:', session ? 'Session active' : 'No session');
+
+                // Get user profile to check role
+                console.log('🔍 Querying user_profiles for user_id:', authData.user.id);
+                const { data: profile, error: profileError } = await window.supabaseClient
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('user_id', authData.user.id)
+                    .single();
+
+                console.log('Profile lookup result:', { profile, profileError });
+
+                if (profileError) {
+                    console.error('❌ Profile error details:', {
+                        message: profileError.message,
+                        code: profileError.code,
+                        details: profileError.details,
+                        hint: profileError.hint
+                    });
+
+                    // If it's an RLS error, provide specific guidance
+                    if (profileError.code === 'PGRST116' || profileError.message.includes('0 rows')) {
+                        throw new Error('User profile not found. Please contact administrator to verify your account is set up correctly.');
+                    }
+
+                    throw new Error('User profile not found. Please contact administrator.');
+                }
+
+                if (!profile) {
+                    throw new Error('No user profile found. Please contact administrator to set up your account.');
+                }
+
+                if (!profile.is_active) {
+                    throw new Error('Your account has been deactivated. Please contact administrator.');
+                }
+
+                // Verify role matches expected role
+                if (profile.role !== expectedRole) {
+                    throw new Error(`This is the ${expectedRole} login. Please use the ${profile.role} login instead.`);
+                }
+
+                console.log(`✅ User role verified: ${profile.role}`);
+
+                // Redirect to appropriate dashboard
+                if (profile.role === 'admin') {
+                    console.log('Redirecting to admin dashboard...');
+                    window.location.href = 'admin-dashboard.html';
+                } else if (profile.role === 'member') {
+                    console.log('Redirecting to member dashboard...');
+                    window.location.href = 'member-dashboard.html';
+                }
+
+            } catch (error) {
+                console.error('❌ Login error:', error);
+                errorMsg.textContent = error.message || 'An unexpected error occurred. Please try again.';
+                errorMsg.style.display = 'block';
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Sign In';
+            }
+        });
+
+        // Check if user is already logged in
+        window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                // Already logged in, redirect to dashboard
+                window.supabaseClient
+                    .from('user_profiles')
+                    .select('role')
+                    .eq('user_id', session.user.id)
+                    .single()
+                    .then(({ data }) => {
+                        if (data) {
+                            if (data.role === 'admin') {
+                                window.location.href = 'admin-dashboard.html';
+                            } else {
+                                window.location.href = 'member-dashboard.html';
+                            }
+                        }
+                    });
+            }
+        });
+    </script>
+</body>
+
+</html>

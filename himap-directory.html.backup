@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIMAP Members Directory | Healthcare BPO Philippines</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600;700;800&family=Crimson+Pro:wght@300;400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --primary: #DC2A91;
+            --accent: #F15A22;
+            --white: #FFFFFF;
+            --text-dark: #2A2A2A;
+            --text-light: #666666;
+            --bg-gradient: linear-gradient(135deg, rgba(220, 42, 145, 0.05) 0%, rgba(241, 90, 34, 0.05) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Pro', Georgia, serif;
+            color: var(--text-dark);
+            background: var(--white);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            padding: 40px 60px;
+            color: var(--white);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .header-logo {
+            height: 80px;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+        }
+
+        .header-text h1 {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .header-text p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+
+        /* Search and Filter Section */
+        .search-section {
+            background: var(--white);
+            padding: 40px 60px;
+            border-bottom: 2px solid rgba(220, 42, 145, 0.1);
+        }
+
+        .search-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 16px 24px;
+            border: 2px solid rgba(220, 42, 145, 0.2);
+            border-radius: 60px;
+            font-family: 'Crimson Pro', Georgia, serif;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(220, 42, 145, 0.1);
+        }
+
+        .search-btn {
+            padding: 16px 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 60px;
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(220, 42, 145, 0.3);
+        }
+
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .filter-tag {
+            padding: 10px 20px;
+            background: var(--bg-gradient);
+            border: 2px solid transparent;
+            border-radius: 30px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tag:hover,
+        .filter-tag.active {
+            border-color: var(--accent);
+            background: rgba(241, 90, 34, 0.1);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Members Grid */
+        .members-section {
+            padding: 60px;
+            background: #FAFAFA;
+        }
+
+        .members-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .results-count {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 32px;
+        }
+
+        .member-card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 32px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .member-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: 0 16px 48px rgba(241, 90, 34, 0.15);
+        }
+
+        .member-logo-container {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            background: var(--bg-gradient);
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .member-logo {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .member-logo-placeholder {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--white);
+        }
+
+        .member-info h3 {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .member-location {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .member-description {
+            font-size: 15px;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .member-stats {
+            display: flex;
+            gap: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(220, 42, 145, 0.1);
+        }
+
+        .stat {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            font-size: 18px;
+            color: var(--text-light);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-light);
+        }
+
+        .no-results h3 {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+
+            .header,
+            .search-section,
+            .members-section {
+                padding: 30px;
+            }
+
+            .header-logo {
+                height: 60px;
+            }
+
+            .header-text h1 {
+                font-size: 28px;
+            }
+
+            .members-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <img src="HIMAP2.png" alt="HIMAP Logo" class="header-logo">
+            <div class="header-text">
+                <h1>Members Directory</h1>
+                <p>Discover the leading healthcare BPO companies in the Philippines</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search and Filter -->
+    <section class="search-section">
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input"
+                    placeholder="Search by company name, location...">
+                <button onclick="performSearch()" class="search-btn">Search</button>
+            </div>
+
+            <div class="filter-tags">
+                <div class="filter-tag active" data-filter="all" onclick="filterByService('all')">All Companies</div>
+                <div class="filter-tag" data-filter="Medical Coding" onclick="filterByService('Medical Coding')">Medical
+                    Coding</div>
+                <div class="filter-tag" data-filter="Medical Billing" onclick="filterByService('Medical Billing')">
+                    Medical Billing</div>
+                <div class="filter-tag" data-filter="RCM" onclick="filterByService('Revenue Cycle Management')">RCM
+                </div>
+                <div class="filter-tag" data-filter="Claims Processing" onclick="filterByService('Claims Processing')">
+                    Claims Processing</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Members Grid -->
+    <section class="members-section">
+        <div class="members-container">
+            <div class="results-count" id="resultsCount">Loading members...</div>
+            <div class="members-grid" id="membersGrid">
+                <div class="loading">Loading HIMAP members...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script>
+        // Supabase Configuration - INLINE
+        const SUPABASE_URL = 'https://llvsayyfvwkqbmhnmumh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdnNheXlmdndrcWJtaG5tdW1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4OTQ4NzAsImV4cCI6MjA4NjQ3MDg3MH0.f05CWLxdXONJQPxRfhKxIDOZeUWtE54vYOygI6RVtoU';
+
+        // Initialize Supabase client
+        let supabase;
+        if (!window.supabaseClient) {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            window.supabaseClient = supabase;
+        } else {
+            supabase = window.supabaseClient;
+        }
+
+        // Helper function to format numbers
+        function formatNumber(num) {
+            if (!num) return '—';
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // Fetch all BPOs
+        async function fetchAllBPOs() {
+            const { data, error } = await supabase
+                .from('bpos')
+                .select('*')
+                .eq('is_active', true)
+                .order('company_name');
+
+            if (error) {
+                console.error('Error fetching BPOs:', error);
+                return [];
+            }
+
+            return data || [];
+        }
+
+        let allMembers = [];
+        let filteredMembers = [];
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadMembers();
+        });
+
+        // Load all members
+        async function loadMembers() {
+            console.log('🚀 loadMembers() called');
+            const grid = document.getElementById('membersGrid');
+            const count = document.getElementById('resultsCount');
+
+            try {
+                console.log('📡 Calling fetchAllBPOs()...');
+                allMembers = await fetchAllBPOs();
+                console.log(`✅ Received ${allMembers.length} members`);
+
+                filteredMembers = allMembers;
+
+                console.log('🎨 Calling displayMembers()...');
+                displayMembers(filteredMembers);
+                console.log('✅ Display complete');
+
+            } catch (error) {
+                console.error('❌ Error loading members:', error);
+                console.error('Error stack:', error.stack);
+
+                grid.innerHTML = `
+                    <div class="no-results">
+                        <h3>Unable to load members</h3>
+                        <p>Error: ${error.message}</p>
+                        <p>Check browser console (F12) for details.</p>
+                    </div>
+                `;
+                count.textContent = 'Error loading data';
+            }
+        }
+
+        // Display members in grid
+        function displayMembers(members) {
+            const grid = document.getElementById('membersGrid');
+            const count = document.getElementById('resultsCount');
+
+            if (members.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-results">
+                        <h3>No members found</h3>
+                        <p>Try adjusting your search or filter criteria.</p>
+                    </div>
+                `;
+                count.textContent = 'No results';
+                return;
+            }
+
+            count.textContent = `${members.length} ${members.length === 1 ? 'member' : 'members'} found`;
+
+            grid.innerHTML = members.map(member => `
+                <a href="member-detail.html?id=${member.id}" class="member-card">
+                    <div class="member-logo-container">
+                        ${member.logo_url
+                    ? `<img src="${member.logo_url}" alt="${member.company_name}" class="member-logo">`
+                    : `<div class="member-logo-placeholder">${member.company_name.charAt(0)}</div>`
+                }
+                    </div>
+                    <div class="member-info">
+                        <h3>${member.trade_name || member.company_name}</h3>
+                        <div class="member-location">
+                            📍 ${member.city || 'Philippines'}${member.province ? ', ' + member.province : ''}
+                        </div>
+                        <p class="member-description">
+                            ${member.company_description || 'Leading healthcare BPO solutions provider'}
+                        </p>
+                    </div>
+                    ${member.total_employees || member.healthcare_fte_count ? `
+                        <div class="member-stats">
+                            ${member.total_employees ? `
+                                <div class="stat">
+                                    <span class="stat-value">${formatNumber(member.total_employees)}</span>
+                                    <span class="stat-label">Total Employees</span>
+                                </div>
+                            ` : ''}
+                            ${member.healthcare_fte_count ? `
+                                <div class="stat">
+                                    <span class="stat-value">${formatNumber(member.healthcare_fte_count)}</span>
+                                    <span class="stat-label">Healthcare FTEs</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                </a>
+            `).join('');
+        }
+
+        // Search functionality
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            if (!query) {
+                filteredMembers = allMembers;
+            } else {
+                filteredMembers = allMembers.filter(member =>
+                    member.company_name.toLowerCase().includes(query) ||
+                    (member.trade_name && member.trade_name.toLowerCase().includes(query)) ||
+                    (member.city && member.city.toLowerCase().includes(query)) ||
+                    (member.province && member.province.toLowerCase().includes(query))
+                );
+            }
+
+            displayMembers(filteredMembers);
+        }
+
+        // Allow Enter key to search
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Filter by service
+        async function filterByService(service) {
+            // Update active tag
+            document.querySelectorAll('.filter-tag').forEach(tag => {
+                tag.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            if (service === 'all') {
+                filteredMembers = allMembers;
+            } else {
+                // This is a simplified client-side filter
+                // For better performance, implement server-side filtering
+                const grid = document.getElementById('membersGrid');
+                grid.innerHTML = '<div class="loading">Filtering...</div>';
+
+                // Simulating async filter - in production, call API
+                setTimeout(() => {
+                    filteredMembers = allMembers; // Replace with actual service filtering
+                    displayMembers(filteredMembers);
+                }, 300);
+            }
+        }
+    </script>
+</body>
+
+</html>

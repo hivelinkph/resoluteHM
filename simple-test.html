@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIMAP Directory - Simple Test</title>
+    <!-- Load Supabase from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        h1 {
+            color: #DC2A91;
+        }
+
+        .company-card {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .company-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2A2A2A;
+        }
+
+        .company-info {
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .status {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🏥 HIMAP Members Directory (Simple Test)</h1>
+    <div id="status" class="status">Loading...</div>
+    <div id="companies"></div>
+
+    <script>
+        // Supabase configuration - INLINE (not from external file)
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+        console.log('🔧 Initializing Supabase...');
+        console.log('URL:', SUPABASE_URL);
+        console.log('Key length:', SUPABASE_ANON_KEY.length);
+
+        // Initialize Supabase client
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function loadCompanies() {
+            const statusDiv = document.getElementById('status');
+            const companiesDiv = document.getElementById('companies');
+
+            try {
+                console.log('📡 Fetching companies from Supabase...');
+
+                const { data, error, count } = await supabase
+                    .from('bpos')
+                    .select('*', { count: 'exact' })
+                    .eq('is_active', true)
+                    .order('company_name');
+
+                console.log('Response:', { data, error, count });
+
+                if (error) {
+                    console.error('❌ Error:', error);
+                    statusDiv.className = 'status error';
+                    statusDiv.innerHTML = `
+                        <strong>Error loading companies:</strong><br>
+                        ${error.message}<br>
+                        Code: ${error.code}<br>
+                        Details: ${error.details || 'None'}
+                    `;
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    console.warn('⚠️ No data returned');
+                    statusDiv.innerHTML = '⚠️ No companies found in database';
+                    return;
+                }
+
+                console.log(`✅ Successfully loaded ${data.length} companies`);
+                statusDiv.innerHTML = `✅ Loaded ${data.length} companies successfully!`;
+                statusDiv.className = 'status';
+
+                // Display companies
+                companiesDiv.innerHTML = data.map(company => `
+                    <div class="company-card">
+                        <div class="company-name">${company.company_name}</div>
+                        <div class="company-info">
+                            📍 ${company.city || 'Philippines'}${company.province ? ', ' + company.province : ''}<br>
+                            👥 ${company.total_employees ? company.total_employees.toLocaleString() : '—'} employees
+                            ${company.healthcare_fte_count ? ` | ${company.healthcare_fte_count.toLocaleString()} healthcare FTEs` : ''}<br>
+                            ${company.company_description || ''}
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error('💥 Exception:', err);
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = `
+                    <strong>Exception occurred:</strong><br>
+                    ${err.message}
+                `;
+            }
+        }
+
+        // Load companies when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 DOM loaded, starting fetch...');
+            loadCompanies();
+        });
+    </script>
+</body>
+
+</html>

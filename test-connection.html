@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Connection Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        button {
+            background: #DC2A91;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #c01f7a;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔍 Supabase Connection Diagnostic</h1>
+
+    <div id="status">
+        <div class="status info">Initializing...</div>
+    </div>
+
+    <button onclick="runTest()">Run Connection Test</button>
+
+    <div id="results"></div>
+
+    <script>
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+        let supabase;
+        let statusDiv = document.getElementById('status');
+        let resultsDiv = document.getElementById('results');
+
+        function updateStatus(message, type = 'info') {
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function addResult(title, content, type = 'info') {
+            const resultHTML = `
+                <div class="status ${type}">
+                    <h3>${title}</h3>
+                    <pre>${JSON.stringify(content, null, 2)}</pre>
+                </div>
+            `;
+            resultsDiv.innerHTML += resultHTML;
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                if (typeof window.supabase === 'undefined') {
+                    updateStatus('❌ ERROR: Supabase library not loaded from CDN', 'error');
+                    return;
+                }
+
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                updateStatus('✅ Supabase client initialized successfully', 'success');
+
+                addResult('Configuration', {
+                    url: SUPABASE_URL,
+                    keyLength: SUPABASE_ANON_KEY.length,
+                    keyPrefix: SUPABASE_ANON_KEY.substring(0, 20) + '...'
+                }, 'info');
+            } catch (error) {
+                updateStatus(`❌ ERROR: ${error.message}`, 'error');
+                addResult('Initialization Error', error, 'error');
+            }
+        });
+
+        async function runTest() {
+            resultsDiv.innerHTML = '';
+            updateStatus('🔄 Running tests...', 'info');
+
+            try {
+                // Test 1: Simple query
+                updateStatus('Test 1: Fetching companies...', 'info');
+                const { data, error, count } = await supabase
+                    .from('bpos')
+                    .select('*', { count: 'exact' })
+                    .eq('is_active', true)
+                    .limit(5);
+
+                if (error) {
+                    addResult('❌ Test 1 Failed: Query Error', {
+                        error: error.message,
+                        code: error.code,
+                        details: error.details,
+                        hint: error.hint
+                    }, 'error');
+                    updateStatus('❌ Query failed - check results below', 'error');
+                    return;
+                }
+
+                addResult('✅ Test 1 Passed: Sample Companies', {
+                    totalCount: count,
+                    sampleResults: data.length,
+                    companies: data.map(c => ({
+                        name: c.company_name,
+                        city: c.city,
+                        employees: c.total_employees
+                    }))
+                }, 'success');
+
+                // Test 2: Fetch all companies
+                updateStatus('Test 2: Fetching all companies...', 'info');
+                const { data: allData, error: allError, count: allCount } = await supabase
+                    .from('bpos')
+                    .select('company_name, city', { count: 'exact' })
+                    .eq('is_active', true);
+
+                if (allError) {
+                    addResult('❌ Test 2 Failed', allError, 'error');
+                } else {
+                    addResult('✅ Test 2 Passed: All Companies', {
+                        total: allCount,
+                        retrieved: allData.length,
+                        sample: allData.slice(0, 10)
+                    }, 'success');
+                }
+
+                // Test 3: Check services table
+                updateStatus('Test 3: Checking services...', 'info');
+                const { data: services, error: servicesError, count: servicesCount } = await supabase
+                    .from('bpo_services')
+                    .select('*', { count: 'exact' })
+                    .limit(5);
+
+                if (servicesError) {
+                    addResult('❌ Test 3 Failed', servicesError, 'error');
+                } else {
+                    addResult('✅ Test 3 Passed: Services Table', {
+                        totalServices: servicesCount,
+                        sample: services
+                    }, 'success');
+                }
+
+                updateStatus('✅ All tests completed!', 'success');
+
+            } catch (error) {
+                updateStatus(`❌ Test failed: ${error.message}`, 'error');
+                addResult('Exception', error, 'error');
+            }
+        }
+    </script>
+</body>
+
+</html>

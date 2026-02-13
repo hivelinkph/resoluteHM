@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare BPO Solutions | Global Health Outsourcing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Graphik:wght@700&family=Roboto:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #363F4D;
+            /* Kyte Navy */
+            --accent: #2DD1AC;
+            /* Kyte Teal */
+            --white: #FFFFFF;
+            --text-dark: #363F4D;
+            --text-light: #5F6B7A;
+            --bg-light: #F9FAFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Georgia', sans-serif;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .logo {
+            font-family: 'Graphik', 'Arial', sans-serif;
+            font-weight: 700;
+        }
+
+        /* Logo in Hero */
+        .hero-logo {
+            height: 118px;
+            width: auto;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+            transition: transform 0.3s ease;
+        }
+
+        .hero-logo:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .hero-logo {
+                height: 126px;
+                margin-bottom: 15px;
+            }
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            /* Allow content to grow */
+            display: flex;
+            align-items: center;
+            /* overflow: hidden; Removed to prevent clipping */
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            padding: 80px 0;
+            /* Add vertical padding */
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('BPO2.png') center/cover no-repeat;
+            opacity: 0.4;
+            z-index: 0;
+        }
+
+        /* Video Overlay */
+        .hero-video-container {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            opacity: 0.25;
+            pointer-events: none;
+        }
+
+        .hero-video-item {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -30px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-30px, 30px) scale(0.9);
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 60px;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(48px, 6vw, 76px);
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.2;
+            /* Increased line-height to prevent clipping */
+            margin-bottom: 24px;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            padding-top: 10px;
+            /* Extra space for ascenders */
+        }
+
+        .hero h1 span {
+            display: block;
+            background: linear-gradient(90deg, #FFE5E5 0%, #FFFFFF 50%, #FFE5E5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .hero p {
+            font-size: clamp(18px, 2vw, 24px);
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 40px;
+            font-weight: 300;
+            max-width: 600px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--accent);
+            color: var(--white);
+            padding: 14px 32px;
+            border-radius: 4px;
+            /* Kyte style */
+            font-family: 'Graphik', Arial, sans-serif;
+            font-size: 16px;
+            /* Reduced from 18px */
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: none;
+            /* Flat style */
+            border: 1px solid transparent;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover {
+            background: #24b896;
+            /* Darker teal */
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--white);
+            color: var(--white);
+        }
+
+        .btn-outline:hover {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        .btn-outline-dark {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline-dark:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-family: 'Graphik', Arial, sans-serif;
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--white);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+        }
+
+        /* Services Section */
+        .services {
+            background: var(--bg-light);
+            padding: 100px 60px;
+        }
+
+        .services-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: 'Graphik', Arial, sans-serif;
+            font-size: clamp(36px, 4vw, 56px);
+            font-weight: 700;
+            color: var(--text-dark);
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .section-subtitle {
+            font-size: 20px;
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 60px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+        }
+
+        .service-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 24px;
+            border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--accent);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            font-size: 28px;
+            color: var(--white);
+        }
+
+        .service-card h3 {
+            font-family: 'Graphik', Arial, sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+        }
+
+        .service-card p {
+            font-size: 16px;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* Why Choose Us */
+        .why-choose {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            padding: 100px 60px;
+            color: var(--white);
+        }
+
+        .why-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 48px;
+            margin-top: 60px;
+        }
+
+        .why-item {
+            display: flex;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .why-number {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 48px;
+            font-weight: 800;
+            opacity: 0.3;
+            line-height: 1;
+        }
+
+        .why-content h3 {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .why-content p {
+            font-size: 16px;
+            line-height: 1.7;
+            opacity: 0.95;
+        }
+
+        /* Footer CTA */
+        .footer-cta {
+            background: var(--white);
+            padding: 80px 60px;
+            text-align: center;
+        }
+
+        .footer-cta h2 {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 24px;
+        }
+
+        .footer-cta p {
+            font-size: 18px;
+            color: var(--text-light);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .stats {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+
+            .why-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .hero,
+            .services,
+            .why-choose,
+            .footer-cta,
+            .logo-marquee-section {
+                padding: 60px 30px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Marquee Section */
+        .logo-marquee-section {
+            padding: 80px 0;
+            background: #FFFFFF;
+            /* Pure white to match logo backgrounds */
+            overflow: hidden;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .marquee-title {
+            text-align: center;
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .marquee-track {
+            display: inline-block;
+            animation: marquee 40s linear infinite;
+            /* Slower speed for better visibility */
+        }
+
+        .marquee-item {
+            display: inline-block;
+            margin: 0 50px;
+            /* Increased gap */
+            height: 80px;
+            vertical-align: middle;
+            transition: all 0.3s ease;
+        }
+
+        .marquee-item:hover {
+            transform: scale(1.1);
+        }
+
+        .marquee-item img {
+            height: 100%;
+            width: auto;
+            object-fit: contain;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .marquee-track:hover {
+            animation-play-state: paused;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-video-container">
+            <video class="hero-video-item" autoplay muted loop playsinline>
+                <source src="GlobeConnect23.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <img src="ResoluteTransparent.png" alt="Resolute Logo" class="hero-logo">
+                <h1>
+                    Healthcare,<br>
+                    <span>Empowered by Care</span>
+                </h1>
+                <p>BPO Solutions That Feel Human. Delivering compassionate, expert healthcare support that scales with
+                    your needs.</p>
+                <a href="resolute-connect.html" class="btn">
+                    Start Your Journey
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                </a>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <span class="stat-number">98%</span>
+                        <span class="stat-label">Client Satisfaction</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Healthcare Support</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">HIPAA</span>
+                        <span class="stat-label">Compliant</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services">
+        <div class="services-container">
+            <h2 class="section-title">Comprehensive Healthcare BPO Services</h2>
+            <p class="section-subtitle">Tailored solutions for modern healthcare providers, payers, and organizations
+            </p>
+
+            <div class="service-grid">
+                <div class="service-card">
+                    <div class="service-icon">🏥</div>
+                    <h3>Medical Billing & Coding</h3>
+                    <p>Streamline revenue cycle management with expert billing, coding, and claims processing that
+                        maximizes reimbursements.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">📞</div>
+                    <h3>Patient Support Services</h3>
+                    <p>Compassionate call center support for appointment scheduling, patient inquiries, and 24/7
+                        helpdesk services.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">📋</div>
+                    <h3>Medical Transcription</h3>
+                    <p>Accurate, timely medical documentation from experienced transcriptionists with specialized
+                        healthcare knowledge.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">💊</div>
+                    <h3>Pharmacy Services</h3>
+                    <p>Prior authorization, benefits verification, and prescription processing with precision and care.
+                    </p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🔐</div>
+                    <h3>HIPAA Compliance</h3>
+                    <p>Secure, compliant data handling with robust protocols protecting patient privacy and information
+                        security.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">📊</div>
+                    <h3>Healthcare Analytics</h3>
+                    <p>Data-driven insights for operational efficiency, quality improvement, and strategic
+                        decision-making.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="why-choose">
+        <div class="why-container">
+            <h2 class="section-title" style="color: white;">Why Healthcare Leaders Choose Us</h2>
+            <p class="section-subtitle" style="color: rgba(255,255,255,0.9);">Experience that elevates your healthcare
+                operations</p>
+
+            <div class="why-grid">
+                <div class="why-item">
+                    <div class="why-number">01</div>
+                    <div class="why-content">
+                        <h3>Clinical Expertise</h3>
+                        <p>Our team includes licensed healthcare professionals with deep clinical knowledge and
+                            real-world experience.</p>
+                    </div>
+                </div>
+
+                <div class="why-item">
+                    <div class="why-number">02</div>
+                    <div class="why-content">
+                        <h3>Proven Track Record</h3>
+                        <p>Over a decade serving healthcare providers, with measurable improvements in efficiency and
+                            patient satisfaction.</p>
+                    </div>
+                </div>
+
+                <div class="why-item">
+                    <div class="why-number">03</div>
+                    <div class="why-content">
+                        <h3>Scalable Solutions</h3>
+                        <p>Flexible staffing models that grow with your organization, from solo practitioners to large
+                            health systems.</p>
+                    </div>
+                </div>
+
+                <div class="why-item">
+                    <div class="why-number">04</div>
+                    <div class="why-content">
+                        <h3>Advanced Technology</h3>
+                        <p>State-of-the-art platforms integrated with your existing systems for seamless workflows and
+                            real-time reporting.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Logo Marquee -->
+    <section class="logo-marquee-section">
+        <h2 class="marquee-title">Our Providers</h2>
+        <div class="marquee-container">
+            <div class="marquee-track" id="logoMarqueeTrack">
+                <!-- Logos injected here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer CTA -->
+    <section class="footer-cta" id="contact">
+        <h2>Ready to Transform Your Healthcare Operations?</h2>
+        <p>Connect with our healthcare BPO experts and discover how we can help you deliver better patient care while
+            optimizing costs.</p>
+        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+            <a href="mailto:contact@healthcarebpo.com" class="btn">
+                Get Started Today
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+            </a>
+            <a href="himap-directory.html" class="btn btn-outline-dark">
+                View HIMAP Members
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+            </a>
+        </div>
+    </section>
+    <script>
+        // Local logos list generated from downloaded_logos directory
+        const LOCAL_LOGOS = [
+            "downloaded_logos/logo_001.png", "downloaded_logos/logo_002.jpg", "downloaded_logos/logo_003.jpg", "downloaded_logos/logo_004.jpg", "downloaded_logos/logo_005.png",
+            "downloaded_logos/logo_006.jpg", "downloaded_logos/logo_007.jpg", "downloaded_logos/logo_008.jpg", "downloaded_logos/logo_009.png", "downloaded_logos/logo_010.png",
+            "downloaded_logos/logo_011.png", "downloaded_logos/logo_012.jpg", "downloaded_logos/logo_013.jpg", "downloaded_logos/logo_014.png", "downloaded_logos/logo_015.png",
+            "downloaded_logos/logo_016.jpg", "downloaded_logos/logo_017.jpg", "downloaded_logos/logo_018.jpg", "downloaded_logos/logo_019.png", "downloaded_logos/logo_020.jpg",
+            "downloaded_logos/logo_021.jpg", "downloaded_logos/logo_022.jpg", "downloaded_logos/logo_023.png", "downloaded_logos/logo_024.jpg", "downloaded_logos/logo_025.jpg",
+            "downloaded_logos/logo_026.jpg", "downloaded_logos/logo_027.png", "downloaded_logos/logo_028.png", "downloaded_logos/logo_029.png", "downloaded_logos/logo_030.png",
+            "downloaded_logos/logo_031.png", "downloaded_logos/logo_032.png", "downloaded_logos/logo_033.png", "downloaded_logos/logo_034.png", "downloaded_logos/logo_035.png",
+            "downloaded_logos/logo_036.png", "downloaded_logos/logo_037.png", "downloaded_logos/logo_038.jpg", "downloaded_logos/logo_039.png", "downloaded_logos/logo_040.png",
+            "downloaded_logos/logo_041.png", "downloaded_logos/logo_042.jpg", "downloaded_logos/logo_043.png", "downloaded_logos/logo_044.png", "downloaded_logos/logo_045.png",
+            "downloaded_logos/logo_046.png", "downloaded_logos/logo_047.png", "downloaded_logos/logo_048.png", "downloaded_logos/logo_049.png", "downloaded_logos/logo_050.png",
+            "downloaded_logos/logo_051.png", "downloaded_logos/logo_052.png", "downloaded_logos/logo_053.png", "downloaded_logos/logo_054.png", "downloaded_logos/logo_055.png",
+            "downloaded_logos/logo_056.png", "downloaded_logos/logo_057.png", "downloaded_logos/logo_058.png", "downloaded_logos/logo_059.png", "downloaded_logos/logo_060.png",
+            "downloaded_logos/logo_061.png", "downloaded_logos/logo_062.png", "downloaded_logos/logo_063.png", "downloaded_logos/logo_064.png", "downloaded_logos/logo_065.png",
+            "downloaded_logos/logo_066.jpg", "downloaded_logos/logo_067.png", "downloaded_logos/logo_068.jpg", "downloaded_logos/logo_069.png", "downloaded_logos/logo_070.png",
+            "downloaded_logos/logo_071.png", "downloaded_logos/logo_072.png", "downloaded_logos/logo_073.png", "downloaded_logos/logo_074.png", "downloaded_logos/logo_075.png",
+            "downloaded_logos/logo_076.png", "downloaded_logos/logo_077.png", "downloaded_logos/logo_078.png", "downloaded_logos/logo_079.png", "downloaded_logos/logo_080.png",
+            "downloaded_logos/logo_081.png", "downloaded_logos/logo_082.png", "downloaded_logos/logo_083.png", "downloaded_logos/logo_084.png", "downloaded_logos/logo_085.png",
+            "downloaded_logos/logo_086.png", "downloaded_logos/logo_087.png", "downloaded_logos/logo_088.png", "downloaded_logos/logo_089.png"
+        ];
+
+        function loadLogos() {
+            const track = document.getElementById('logoMarqueeTrack');
+
+            try {
+                // Shuffle array for randomness if desired, or keep sorted
+                // LOCAL_LOGOS.sort(() => Math.random() - 0.5);
+
+                // Create logo elements
+                const fragment = document.createDocumentFragment();
+                LOCAL_LOGOS.forEach(url => {
+                    const div = document.createElement('div');
+                    div.className = 'marquee-item';
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = 'Partner Logo';
+                    img.loading = 'lazy';
+                    div.appendChild(img);
+                    fragment.appendChild(div);
+                });
+
+                // Duplicate content logic remains the same
+                track.appendChild(fragment.cloneNode(true));
+                // Add more duplication for smoother infinite scroll on large screens given the number of logos
+                if (LOCAL_LOGOS.length < 20) {
+                    track.appendChild(fragment.cloneNode(true));
+                    track.appendChild(fragment.cloneNode(true));
+                }
+
+            } catch (err) {
+                console.error('Error loading logos for marquee:', err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadLogos);
+    </script>
+</body>
+
+</html>

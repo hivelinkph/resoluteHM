@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Dashboard | HIMAP Directory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Graphik:wght@700&family=Roboto:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --primary: #363F4D;
+            /* Kyte Navy */
+            --accent: #2DD1AC;
+            /* Kyte Teal */
+            --white: #FFFFFF;
+            --text-dark: #363F4D;
+            --text-light: #5F6B7A;
+            --bg-light: #F9FAFB;
+            --success: #2E7D32;
+            --error: #C62828;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Georgia', sans-serif;
+            color: var(--text-dark);
+            background: var(--bg-light);
+        }
+
+        /* Header */
+        .header {
+            background: var(--primary);
+            padding: 20px 40px;
+            color: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .header h1 {
+            font-family: 'Graphik', Arial, sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .company-name {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .btn-logout {
+            padding: 10px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            border: 1px solid var(--white);
+            border-radius: 4px;
+            /* Kyte standard */
+            font-family: 'Graphik', Arial, sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .btn-logout:hover {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        .btn-view {
+            padding: 10px 24px;
+            background: var(--accent);
+            color: var(--white);
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            /* Kyte standard */
+            font-family: 'Graphik', Arial, sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .btn-view:hover {
+            background: transparent;
+            color: var(--white);
+            border-color: var(--white);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 40px;
+        }
+
+        /* Tabs */
+        .tabs-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #E0E0E0;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-family: 'Graphik', Arial, sans-serif;
+            font-size: 14px;
+            /* Slightly smaller for tabs */
+            font-weight: 700;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Card */
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .card h2 {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            font-family: 'Raleway', Arial, sans-serif;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="url"],
+        input[type="tel"],
+        input[type="number"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #E0E0E0;
+            border-radius: 8px;
+            font-family: 'Crimson Pro', Georgia, serif;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(220, 42, 145, 0.1);
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            /* Standardized padding */
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            /* Kyte style */
+            font-family: 'Graphik', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: none;
+            /* Flat style */
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            background: #24b896;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            padding: 10px 20px;
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            /* Kyte standard */
+            font-family: 'Graphik', Arial, sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-danger {
+            padding: 8px 16px;
+            background: transparent;
+            color: #C62828;
+            border: 1px solid #C62828;
+            border-radius: 4px;
+            /* Kyte standard */
+            font-family: 'Graphik', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-danger:hover {
+            background: #C62828;
+            color: var(--white);
+        }
+
+        /* Message */
+        .message {
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.success {
+            background: #E8F5E9;
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+
+        .message.error {
+            background: #FFE5E5;
+            color: var(--error);
+            border-left: 4px solid var(--error);
+        }
+
+        /* List Items */
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .list-item {
+            background: var(--bg-light);
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-details h4 {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .item-details p {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        /* Logo Upload */
+        .logo-upload {
+            border: 2px dashed #E0E0E0;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logo-upload:hover {
+            border-color: var(--primary);
+            background: rgba(220, 42, 145, 0.02);
+        }
+
+        .logo-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin: 0 auto 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-light);
+            font-size: 18px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div>
+            <h1>Member Dashboard</h1>
+            <div class="company-name" id="companyName">Loading...</div>
+        </div>
+        <div class="header-actions">
+            <a href="#" id="viewPublicLink" class="btn-view" style="display: none;">View Public Profile</a>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div id="loading" class="loading">Loading company information...</div>
+
+        <div id="content" style="display: none;">
+            <!-- Tabs Navigation -->
+            <div class="tabs-nav">
+                <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+                <button class="tab-btn" onclick="switchTab('services')">Services</button>
+                <button class="tab-btn" onclick="switchTab('operations')">Operations</button>
+                <button class="tab-btn" onclick="switchTab('clients')">Client Profile</button>
+                <button class="tab-btn" onclick="switchTab('locations')">Locations</button>
+                <button class="tab-btn" onclick="switchTab('team')">Team</button>
+                <button class="tab-btn" onclick="switchTab('certifications')">Certifications</button>
+                <button class="tab-btn" onclick="switchTab('technology')">Technology</button>
+            </div>
+
+            <!-- Tab 1: Overview -->
+            <div id="overview" class="tab-content active">
+                <!-- Basic Information -->
+                <div class="card">
+                    <h2>Basic Information</h2>
+                    <div class="message" id="basicMessage"></div>
+                    <form id="basicForm">
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label for="companyNameInput">Company Name</label>
+                                <input type="text" id="companyNameInput" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="tradeName">Trade Name (if different)</label>
+                                <input type="text" id="tradeName">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="description">Description</label>
+                                <textarea id="description"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="website">Website</label>
+                                <input type="url" id="website">
+                            </div>
+                            <div class="form-group">
+                                <label for="linkedin">LinkedIn URL</label>
+                                <input type="url" id="linkedin">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Contact Email</label>
+                                <input type="email" id="contactEmail">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input type="tel" id="phone">
+                            </div>
+                            <div class="form-group">
+                                <label for="messenger">Messenger Handle</label>
+                                <input type="text" id="messenger" placeholder="your.handle">
+                            </div>
+                            <div class="form-group">
+                                <label for="whatsapp">WhatsApp Number</label>
+                                <input type="tel" id="whatsapp" placeholder="+63...">
+                            </div>
+                            <div class="form-group">
+                                <label for="viber">Viber Number</label>
+                                <input type="tel" id="viber" placeholder="+63...">
+                            </div>
+                            <div class="form-group">
+                                <label for="telegram">Telegram Username</label>
+                                <input type="text" id="telegram" placeholder="@username">
+                            </div>
+                            <div class="form-group">
+                                <label for="facebook">Facebook Page/Handle</label>
+                                <input type="text" id="facebook" placeholder="facebook.com/yourpage">
+                            </div>
+                            <div class="form-group">
+                                <label for="instagram">Instagram Handle</label>
+                                <input type="text" id="instagram" placeholder="@yourhandle">
+                            </div>
+                            <div class="form-group">
+                                <label for="yearEstablished">Year Established</label>
+                                <input type="number" id="yearEstablished" min="1900" max="2100">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary" id="basicBtn">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Logo Upload -->
+                <div class="card">
+                    <h2>Company Logo</h2>
+                    <div class="message" id="logoMessage"></div>
+                    <div class="logo-upload" onclick="document.getElementById('logoFile').click()">
+                        <img id="logoPreview" class="logo-preview" style="display: none;">
+                        <p id="uploadText">Click to upload or drag & drop your logo</p>
+                        <small style="color: var(--text-light);">PNG, JPG or SVG (max 2MB)</small>
+                    </div>
+                    <input type="file" id="logoFile" accept="image/*" style="display: none;">
+                    <button class="btn-primary" id="uploadBtn" style="margin-top: 20px; display: none;">Upload
+                        Logo</button>
+                </div>
+            </div>
+
+            <!-- Tab 2: Services -->
+            <div id="services" class="tab-content">
+                <div class="card">
+                    <h2>
+                        Services Offered
+                        <button class="btn-secondary" onclick="openModal('serviceModal')">+ Add Service</button>
+                    </h2>
+                    <div id="servicesList" class="item-list">
+                        <!-- Services dynamically populated -->
+                        <p style="text-align: center; color: var(--text-light);">No services listed yet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Operations -->
+            <div id="operations" class="tab-content">
+                <div class="card">
+                    <h2>Operational Details</h2>
+                    <div class="message" id="opsMessage"></div>
+                    <form id="opsForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="totalEmployees">Total Employees</label>
+                                <input type="number" id="totalEmployees">
+                            </div>
+                            <div class="form-group">
+                                <label for="healthcareFTEs">Healthcare FTE Count</label>
+                                <input type="number" id="healthcareFTEs">
+                            </div>
+                            <div class="form-group">
+                                <label for="deliveryModel">Delivery Model</label>
+                                <select id="deliveryModel">
+                                    <option value="Onsite">Onsite</option>
+                                    <option value="Remote">Remote</option>
+                                    <option value="Hybrid">Hybrid</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="workShifts">Work Shifts</label>
+                                <input type="text" id="workShifts" placeholder="e.g. 24/7, US hours">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="compliance">Compliance Frameworks</label>
+                                <input type="text" id="compliance" placeholder="e.g. HIPAA, SOC2, ISO 27001">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="ehrSystems">EHR Systems Supported</label>
+                                <textarea id="ehrSystems" style="min-height: 80px;"></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary" id="opsBtn">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tab 3.5: Client Profile -->
+            <div id="clients" class="tab-content">
+                <div class="card">
+                    <h2>Client Profile & Market</h2>
+                    <div class="message" id="clientMessage"></div>
+                    <form id="clientForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="activeClients">No. of Active Clients</label>
+                                <input type="number" id="activeClients">
+                            </div>
+                            <div class="form-group">
+                                <label for="yearsHealthcare">Years Serving Healthcare</label>
+                                <input type="number" id="yearsHealthcare">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="targetMarket">Target Market</label>
+                                <input type="text" id="targetMarket" placeholder="e.g. Payers, Providers, Vendors">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="clientTypes">Client Types</label>
+                                <input type="text" id="clientTypes" placeholder="e.g. Hospitals, Clinics, Insurance">
+                            </div>
+                            <div class="form-group">
+                                <label for="avgClientSize">Average Client Size</label>
+                                <input type="text" id="avgClientSize" placeholder="e.g. Mid-Market, Enterprise">
+                            </div>
+                            <div class="form-group">
+                                <label for="largestClientType">Largest Client Type</label>
+                                <input type="text" id="largestClientType">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary" id="clientBtn">Save Profile</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tab 4: Locations -->
+            <div id="locations" class="tab-content">
+                <!-- Headquarters -->
+                <div class="card">
+                    <h2>Headquarters Address</h2>
+                    <div class="message" id="hqMessage"></div>
+                    <form id="hqForm">
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label for="address">Address</label>
+                                <textarea id="address"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="city">City</label>
+                                <input type="text" id="city">
+                            </div>
+                            <div class="form-group">
+                                <label for="region">Region/State</label>
+                                <input type="text" id="region">
+                            </div>
+                            <div class="form-group">
+                                <label for="zip">Zip/Postal Code</label>
+                                <input type="text" id="zip">
+                            </div>
+                            <div class="form-group">
+                                <label for="country">Country</label>
+                                <input type="text" id="country" value="Philippines">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary" id="hqBtn">Save HQ Address</button>
+                    </form>
+                </div>
+
+                <!-- Additional Locations -->
+                <div class="card">
+                    <h2>
+                        Additional Locations
+                        <button class="btn-secondary" onclick="openModal('locationModal')">+ Add Location</button>
+                    </h2>
+                    <div id="locationsList" class="item-list"></div>
+                </div>
+            </div>
+
+            <!-- Tab 5: Team -->
+            <div id="team" class="tab-content">
+                <div class="card">
+                    <h2>
+                        Key Personnel
+                        <button class="btn-secondary" onclick="openModal('teamModal')">+ Add Member</button>
+                    </h2>
+                    <div id="teamList" class="item-list"></div>
+                </div>
+            </div>
+
+            <!-- Tab 6: Certifications -->
+            <div id="certifications" class="tab-content">
+                <div class="card">
+                    <h2>
+                        Certifications
+                        <button class="btn-secondary" onclick="openModal('certModal')">+ Add Certification</button>
+                    </h2>
+                    <div id="certList" class="item-list"></div>
+                </div>
+            </div>
+
+            <!-- Tab 7: Technology -->
+            <div id="technology" class="tab-content">
+                <div class="card">
+                    <h2>
+                        Technology Stack
+                        <button class="btn-secondary" onclick="openModal('techModal')">+ Add Technology</button>
+                    </h2>
+                    <div id="techList" class="item-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Service Modal -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('serviceModal')">&times;</span>
+            <h2>Add Service</h2>
+            <form id="serviceForm">
+                <input type="hidden" id="serviceId">
+                <div class="form-group">
+                    <label>Service Name</label>
+                    <input type="text" id="serviceName" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <input type="text" id="serviceCategory" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="serviceDesc"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tools Used</label>
+                    <input type="text" id="serviceTools" placeholder="e.g. Python, Salesforce">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="servicePrimary"> Is Primary Service?
+                    </label>
+                </div>
+                <button type="submit" class="btn-primary">Save Service</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Location Modal -->
+    <div id="locationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('locationModal')">&times;</span>
+            <h2>Add Location</h2>
+            <form id="locationFormModal">
+                <input type="hidden" id="locationId">
+                <div class="form-group">
+                    <label>Location Name (e.g. Cebu Site)</label>
+                    <input type="text" id="locName" required>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea id="locAddress"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" id="locCity" required>
+                </div>
+                <div class="form-group">
+                    <label>Province</label>
+                    <input type="text" id="locProvince">
+                </div>
+                <div class="form-group">
+                    <label>Headcount</label>
+                    <input type="number" id="locHeadcount">
+                </div>
+                <button type="submit" class="btn-primary">Save Location</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Team Modal -->
+    <div id="teamModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('teamModal')">&times;</span>
+            <h2>Add Team Member</h2>
+            <form id="teamForm">
+                <input type="hidden" id="teamId">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="teamName" required>
+                </div>
+                <div class="form-group">
+                    <label>Position / Title</label>
+                    <input type="text" id="teamTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Bio</label>
+                    <textarea id="teamBio"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Photo URL</label>
+                    <input type="url" id="teamPhoto" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>LinkedIn Profile</label>
+                    <input type="url" id="teamLinkedIn">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="teamExec"> Is Executive?
+                    </label>
+                </div>
+                <button type="submit" class="btn-primary">Save Member</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cert Modal -->
+    <div id="certModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('certModal')">&times;</span>
+            <h2>Add Certification</h2>
+            <form id="certForm">
+                <input type="hidden" id="certId">
+                <div class="form-group">
+                    <label>Certification Name</label>
+                    <input type="text" id="certName" required>
+                </div>
+                <div class="form-group">
+                    <label>Issuing Body</label>
+                    <input type="text" id="certIssuer">
+                </div>
+                <div class="form-group">
+                    <label>Valid Until</label>
+                    <input type="date" id="certDate">
+                </div>
+                <button type="submit" class="btn-primary">Save Certification</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tech Modal -->
+    <div id="techModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('techModal')">&times;</span>
+            <h2>Add Technology</h2>
+            <form id="techForm">
+                <input type="hidden" id="techId">
+                <div class="form-group">
+                    <label>System Name</label>
+                    <input type="text" id="techName" required>
+                </div>
+                <div class="form-group">
+                    <label>Type / Category</label>
+                    <input type="text" id="techType">
+                </div>
+                <div class="form-group">
+                    <label>Version</label>
+                    <input type="text" id="techVersion">
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="techNotes"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Save Technology</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+        // Initialize Supabase (prevent redeclarations)
+        if (!window.supabaseClient) {
+            window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+
+        // Global State
+        let currentUser = null;
+        let userBpoId = null;
+        let bpoData = {}; // Stores all fetched data
+
+        // --- Tabs Logic ---
+        function switchTab(tabName) {
+            // Update buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // --- Auth & Init ---
+        async function checkAuth() {
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html?role=member';
+                return false;
+            }
+
+            const { data: profile } = await window.supabaseClient
+                .from('user_profiles')
+                .select('*')
+                .eq('user_id', session.user.id)
+                .single();
+
+            if (!profile || !profile.is_active || !profile.bpo_id) {
+                alert('Account inactive or not assigned to company.');
+                await window.supabaseClient.auth.signOut();
+                window.location.href = 'login.html';
+                return false;
+            }
+
+            currentUser = profile;
+            userBpoId = profile.bpo_id;
+            return true;
+        }
+
+        // --- Data Loading ---
+        async function loadAllData() {
+            try {
+                // Fetch BPO Core Data
+                const { data: company, error } = await window.supabaseClient
+                    .from('bpos')
+                    .select('*')
+                    .eq('id', userBpoId)
+                    .single();
+
+                if (error) throw error;
+                bpoData.company = company;
+
+                // Parallel Fetch for Related Tables
+                const [
+                    { data: services },
+                    { data: operations },
+                    { data: clients },
+                    { data: locations },
+                    { data: personnel },
+                    { data: certifications },
+                    { data: technology },
+                    { data: media }
+                ] = await Promise.all([
+                    window.supabaseClient.from('bpo_services').select('*').eq('bpo_id', userBpoId),
+                    window.supabaseClient.from('bpo_operations').select('*').eq('bpo_id', userBpoId).single(),
+                    window.supabaseClient.from('bpo_clients_profile').select('*').eq('bpo_id', userBpoId).single(),
+                    window.supabaseClient.from('bpo_locations').select('*').eq('bpo_id', userBpoId),
+                    window.supabaseClient.from('bpo_personnel').select('*').eq('bpo_id', userBpoId),
+                    window.supabaseClient.from('bpo_certifications').select('*').eq('bpo_id', userBpoId),
+                    window.supabaseClient.from('bpo_technology').select('*').eq('bpo_id', userBpoId),
+                    window.supabaseClient.from('bpo_media').select('*').eq('bpo_id', userBpoId)
+                ]);
+
+                bpoData.services = services || [];
+                bpoData.operations = operations || {};
+                bpoData.clients = clients || {};
+                bpoData.locations = locations || [];
+                bpoData.personnel = personnel || [];
+                bpoData.certifications = certifications || [];
+                bpoData.technology = technology || [];
+                bpoData.media = media || [];
+
+                populateUI();
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                alert('Failed to load dashboard data.');
+            }
+        }
+
+        function populateUI() {
+            const c = bpoData.company;
+
+            // Header
+            document.getElementById('companyName').textContent = c.company_name;
+            document.getElementById('viewPublicLink').href = `member-detail.html?id=${c.id}`;
+            document.getElementById('viewPublicLink').style.display = 'inline-block';
+
+            // Tab 1: Overview
+            document.getElementById('companyNameInput').value = c.company_name || '';
+            document.getElementById('tradeName').value = c.trade_name || '';
+            document.getElementById('description').value = c.company_description || '';
+            document.getElementById('website').value = c.website_url || '';
+            document.getElementById('linkedin').value = c.linkedin_url || '';
+            document.getElementById('contactEmail').value = c.email || '';
+            document.getElementById('phone').value = c.contact_number || '';
+            document.getElementById('messenger').value = c.messenger_handle || '';
+            document.getElementById('whatsapp').value = c.whatsapp_number || '';
+            document.getElementById('viber').value = c.viber_number || '';
+            document.getElementById('telegram').value = c.telegram_username || '';
+            document.getElementById('facebook').value = c.facebook_handle || '';
+            document.getElementById('instagram').value = c.instagram_handle || '';
+            document.getElementById('yearEstablished').value = c.year_established || '';
+
+            // Logo
+            const logo = bpoData.media.find(m => m.media_type === 'logo');
+            if (logo) {
+                document.getElementById('logoPreview').src = logo.media_url || logo.file_url; // Handle both column names if unsure
+                document.getElementById('logoPreview').style.display = 'block';
+                document.getElementById('uploadText').style.display = 'none';
+            }
+
+            // Tab 2: Services
+            renderList('servicesList', bpoData.services, (item) => `
+                <div class="item-details">
+                    <h4>${item.service_name} ${item.is_primary_service ? '(Primary)' : ''}</h4>
+                    <p>${item.service_category}</p>
+                </div>
+                <button class="btn-danger" onclick="deleteItem('bpo_services', '${item.id}')">Remove</button>
+            `);
+
+            // Tab 3: Operations
+            const ops = bpoData.operations;
+            document.getElementById('totalEmployees').value = c.total_employees || ''; // Usually in BPOs table
+            document.getElementById('healthcareFTEs').value = c.healthcare_fte_count || '';
+            if (ops) {
+                document.getElementById('deliveryModel').value = ops.delivery_model || 'Onsite';
+                document.getElementById('workShifts').value = ops.work_shifts || '';
+                document.getElementById('compliance').value = ops.compliance_frameworks || '';
+                document.getElementById('ehrSystems').value = ops.ehr_systems_supported || '';
+            }
+
+            // Tab 3.5: Clients Profile
+            const cp = bpoData.clients;
+            if (cp) {
+                document.getElementById('activeClients').value = cp.no_of_active_clients || '';
+                document.getElementById('yearsHealthcare').value = cp.years_serving_healthcare || '';
+                document.getElementById('targetMarket').value = cp.target_market || '';
+                document.getElementById('clientTypes').value = cp.client_types || '';
+                document.getElementById('avgClientSize').value = cp.average_client_size || '';
+                document.getElementById('largestClientType').value = cp.largest_client_type || '';
+            }
+
+
+            // Tab 4: Locations (HQ + Others)
+            document.getElementById('address').value = c.headquarters_address || '';
+            document.getElementById('city').value = c.city || '';
+            // document.getElementById('region').value = c.province || ''; // Region/Province
+            // document.getElementById('zip').value = ''; // Zip not always used
+
+            renderList('locationsList', bpoData.locations, (item) => `
+                <div class="item-details">
+                    <h4>${item.location_name}</h4>
+                    <p>${item.city}, ${item.province || ''}</p>
+                </div>
+                <button class="btn-danger" onclick="deleteItem('bpo_locations', '${item.id}')">Remove</button>
+            `);
+
+            // Tab 5: Team
+            renderList('teamList', bpoData.personnel, (item) => `
+                <div class="item-details">
+                    <h4>${item.full_name} ${item.is_executive ? '(Exec)' : ''}</h4>
+                    <p>${item.position_title}</p>
+                </div>
+                <button class="btn-danger" onclick="deleteItem('bpo_personnel', '${item.id}')">Remove</button>
+            `);
+
+            // Tab 6: Certifications
+            renderList('certList', bpoData.certifications, (item) => `
+                <div class="item-details">
+                    <h4>${item.certification_name}</h4>
+                    <p>Issuer: ${item.issuing_body || 'N/A'}</p>
+                </div>
+                <button class="btn-danger" onclick="deleteItem('bpo_certifications', '${item.id}')">Remove</button>
+            `);
+
+            // Tab 7: Technology
+            renderList('techList', bpoData.technology, (item) => `
+                <div class="item-details">
+                    <h4>${item.system_name}</h4>
+                    <p>${item.system_type || ''}</p>
+                </div>
+                <button class="btn-danger" onclick="deleteItem('bpo_technology', '${item.id}')">Remove</button>
+            `);
+        }
+
+        // --- Helper for Lists ---
+        function renderList(elementId, items, templateFn) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = '';
+            if (!items || items.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-light);">No items listed.</p>';
+                return;
+            }
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                div.innerHTML = templateFn(item);
+                container.appendChild(div);
+            });
+        }
+
+        // --- Save Functions ---
+
+        // Save Basic Info
+        document.getElementById('basicForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await updateTable('bpos', userBpoId, {
+                company_name: document.getElementById('companyNameInput').value,
+                trade_name: document.getElementById('tradeName').value,
+                company_description: document.getElementById('description').value,
+                website_url: document.getElementById('website').value,
+                linkedin_url: document.getElementById('linkedin').value,
+                email: document.getElementById('contactEmail').value,
+                contact_number: document.getElementById('phone').value,
+                messenger_handle: document.getElementById('messenger').value,
+                whatsapp_number: document.getElementById('whatsapp').value,
+                viber_number: document.getElementById('viber').value,
+                telegram_username: document.getElementById('telegram').value,
+                facebook_handle: document.getElementById('facebook').value,
+                instagram_handle: document.getElementById('instagram').value,
+                year_established: document.getElementById('yearEstablished').value || null
+            }, 'basicMessage');
+        });
+
+        // Save HQ
+        document.getElementById('hqForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await updateTable('bpos', userBpoId, {
+                headquarters_address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                // province: document.getElementById('region').value
+            }, 'hqMessage');
+        });
+
+        // Save Operations
+        // Save Operations
+        document.getElementById('opsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // 1. Update Core Stats (in bpos table)
+            await window.supabaseClient.from('bpos').update({
+                total_employees: document.getElementById('totalEmployees').value || null,
+                healthcare_fte_count: document.getElementById('healthcareFTEs').value || null,
+            }).eq('id', userBpoId);
+
+            // 2. Update/Insert Operations Details
+            const opsData = {
+                bpo_id: userBpoId,
+                delivery_model: document.getElementById('deliveryModel').value,
+                work_shifts: document.getElementById('workShifts').value,
+                compliance_frameworks: document.getElementById('compliance').value,
+                ehr_systems_supported: document.getElementById('ehrSystems').value
+            };
+
+            let { error } = await window.supabaseClient.from('bpo_operations').upsert(opsData, { onConflict: 'bpo_id' });
+
+            showMessage('opsMessage', error ? 'error' : 'success', error ? error.message : 'Operations data saved!');
+        });
+
+        // Save Client Profile
+        document.getElementById('clientForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const clientData = {
+                bpo_id: userBpoId,
+                target_market: document.getElementById('targetMarket').value,
+                client_types: document.getElementById('clientTypes').value,
+                average_client_size: document.getElementById('avgClientSize').value,
+                no_of_active_clients: document.getElementById('activeClients').value || null,
+                largest_client_type: document.getElementById('largestClientType').value,
+                years_serving_healthcare: document.getElementById('yearsHealthcare').value || null
+            };
+
+            const { error } = await window.supabaseClient.from('bpo_clients_profile').upsert(clientData, { onConflict: 'bpo_id' });
+
+            showMessage('clientMessage', error ? 'error' : 'success', error ? error.message : 'Client profile saved!');
+        });
+
+
+        // --- Generic Update Helper ---
+        async function updateTable(table, id, data, messageId) {
+            const msg = document.getElementById(messageId);
+            msg.style.display = 'none';
+
+            try {
+                const { error } = await window.supabaseClient.from(table).update(data).eq('id', id);
+                if (error) throw error;
+                showMessage(messageId, 'success', 'Changes saved successfully!');
+            } catch (err) {
+                console.error(err);
+                showMessage(messageId, 'error', err.message || 'Failed to save');
+            }
+        }
+
+        function showMessage(id, type, text) {
+            const el = document.getElementById(id);
+            el.className = `message ${type}`;
+            el.textContent = text;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        // --- List Management (Add/Delete) ---
+
+        async function deleteItem(table, id) {
+            if (!confirm('Are you sure you want to remove this item?')) return;
+
+            try {
+                const { error } = await window.supabaseClient.from(table).delete().eq('id', id);
+                if (error) throw error;
+                loadAllData(); // Reload to refresh list
+            } catch (err) {
+                alert('Error removing item: ' + err.message);
+            }
+        }
+
+        // --- Modals ---
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // Add Service
+        document.getElementById('serviceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addItem('bpo_services', {
+                bpo_id: userBpoId,
+                service_name: document.getElementById('serviceName').value,
+                service_category: document.getElementById('serviceCategory').value,
+                description: document.getElementById('serviceDesc').value,
+                tools_used: document.getElementById('serviceTools').value,
+                is_primary_service: document.getElementById('servicePrimary').checked
+            }, 'serviceModal');
+        });
+
+        // Add Location
+        document.getElementById('locationFormModal').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addItem('bpo_locations', {
+                bpo_id: userBpoId,
+                location_name: document.getElementById('locName').value,
+                address: document.getElementById('locAddress').value,
+                city: document.getElementById('locCity').value,
+                province: document.getElementById('locProvince').value,
+                headcount: document.getElementById('locHeadcount').value || null
+            }, 'locationModal');
+        });
+
+        // Add Team
+        document.getElementById('teamForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addItem('bpo_personnel', {
+                bpo_id: userBpoId,
+                full_name: document.getElementById('teamName').value,
+                position_title: document.getElementById('teamTitle').value,
+                bio: document.getElementById('teamBio').value,
+                photo_url: document.getElementById('teamPhoto').value,
+                linkedin_profile: document.getElementById('teamLinkedIn').value,
+                is_executive: document.getElementById('teamExec').checked
+            }, 'teamModal');
+        });
+
+        // Add Cert
+        document.getElementById('certForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addItem('bpo_certifications', {
+                bpo_id: userBpoId,
+                certification_name: document.getElementById('certName').value,
+                issuing_body: document.getElementById('certIssuer').value,
+                valid_until: document.getElementById('certDate').value || null
+            }, 'certModal');
+        });
+
+        // Add Tech
+        document.getElementById('techForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addItem('bpo_technology', {
+                bpo_id: userBpoId,
+                system_name: document.getElementById('techName').value,
+                system_type: document.getElementById('techType').value,
+                version: document.getElementById('techVersion').value,
+                notes: document.getElementById('techNotes').value
+            }, 'techModal');
+        });
+
+        async function addItem(table, data, modalId) {
+            try {
+                const { error } = await window.supabaseClient.from(table).insert(data);
+                if (error) throw error;
+                closeModal(modalId);
+                loadAllData(); // Refresh info
+                document.getElementById(modalId).querySelector('form').reset();
+            } catch (err) {
+                alert('Error adding item: ' + err.message);
+            }
+        }
+
+        // --- Logo Upload ---
+        document.getElementById('logoFile').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            // Preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('logoPreview').src = e.target.result;
+                document.getElementById('logoPreview').style.display = 'block';
+                document.getElementById('uploadText').style.display = 'none';
+                document.getElementById('uploadBtn').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('uploadBtn').addEventListener('click', async () => {
+            const file = document.getElementById('logoFile').files[0];
+            if (!file) return;
+
+            try {
+                const filename = `${userBpoId}-logo-${Date.now()}.${file.name.split('.').pop()}`;
+                const { error: upErr } = await window.supabaseClient.storage
+                    .from('bpo-assets')
+                    .upload(`logos/${filename}`, file);
+
+                if (upErr) throw upErr;
+
+                const { data: urlData } = window.supabaseClient.storage
+                    .from('bpo-assets')
+                    .getPublicUrl(`logos/${filename}`);
+
+                // Save to DB
+                const { error: dbErr } = await window.supabaseClient
+                    .from('bpo_media')
+                    .upsert({
+                        bpo_id: userBpoId,
+                        media_type: 'logo',
+                        media_url: urlData.publicUrl,
+                        is_primary: true
+                    }, { onConflict: 'bpo_id, media_type' }); // Ensure unique logo per bpo if needed or just add
+
+                if (dbErr) throw dbErr;
+
+                showMessage('logoMessage', 'success', 'Logo uploaded!');
+                document.getElementById('uploadBtn').style.display = 'none';
+
+            } catch (err) {
+                showMessage('logoMessage', 'error', err.message);
+            }
+        });
+
+        // Logout
+        async function logout() {
+            await window.supabaseClient.auth.signOut();
+            window.location.href = 'login.html';
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (await checkAuth()) {
+                await loadAllData();
+            }
+        });
+
+    </script>
+</body>
+
+</html>

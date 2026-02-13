@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Profile | HIMAP Directory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Graphik:wght@700&family=Roboto:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --primary: #363F4D;
+            /* Kyte Navy */
+            --accent: #2DD1AC;
+            /* Kyte Teal */
+            --white: #FFFFFF;
+            --text-dark: #363F4D;
+            --text-light: #5F6B7A;
+            --bg-light: #F9FAFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Georgia', sans-serif;
+            color: var(--text-dark);
+            background: var(--bg-light);
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--white);
+            padding: 20px 60px;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .back-btn {
+            padding: 12px 24px;
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            /* Kyte style */
+            font-family: 'Graphik', Arial, sans-serif;
+            font-weight: 700;
+            color: var(--white);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+        }
+
+        .back-btn:hover {
+            background: #24b896;
+            transform: translateY(-1px);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: var(--accent);
+            /* Solid Teal */
+            padding: 60px;
+            color: var(--white);
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .company-logo-large {
+            width: 200px;
+            height: 200px;
+            background: var(--white);
+            border-radius: 24px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .company-logo-large img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .company-info h1 {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .company-meta {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+
+        .company-description {
+            font-size: 18px;
+            line-height: 1.6;
+            opacity: 0.95;
+            max-width: 800px;
+        }
+
+        /* Contact Actions */
+        .contact-actions {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .contact-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .contact-btn:hover {
+            background: var(--white);
+            color: var(--accent);
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .contact-btn.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: grayscale(1);
+        }
+
+        .contact-btn.disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Brand Colors */
+        .contact-btn.call {
+            background: #28a745;
+        }
+
+        .contact-btn.email {
+            background: #ea4335;
+        }
+
+        .contact-btn.messenger {
+            background: #0084FF;
+        }
+
+        .contact-btn.whatsapp {
+            background: #25D366;
+        }
+
+        .contact-btn.viber {
+            background: #7360f2;
+        }
+
+        .contact-btn.telegram {
+            background: #0088cc;
+        }
+
+        .contact-btn.facebook {
+            background: #1877F2;
+        }
+
+        .contact-btn.instagram {
+            background: #E4405F;
+        }
+
+        .contact-btn:not(.disabled):hover {
+            opacity: 0.9;
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .contact-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .hero {
+            position: relative;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            background: var(--white);
+            padding: 40px 60px;
+            border-bottom: 2px solid rgba(220, 42, 145, 0.1);
+        }
+
+        .stats-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Tabs */
+        .tabs-section {
+            padding: 60px;
+        }
+
+        .tabs-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .tabs-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 40px;
+            border-bottom: 2px solid rgba(220, 42, 145, 0.1);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 16px 32px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Content Sections */
+        .section-title {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 24px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .info-card {
+            background: var(--white);
+            padding: 24px;
+            border-radius: 16px;
+            border: 2px solid rgba(220, 42, 145, 0.1);
+        }
+
+        .info-card h4 {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .info-card p {
+            font-size: 16px;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .service-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .service-item {
+            background: var(--white);
+            padding: 24px;
+            border-radius: 16px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .service-item h4 {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .service-item p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .personnel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .personnel-card {
+            background: var(--white);
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .personnel-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            background: var(--bg-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .personnel-name {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .personnel-title {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            font-size: 18px;
+            color: var(--text-light);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .company-logo-large {
+                margin: 0 auto;
+            }
+
+            .nav,
+            .stats-bar,
+            .tabs-section {
+                padding: 30px;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="himap-directory.html" class="back-btn" id="backBtn">← Back to Directory</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="heroSection">
+        <div class="loading">Loading member details...</div>
+    </section>
+
+    <!-- Stats Bar -->
+    <section class="stats-bar" id="statsBar" style="display: none;">
+        <div class="stats-container" id="statsContainer"></div>
+    </section>
+
+    <!-- Tabs Section -->
+    <section class="tabs-section">
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+                <button class="tab-btn" onclick="switchTab('services')">Services</button>
+                <button class="tab-btn" onclick="switchTab('operations')">Operations</button>
+                <button class="tab-btn" onclick="switchTab('locations')">Locations</button>
+                <button class="tab-btn" onclick="switchTab('personnel')">Team</button>
+                <button class="tab-btn" onclick="switchTab('certifications')">Certifications</button>
+                <button class="tab-btn" onclick="switchTab('technology')">Technology</button>
+            </div>
+
+            <div id="tabsContent">
+                <div class="loading">Loading details...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+        // Initialize Supabase client
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Helper functions
+        function formatNumber(num) {
+            if (!num) return '—';
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        function truncateText(text, maxLength) {
+            if (!text) return '';
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
+        }
+
+        // Fetch BPO details
+        async function fetchBPODetails(bpoId) {
+            const { data: company, error } = await supabaseClient
+                .from('bpos')
+                .select('*')
+                .eq('id', bpoId)
+                .single();
+
+            if (error) {
+                console.error('Error fetching company:', error);
+                return null;
+            }
+
+            const [
+                { data: services },
+                { data: clientProfile },
+                { data: operations },
+                { data: locations },
+                { data: certifications },
+                { data: personnel },
+                { data: media },
+                { data: technology }
+            ] = await Promise.all([
+                supabaseClient.from('bpo_services').select('*').eq('bpo_id', bpoId),
+                supabaseClient.from('bpo_clients_profile').select('*').eq('bpo_id', bpoId).single(),
+                supabaseClient.from('bpo_operations').select('*').eq('bpo_id', bpoId).single(),
+                supabaseClient.from('bpo_locations').select('*').eq('bpo_id', bpoId),
+                supabaseClient.from('bpo_certifications').select('*').eq('bpo_id', bpoId),
+                supabaseClient.from('bpo_personnel').select('*').eq('bpo_id', bpoId),
+                supabaseClient.from('bpo_media').select('*').eq('bpo_id', bpoId),
+                supabaseClient.from('bpo_technology').select('*').eq('bpo_id', bpoId)
+            ]);
+
+            return {
+                company,
+                services: services || [],
+                clientProfile: clientProfile || {},
+                operations: operations || {},
+                locations: locations || [],
+                certifications: certifications || [],
+                personnel: personnel || [],
+                media: media || [],
+                technology: technology || []
+            };
+        }
+
+        let memberData = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const bpoId = getUrlParameter('id');
+            const from = getUrlParameter('from');
+
+            if (!bpoId) {
+                window.location.href = 'himap-directory.html';
+                return;
+            }
+
+            // Handle Dynamic Back Button
+            if (from === 'connect') {
+                const backBtn = document.getElementById('backBtn');
+                if (backBtn) {
+                    backBtn.href = 'resolute-connect.html?view=results';
+                    backBtn.textContent = '← Back to Results';
+                }
+            }
+
+            await loadMemberDetails(bpoId);
+        });
+
+        async function loadMemberDetails(bpoId) {
+            try {
+                memberData = await fetchBPODetails(bpoId);
+
+                if (!memberData || !memberData.company) {
+                    throw new Error('Member not found');
+                }
+
+                renderHero(memberData.company, memberData.media);
+                renderStats(memberData.company, memberData.clientProfile);
+                switchTab('overview');
+            } catch (error) {
+                console.error('Error loading member:', error);
+                document.getElementById('heroSection').innerHTML = `
+                    <div class="loading">Unable to load member details. <a href="himap-directory.html">Return to directory</a></div>
+                `;
+            }
+        }
+
+        function renderHero(company, media) {
+            const logo = media.find(m => m.media_type === 'logo' && m.is_primary);
+
+            const contactIcons = [
+                { id: 'call', title: 'Call', class: 'call', icon: '<svg viewBox="0 0 24 24"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"/></svg>', link: company.contact_number ? `tel:${company.contact_number}` : '#' },
+                { id: 'email', title: 'Email', class: 'email', icon: '<svg viewBox="0 0 24 24"><path d="M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6A2,2 0 0,0 20,4M12.71,12.71C12.55,12.87 12.33,12.95 12.11,12.95L11.89,12.95C11.67,12.95 11.45,12.87 11.29,12.71L4,5.43V6A1,1 0 0,0 3,7A1,1 0 0,0 2,6V5A2,2 0 0,0 4,3H20A2,2 0 0,0 22,5V6A1,1 0 0,0 21,7A1,1 0 0,0 20,6V5.43L12.71,12.71Z"/><circle cx="12" cy="11.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>', link: company.email ? `mailto:${company.email}` : '#' },
+                { id: 'messenger', title: 'Messenger', class: 'messenger', icon: '<svg viewBox="0 0 24 24"><path d="M12,2c-5.52,0-10,4.48-10,10c0,2.83,1.18,5.38,3.08,7.21c0.16,0.15,0.25,0.36,0.25,0.58v2.4c0,0.4,0.44,0.64,0.76,0.4l2.84-2.13c0.18-0.13,0.39-0.2,0.61-0.2c0.8,0.14,1.62,0.22,2.46,0.22c5.52,0,10-4.48,10-10C22,6.48,17.52,2,12,2z M12,14.5c-0.28,0-0.5-0.22-0.5-0.5v-1l1.5-1.5c0.2-0.2,0.2-0.5,0-0.7L12,9.3v-1 c0-0.28,0.22-0.5,0.5-0.5s0.5,0.22,0.5,0.5v1l-1.5,1.5c-0.2,0.2-0.2,0.5,0,0.7l1.5,1.5v1C12.5,14.28,12.28,14.5,12,14.5z"/></svg>', link: company.messenger_handle ? `https://m.me/${company.messenger_handle}` : '#' },
+                { id: 'whatsapp', title: 'WhatsApp', class: 'whatsapp', icon: '<svg viewBox="0 0 24 24"><path d="M12.04,2C6.58,2,2.13,6.45,2.13,11.91C2.13,13.66,2.59,15.36,3.45,16.86L2.05,22L7.3,20.62C8.75,21.41,10.38,21.83,12.04,21.83C17.5,21.83,21.95,17.38,21.95,11.92C21.95,9.27,20.92,6.78,19.05,4.91C17.18,3.03,14.69,2,12.04,2M12.05,3.67C14.25,3.67,16.31,4.53,17.87,6.09C19.42,7.65,20.28,9.72,20.28,11.92C20.28,16.46,16.58,20.15,12.04,20.15C10.56,20.15,9.11,19.76,7.85,19.02L7.55,18.83L4.41,19.66L5.25,16.63L5.05,16.31C4.22,15,3.78,13.47,3.78,11.91C3.78,7.37,7.48,3.67,12.05,3.67M15.71,13.07C15.93,13.18,16.08,13.26,16.13,13.41C16.19,13.56,16.19,14.26,16,15.09C15.82,15.92,14.91,16.41,14.48,16.48C14.1,16.53,13.62,16.56,13.09,16.39C12.77,16.29,12.36,16.15,11.83,15.92C9.62,14.97,8.17,12.74,8.06,12.6C7.95,12.45,7.16,11.4,7.16,10.31C7.16,9.22,7.73,8.69,7.93,8.47C8.13,8.26,8.38,8.2,8.53,8.2C8.68,8.2,8.92,8.2,9.05,8.2C9.19,8.2,9.39,8.26,9.58,8.71C9.77,9.17,10.24,10.32,10.3,10.43C10.35,10.54,10.38,10.68,10.31,10.83C10.23,10.98,10.2,11.09,10.09,11.23C9.98,11.38,9.84,11.56,9.73,11.67C9.62,11.78,9.51,11.9,9.64,12.12C9.77,12.34,10.21,13.05,10.86,13.63C11.7,14.38,12.41,14.62,12.63,14.73C12.85,14.84,12.96,14.82,13.08,14.67C13.2,14.53,13.6,14.04,13.74,13.82C13.89,13.6,14.03,13.63,14.23,13.71C14.43,13.78,15.5,14.31,15.71,14.42Z"/></svg>', link: company.whatsapp_number ? `https://wa.me/${company.whatsapp_number.replace(/\D/g, '')}` : '#' },
+                { id: 'viber', title: 'Viber', class: 'viber', icon: '<svg viewBox="0 0 24 24"><path d="M12.2,2C6.4,2,2.4,5.4,2.4,10.4c0,2.1,0.7,4.1,2.5,5.7c-0.2,0.9-1,2.8-1.5,3.9c-0.1,0.2,0,0.5,0.2,0.6c0.1,0.1,0.2,0.1,0.3,0.1 c1.1-0.2,3.3-1,4.5-1.7c1.1,0.4,2.4,0.6,3.7,0.6c5.8,0,10.4-4.2,10.4-9.3S17.9,2,12.2,2z M16.7,14c-0.4,0.4-1.3,0.6-1.8,0.2 c-0.5-0.4-2.2-1.9-2.2-1.9s-0.7,0.7-1,1c-0.3,0.3-0.8,0.2-1.2-0.2s-2-2.7-2-2.7S6,9.8,5.8,9.4S5.8,8.5,6.2,8.1S8,6.8,8,6.8 s0.4-0.3,0.7,0s1.1,1.5,1.1,1.5s0.2,0.3,0,0.6s-0.6,0.8-0.6,0.8s-0.2,0.3,0.1,0.6c0.3,0.3,1.5,1.9,2.4,2.4c0.3,0.2,0.5,0.1,0.8-0.1 s0.8-1.2,0.8-1.2s0.3-0.3,0.6-0.1s1.7,0.8,1.7,0.8S17.1,13.6,16.7,14z"/></svg>', link: company.viber_number ? `viber://chat?number=${company.viber_number.replace(/\D/g, '')}` : '#' },
+                { id: 'telegram', title: 'Telegram', class: 'telegram', icon: '<svg viewBox="0 0 24 24"><path d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M16.64,8.8c-0.15,1.58-0.8,5.42-1.13,7.19 c-0.14,0.75-0.42,1-0.68,1.03c-0.58,0.05-1.02-0.38-1.58-0.75c-0.88-0.58-1.38-0.94-2.23-1.5c-0.99-0.65-0.35-1.01,0.22-1.59 c0.15-0.15,2.71-2.48,2.76-2.69c0.01-0.03,0.01-0.13-0.05-0.18c-0.06-0.05-0.14-0.03-0.21-0.02c-0.09,0.02-1.49,0.95-4.22,2.79 c-0.4,0.27-0.76,0.41-1.08,0.4c-0.36-0.01-1.04-0.2-1.55-0.37c-0.63-0.2-1.13-0.31-1.08-0.66c0.02-0.18,0.27-0.36,0.74-0.55 c2.91-1.27,4.85-2.11,5.82-2.52c2.77-1.18,3.35-1.39,3.73-1.39c0.08,0,0.27,0.02,0.39,0.12c0.1,0.08,0.13,0.19,0.14,0.27 C16.65,8.54,16.65,8.71,16.64,8.8z"/></svg>', link: company.telegram_username ? `https://t.me/${company.telegram_username.replace('@', '')}` : '#' },
+                { id: 'facebook', title: 'Facebook', class: 'facebook', icon: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/></svg>', link: company.facebook_handle ? (company.facebook_handle.startsWith('http') ? company.facebook_handle : `https://facebook.com/${company.facebook_handle}`) : '#' },
+                { id: 'instagram', title: 'Instagram', class: 'instagram', icon: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/></svg>', link: company.instagram_handle ? (company.instagram_handle.startsWith('http') ? company.instagram_handle : `https://instagram.com/${company.instagram_handle.replace('@', '')}`) : '#' }
+            ];
+
+            document.getElementById('heroSection').innerHTML = `
+                <div class="contact-actions">
+                    ${contactIcons.map(item => `
+                        <a href="${item.link}" 
+                           class="contact-btn ${item.class} ${item.link === '#' ? 'disabled' : ''}" 
+                           title="${item.title}${item.link === '#' ? ' (Not Available)' : ''}"
+                           ${item.link !== '#' ? 'target="_blank"' : ''}
+                           onclick="${item.link === '#' ? 'event.preventDefault();' : ''}">
+                            ${item.icon}
+                        </a>
+                    `).join('')}
+                </div>
+                <div class="hero-content">
+                    <div class="company-logo-large">
+                        ${logo ? `<img src="${logo.file_url}" alt="${company.company_name}">` : `<div style="font-size: 72px; color: var(--primary);">${company.company_name.charAt(0)}</div>`}
+                    </div>
+                    <div class="company-info">
+                        <h1>${company.trade_name || company.company_name}</h1>
+                        <div class="company-meta">
+                            <div class="meta-item">📍 ${company.city || ''}${company.province ? ', ' + company.province : ''}</div>
+                            ${company.year_established ? `<div class="meta-item">📅 Est. ${company.year_established}</div>` : ''}
+                            ${company.website_url ? `<div class="meta-item">🌐 <a href="${company.website_url}" target="_blank" style="color: white; text-decoration: underline;">${company.website_url}</a></div>` : ''}
+                        </div>
+                        <p class="company-description">${company.company_description || ''}</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('statsBar').style.display = 'block';
+        }
+
+
+        function renderStats(company, clientProfile) {
+            const stats = [];
+
+            if (company.total_employees) {
+                stats.push({ value: formatNumber(company.total_employees), label: 'Total Employees' });
+            }
+            if (company.healthcare_fte_count) {
+                stats.push({ value: formatNumber(company.healthcare_fte_count), label: 'Healthcare FTEs' });
+            }
+            if (clientProfile?.no_of_active_clients) {
+                stats.push({ value: formatNumber(clientProfile.no_of_active_clients), label: 'Active Clients' });
+            }
+            if (clientProfile?.years_serving_healthcare) {
+                stats.push({ value: clientProfile.years_serving_healthcare + '+', label: 'Years in Healthcare' });
+            }
+
+            document.getElementById('statsContainer').innerHTML = stats.map(stat => `
+                <div class="stat-box">
+                    <span class="stat-value">${stat.value}</span>
+                    <span class="stat-label">${stat.label}</span>
+                </div>
+            `).join('');
+        }
+
+        function switchTab(tabName) {
+            // Update active tab button
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event?.target?.classList.add('active');
+
+            // Render tab content
+            const contentDiv = document.getElementById('tabsContent');
+
+            switch (tabName) {
+                case 'overview':
+                    contentDiv.innerHTML = renderOverview();
+                    break;
+                case 'services':
+                    contentDiv.innerHTML = renderServices();
+                    break;
+                case 'operations':
+                    contentDiv.innerHTML = renderOperations();
+                    break;
+                case 'locations':
+                    contentDiv.innerHTML = renderLocations();
+                    break;
+                case 'personnel':
+                    contentDiv.innerHTML = renderPersonnel();
+                    break;
+                case 'certifications':
+                    contentDiv.innerHTML = renderCertifications();
+                    break;
+                case 'technology':
+                    contentDiv.innerHTML = renderTechnology();
+                    break;
+            }
+        }
+
+        function renderOverview() {
+            const { company, clientProfile } = memberData;
+            return `
+                <h2 class="section-title">Company Overview</h2>
+                <div class="info-grid">
+                    ${company.mission ? `<div class="info-card"><h4>Mission</h4><p>${company.mission}</p></div>` : ''}
+                    ${company.vision ? `<div class="info-card"><h4>Vision</h4><p>${company.vision}</p></div>` : ''}
+                    ${clientProfile?.target_market ? `<div class="info-card"><h4>Target Markets</h4><p>${clientProfile.target_market}</p></div>` : ''}
+                    ${clientProfile?.client_types ? `<div class="info-card"><h4>Client Types</h4><p>${clientProfile.client_types}</p></div>` : ''}
+                    ${company.ownership_type ? `<div class="info-card"><h4>Ownership</h4><p>${company.ownership_type}</p></div>` : ''}
+                    ${company.email ? `<div class="info-card"><h4>Contact Email</h4><p>${company.email}</p></div>` : ''}
+                    ${company.contact_number ? `<div class="info-card"><h4>Phone</h4><p>${company.contact_number}</p></div>` : ''}
+                </div>
+            `;
+        }
+
+        function renderServices() {
+            const { services } = memberData;
+            if (!services || services.length === 0) {
+                return '<p class="loading">No services listed</p>';
+            }
+
+            return `
+                <h2 class="section-title">Services & Capabilities</h2>
+                <div class="service-list">
+                    ${services.map(s => `
+                        <div class="service-item">
+                            <h4>${s.service_name}</h4>
+                            <p><strong>Category:</strong> ${s.service_category}</p>
+                            ${s.description ? `<p>${s.description}</p>` : ''}
+                            ${s.tools_used ? `<p><strong>Tools:</strong> ${s.tools_used}</p>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderOperations() {
+            const { operations } = memberData;
+            if (!operations) {
+                return '<p class="loading">No operations details available</p>';
+            }
+
+            return `
+                <h2 class="section-title">Operations Details</h2>
+                <div class="info-grid">
+                    ${operations.delivery_model ? `<div class="info-card"><h4>Delivery Model</h4><p>${operations.delivery_model}</p></div>` : ''}
+                    ${operations.work_shifts ? `<div class="info-card"><h4>Work Shifts</h4><p>${operations.work_shifts}</p></div>` : ''}
+                    ${operations.compliance_frameworks ? `<div class="info-card"><h4>Compliance</h4><p>${operations.compliance_frameworks}</p></div>` : ''}
+                    ${operations.ehr_systems_supported ? `<div class="info-card"><h4>EHR Systems</h4><p>${operations.ehr_systems_supported}</p></div>` : ''}
+                    ${operations.billing_platforms_supported ? `<div class="info-card"><h4>Billing Platforms</h4><p>${operations.billing_platforms_supported}</p></div>` : ''}
+                    ${operations.coding_systems_supported ? `<div class="info-card"><h4>Coding Systems</h4><p>${operations.coding_systems_supported}</p></div>` : ''}
+                </div>
+            `;
+        }
+
+        function renderLocations() {
+            const { locations } = memberData;
+            if (!locations || locations.length === 0) {
+                return '<p class="loading">No locations listed</p>';
+            }
+
+            return `
+                <h2 class="section-title">Locations</h2>
+                <div class="info-grid">
+                    ${locations.map(loc => `
+                        <div class="info-card">
+                            <h4>${loc.location_name || 'Office'} ${loc.is_headquarters ? '(HQ)' : ''}</h4>
+                            <p>${loc.address || ''}<br>${loc.city || ''}${loc.province ? ', ' + loc.province : ''}</p>
+                            ${loc.headcount ? `<p><strong>Headcount:</strong> ${formatNumber(loc.headcount)}</p>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderPersonnel() {
+            const { personnel } = memberData;
+            if (!personnel || personnel.length === 0) {
+                return '<p class="loading">No team members listed</p>';
+            }
+
+            return `
+                <h2 class="section-title">Leadership Team</h2>
+                <div class="personnel-grid">
+                    ${personnel.map(person => `
+                        <div class="personnel-card">
+                            <div class="personnel-photo">
+                                ${person.photo_url ? `<img src="${person.photo_url}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : person.full_name.charAt(0)}
+                            </div>
+                            <div class="personnel-name">${person.full_name}</div>
+                            <div class="personnel-title">${person.position_title || ''}</div>
+                            ${person.bio ? `<p style="font-size:14px;color:var(--text-light);margin-top:12px;">${truncateText(person.bio, 120)}</p>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderCertifications() {
+            const { certifications } = memberData;
+            if (!certifications || certifications.length === 0) {
+                return '<p class="loading">No certifications listed</p>';
+            }
+
+            return `
+                <h2 class="section-title">Certifications & Accreditations</h2>
+                <div class="info-grid">
+                    ${certifications.map(cert => `
+                        <div class="info-card">
+                            <h4>${cert.certification_name}</h4>
+                            <p>${cert.issuing_body || ''}</p>
+                            ${cert.valid_until ? `<p><strong>Valid Until:</strong> ${new Date(cert.valid_until).toLocaleDateString()}</p>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderTechnology() {
+            const { technology } = memberData;
+            if (!technology || technology.length === 0) {
+                return '<p class="loading">No technology stack listed</p>';
+            }
+
+            return `
+                <h2 class="section-title">Technology Stack</h2>
+                <div class="service-list">
+                    ${technology.map(tech => `
+                        <div class="service-item">
+                            <h4>${tech.system_name}</h4>
+                            <p><strong>Type:</strong> ${tech.system_type}</p>
+                            ${tech.version ? `<p><strong>Version:</strong> ${tech.version}</p>` : ''}
+                            ${tech.notes ? `<p>${tech.notes}</p>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    </script>
+</body>
+
+</html>

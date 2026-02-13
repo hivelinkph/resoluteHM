@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resolute Connect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Graphik:wght@700&family=Roboto:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --primary: #363F4D;
+            /* Kyte Navy */
+            --accent: #2DD1AC;
+            /* Kyte Teal */
+            --text-dark: #363F4D;
+            --text-light: #5F6B7A;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Georgia', sans-serif;
+            background: #FFFFFF;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--text-dark);
+        }
+
+        .header {
+            padding: 24px 40px;
+        }
+
+        .logo {
+            display: inline-block;
+            height: 48px;
+            /* Proportionate for this layout */
+            transition: all 0.3s ease;
+        }
+
+        .logo img {
+            height: 100%;
+            width: auto;
+            display: block;
+        }
+
+        .logo:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .icon-container {
+            margin-bottom: 32px;
+            /* Placeholder for the icon in reference image */
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Custom Resolute Icon (simple vector representation) */
+        .resolute-icon {
+            width: 64px;
+            height: 64px;
+            color: var(--primary);
+        }
+
+        h1 {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: clamp(32px, 5vw, 48px);
+            margin-bottom: 24px;
+            line-height: 1.2;
+            padding-bottom: 5px;
+            /* Prevent descender clipping */
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--text-light);
+            max-width: 500px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .description {
+            font-size: 16px;
+            color: var(--text-light);
+            max-width: 600px;
+            line-height: 1.6;
+            margin-bottom: 48px;
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .start-btn {
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            padding: 12px 32px;
+            /* Reduced from 14px 48px */
+            border-radius: 4px;
+            /* Kyte style */
+            font-family: 'Graphik', Arial, sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: none;
+            /* Flat style */
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-1px);
+            background: #24b896;
+        }
+
+        .footer {
+            padding: 24px 40px;
+            font-size: 12px;
+            color: #999;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+
+
+        @media (max-width: 768px) {
+            .footer {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+        }
+
+        /* Form Container Styles */
+        .form-container {
+            display: none;
+            /* Hidden by default */
+            flex-direction: column;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: left;
+            animation: fadeIn 0.5s ease;
+            padding-bottom: 80px;
+            /* Space for sticky footer */
+        }
+
+        .form-section {
+            background: #FAFAFA;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .step-number {
+            background: var(--primary);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .section-title h2 {
+            font-family: 'Raleway', sans-serif;
+            font-size: 24px;
+            color: #0056b3;
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Search & Options Styles */
+        .search-container {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 1px solid #eee;
+            background: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            outline: none;
+            transition: box-shadow 0.2s;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 0 2px rgba(241, 90, 34, 0.2);
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        /* Custom Scrollbar for options */
+        .options-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .options-grid::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .options-grid::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-radius: 8px;
+            background: #fff;
+            border: 1px solid transparent;
+        }
+
+        .option-item:hover {
+            background: rgba(0, 0, 0, 0.02);
+            border-color: #eee;
+        }
+
+        .option-item.selected {
+            background: rgba(241, 90, 34, 0.05);
+            /* Accent color tint */
+            border-color: var(--accent);
+        }
+
+        /* Custom Checkbox/Radio styling */
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            background: #ddd;
+            border-radius: 4px;
+            /* Square for checkbox */
+            flex-shrink: 0;
+            position: relative;
+            transition: background 0.2s;
+        }
+
+        .radio .checkbox {
+            border-radius: 50%;
+            /* Round for radio */
+        }
+
+        .option-item.selected .checkbox {
+            background: var(--accent);
+        }
+
+        .option-item.selected .checkbox::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+        }
+
+        /* Chips for selected items (optional visualization) */
+        .selected-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .chip {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .chip-remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Sticky Footer */
+        .sticky-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            padding: 16px 40px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 16px;
+            z-index: 100;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .sticky-footer.visible {
+            transform: translateY(0);
+        }
+
+        .submit-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px 48px;
+            border-radius: 4px;
+            /* Kyte style */
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            text-transform: uppercase;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            background: #24b896;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Searching Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .loader-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .orbit-spinner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--primary);
+            border-right-color: var(--accent);
+            animation: spin 1.5s linear infinite;
+        }
+
+        .orbit-spinner::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--accent);
+            border-left-color: var(--primary);
+            animation: spin 2s linear infinite reverse;
+        }
+
+        .search-icon-center {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 12px rgba(220, 42, 145, 0.3);
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .modal-title {
+            font-family: 'Raleway', sans-serif;
+            font-size: 24px;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .modal-subtitle {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 32px;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .status-box {
+            background: #FAFAFA;
+            padding: 12px 20px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            width: 100%;
+            min-height: 48px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .status-text {
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .trust-badges {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .badge-icon {
+            width: 32px;
+            height: 32px;
+            background: #FEF0F5;
+            /* Light pink */
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        /* Results View */
+        .results-view {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: left;
+            animation: fadeIn 0.5s ease;
+            padding-bottom: 60px;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .provider-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            /* Slightly stronger shadow */
+            border: 1px solid #f0f0f0;
+            transition: transform 0.2s;
+        }
+
+        .provider-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid #f9f9f9;
+        }
+
+        .provider-logo {
+            width: 70px;
+            /* Increased from 50px (40% bigger) */
+            height: 70px;
+            background: #ffffff;
+            border-radius: 8px;
+            object-fit: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .provider-info h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .provider-meta {
+            font-size: 13px;
+            color: #777;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .stat-label {
+            color: #888;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .tag {
+            background: #E8F4FD;
+            color: #0056b3;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .card-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #f9f9f9;
+            text-align: center;
+        }
+
+        .view-profile-btn {
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .view-profile-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Contact Section Styles */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .text-input {
+            padding: 12px 16px;
+            border: 1px solid #E2E8F0;
+            border-radius: 4px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(45, 209, 172, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <a href="healthcare-bpo-landing.html" class="logo">
+            <img src="ResoluteTransparent.png" alt="Resolute Logo">
+        </a>
+    </header>
+
+    <main class="main-content">
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen">
+            <div class="icon-container">
+                <!-- Simple SVG Icon representing connection/people -->
+                <svg class="resolute-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
+                        fill="url(#grad1)" />
+                    <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:rgb(220, 42, 145);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:rgb(241, 90, 34);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+
+            <h1>Welcome to Resolute Connect</h1>
+
+            <p class="subtitle">
+                Answer a few short questions so we can make the right match.
+            </p>
+
+            <p class="description">
+                You will be matched with trusted and verified outsourcing providers – selected to fit your business
+                goals.
+                <br><br>
+                <span class="highlight">It's free and takes less than one minute.</span>
+            </p>
+
+            <button id="beginBtn" class="start-btn">
+                Begin
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Single Page Form -->
+        <div id="singlePageForm" class="form-container">
+
+            <!-- Section 1: Organisation Type -->
+            <div class="form-section" id="section-org">
+                <div class="section-header">
+                    <div class="step-number">1</div>
+                    <div class="section-title">
+                        <h2>Which best describes your organisation?</h2>
+                        <div class="section-subtitle">This helps us tailor our recommendations to your stage of growth.
+                        </div>
+                    </div>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search..."
+                        oninput="filterOptions('org-options', this.value)">
+                </div>
+                <div class="options-grid radio" id="org-options">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Section 2: Industry -->
+            <div class="form-section" id="section-industry">
+                <div class="section-header">
+                    <div class="step-number">2</div>
+                    <div class="section-title">
+                        <h2>What industry is your business in?</h2>
+                        <div class="section-subtitle">This helps us match you with providers that know your industry.
+                        </div>
+                    </div>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search industries..."
+                        oninput="filterOptions('industry-options', this.value)">
+                </div>
+                <div class="options-grid radio" id="industry-options">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Section 3: Roles -->
+            <div class="form-section" id="section-roles">
+                <div class="section-header">
+                    <div class="step-number">3</div>
+                    <div class="section-title">
+                        <h2>Which positions are you considering outsourcing?</h2>
+                        <div class="section-subtitle">Select one or more roles. We will match you with providers that
+                            specialise in these positions.</div>
+                    </div>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search roles..."
+                        oninput="filterOptions('roles-options', this.value)">
+                </div>
+                <div class="options-grid" id="roles-options">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="selected-chips" id="roles-chips"></div>
+            </div>
+
+            <!-- Section 4: Team Size -->
+            <div class="form-section" id="section-size">
+                <div class="section-header">
+                    <div class="step-number">4</div>
+                    <div class="section-title">
+                        <h2>How many outsourced staff do you need?</h2>
+                        <div class="section-subtitle">An estimate is fine.</div>
+                    </div>
+                </div>
+                <div class="options-grid radio" id="size-options">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Section 5: Time Zone -->
+            <div class="form-section" id="section-timezone">
+                <div class="section-header">
+                    <div class="step-number">5</div>
+                    <div class="section-title">
+                        <h2>Which timezone(s) will your team need to support?</h2>
+                        <div class="section-subtitle">You can choose multiple.</div>
+                    </div>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search timezones..."
+                        oninput="filterOptions('timezone-options', this.value)">
+                </div>
+                <div class="options-grid" id="timezone-options">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Section 6: Location -->
+            <div class="form-section" id="section-location">
+                <div class="section-header">
+                    <div class="step-number">6</div>
+                    <div class="section-title">
+                        <h2>Do you have a preferred outsourcing location?</h2>
+                        <div class="section-subtitle">This helps us match you with providers in the right region.</div>
+                    </div>
+                </div>
+                <div class="options-grid radio" id="location-options">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Section 7: Contact Details -->
+            <div class="form-section" id="section-contact">
+                <div class="section-header">
+                    <div class="step-number">7</div>
+                    <div class="section-title">
+                        <h2>Almost done! Where should we send your matches?</h2>
+                        <div class="section-subtitle">We'll also send a copy of your requirements.</div>
+                    </div>
+                </div>
+                <div class="contact-grid">
+                    <div class="input-group">
+                        <label>Full Name *</label>
+                        <input type="text" name="fullName" placeholder="John Doe" class="text-input">
+                    </div>
+                    <div class="input-group">
+                        <label>Work Email *</label>
+                        <input type="email" name="workEmail" placeholder="john@company.com" class="text-input">
+                    </div>
+                    <div class="input-group">
+                        <label>Phone Number</label>
+                        <input type="tel" name="phoneNumber" placeholder="+1 (555) 000-0000" class="text-input">
+                    </div>
+                    <div class="input-group">
+                        <label>Company Website</label>
+                        <input type="url" name="companyWebsite" placeholder="https://company.com" class="text-input">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Searching Modal -->
+        <div id="searchingModal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div class="loader-container">
+                    <div class="orbit-spinner"></div>
+                    <div class="search-icon-center">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </div>
+                </div>
+                <h2 class="modal-title">Finding Your Best Providers</h2>
+                <p class="modal-subtitle">We're matching you with the most suitable outsourcing partners based on your
+                    unique criteria</p>
+
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+
+                <div class="status-box">
+                    <div class="status-dot"></div>
+                    <span id="statusText" class="status-text">Scanning our verified provider network...</span>
+                </div>
+
+                <div class="trust-badges">
+                    <div class="badge">
+                        <div class="badge-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <span>Verified</span>
+                    </div>
+                    <div class="badge">
+                        <div class="badge-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                            </svg>
+                        </div>
+                        <span>Fast Match</span>
+                    </div>
+                    <div class="badge">
+                        <div class="badge-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </div>
+                        <span>Secure</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results View (Placeholder) -->
+        <div id="resultsView" class="results-view hidden">
+            <div class="results-header">
+                <h1>We found 3 perfect matches!</h1>
+                <p class="subtitle">Based on your requirements for <strong>.NET Development</strong> and
+                    <strong>Healthcare</strong>.
+                </p>
+            </div>
+
+            <div class="results-grid" id="resultsGrid">
+                <!-- Cards will be injected here -->
+            </div>
+        </div>
+
+    </main>
+
+    <div class="sticky-footer" id="stickyFooter">
+        <button class="submit-btn" id="submitBtn">Find Matches</button>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Data Protection Policy</a>
+            <a href="#">Terms and Conditions</a>
+            <a href="#">Contact Us</a>
+        </div>
+        <div>
+            &copy; 2026 Resolute Global
+        </div>
+    </footer>
+
+
+
+    <script>
+        // --- Supabase Init ---
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // --- Data Definitions ---
+        const DATA = {
+            orgTypes: [
+                "Startup", "Small & Medium (SMEs)", "Enterprise", "Government", "Association", "Non-Profit Organizations"
+            ],
+            industries: [
+                "Accounting", "Aerospace & Defense", "Aged Care", "Agriculture", "Architecture & Engineering",
+                "Arts and Culture", "Automotive", "Banking & Financial Services", "Construction", "Education",
+                "Energy & Utilities", "Healthcare & Medical", "Hospitality & Tourism", "Insurance", "Legal Services",
+                "Manufacturing", "Real Estate", "Retail", "Technology & Software", "Telecommunications", "Transport & Logistics"
+            ],
+            roles: [
+                ".NET Developer", ".NET Engineer", "2D Animator", "3D Artist", "3D Generalist", "Academic Advisor",
+                "Accountant", "Administrative Assistant", "Call Center Agent", "Customer Support Rep", "Data Analyst",
+                "DevOps Engineer", "Frontend Developer", "Full Stack Developer", "Graphic Designer", "HR Specialist",
+                "Java Developer", "Medical Coder", "Medical Transcriptionist", "Nurse", "Project Manager", "Python Developer",
+                "QA Engineer", "Recruiter", "Sales Representative", "Social Media Manager", "Virtual Assistant"
+            ],
+            teamSizes: [
+                "1-3", "4-10", "11-20", "21-50", "51-100", "101+"
+            ],
+            timezones: [
+                "Australia/Sydney (UTC +10)", "Australia/Adelaide (UTC +9:30)", "Australia/Perth (UTC +8)",
+                "Pacific/Auckland (UTC +12)", "America/New_York (UTC -5)", "America/Chicago (UTC -6)",
+                "America/Denver (UTC -7)", "America/Los_Angeles (UTC -8)", "Europe/London (UTC +0)",
+                "Europe/Paris (UTC +1)", "Asia/Singapore (UTC +8)", "Asia/Tokyo (UTC +9)"
+            ],
+            locations: [
+                "Not sure (best match)", "Philippines", "India", "Fiji", "South Africa", "Colombia", "Vietnam", "Malaysia"
+            ]
+        };
+
+        // --- State Management ---
+        const STATE = {
+            org: null,
+            industry: null,
+            roles: new Set(),
+            size: null,
+            timezones: new Set(),
+            location: null,
+            name: '',
+            email: '',
+            phone: '',
+            website: ''
+        };
+
+        // --- Render Functions ---
+        function renderSection(containerId, data, type, stateKey) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'option-item';
+                // Check if selected
+                if (type === 'radio' && STATE[stateKey] === item) div.classList.add('selected');
+                if (type === 'checkbox' && STATE[stateKey].has(item)) div.classList.add('selected');
+
+                div.innerHTML = `
+                    <div class="checkbox"></div>
+                    <span class="option-label">${item}</span>
+                `;
+
+                div.onclick = () => handleSelection(div, item, type, stateKey, containerId);
+                container.appendChild(div);
+            });
+        }
+
+        function handleSelection(element, value, type, stateKey, containerId) {
+            if (type === 'radio') {
+                // Deselect others visually
+                const container = document.getElementById(containerId);
+                Array.from(container.children).forEach(child => child.classList.remove('selected'));
+
+                // Select this one
+                element.classList.add('selected');
+                STATE[stateKey] = value;
+            } else {
+                // Toggle
+                if (STATE[stateKey].has(value)) {
+                    STATE[stateKey].delete(value);
+                    element.classList.remove('selected');
+                } else {
+                    STATE[stateKey].add(value);
+                    element.classList.add('selected');
+                }
+
+                // Update Chips for Roles
+                if (stateKey === 'roles') updateChips();
+            }
+        }
+
+        function updateChips() {
+            const container = document.getElementById('roles-chips');
+            container.innerHTML = '';
+            STATE.roles.forEach(role => {
+                const chip = document.createElement('div');
+                chip.className = 'chip';
+                chip.innerHTML = `${role} <span class="chip-remove" onclick="removeRole('${role}')">&times;</span>`;
+                container.appendChild(chip);
+            });
+        }
+
+        window.removeRole = (role) => {
+            STATE.roles.delete(role);
+            updateChips();
+            // Re-render roles list to remove highlight
+            // Note: In a real app, we'd just find the element and toggle class to avoid re-rendering
+            const el = Array.from(document.querySelectorAll('#roles-options .option-item')).find(e => e.innerText.includes(role));
+            if (el) el.classList.remove('selected');
+        };
+
+        // --- Filter Function ---
+        window.filterOptions = (containerId, text) => {
+            const container = document.getElementById(containerId);
+            Array.from(container.children).forEach(child => {
+                const label = child.querySelector('.option-label').innerText.toLowerCase();
+                if (label.includes(text.toLowerCase())) {
+                    child.style.display = 'flex';
+                } else {
+                    child.style.display = 'none';
+                }
+            });
+        };
+
+        // --- Init ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const beginBtn = document.getElementById('beginBtn');
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            const singlePageForm = document.getElementById('singlePageForm');
+            const stickyFooter = document.getElementById('stickyFooter');
+
+            // Render all sections
+            renderSection('org-options', DATA.orgTypes, 'radio', 'org');
+            renderSection('industry-options', DATA.industries, 'radio', 'industry'); // Assuming single industry for now
+            renderSection('roles-options', DATA.roles, 'checkbox', 'roles');
+            renderSection('size-options', DATA.teamSizes, 'radio', 'size');
+            renderSection('timezone-options', DATA.timezones, 'checkbox', 'timezones');
+            renderSection('location-options', DATA.locations, 'radio', 'location');
+
+            // Handle Persistent View
+            const view = getUrlParameter('view');
+            if (view === 'results') {
+                const cachedResults = localStorage.getItem('resolute_connect_matches');
+                if (cachedResults) {
+                    welcomeScreen.classList.add('hidden');
+                    singlePageForm.classList.add('hidden');
+                    showResults(JSON.parse(cachedResults));
+                    return;
+                }
+            }
+
+            // Transition
+            beginBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                welcomeScreen.classList.add('hidden');
+                singlePageForm.style.display = 'flex'; // Use flex for column layout
+                stickyFooter.classList.add('visible');
+                // Scroll to top of form
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // Submit Handler with Modal
+            document.getElementById('submitBtn').addEventListener('click', () => {
+                // Check simple validation first
+                const name = document.querySelector('input[name="fullName"]').value;
+                const email = document.querySelector('input[name="workEmail"]').value;
+
+                if (!name || !email) {
+                    alert('Please fill in at least your Name and Email so we can send you the matches.');
+                    return;
+                }
+
+                // Update text fields
+                STATE.name = name;
+                STATE.email = email;
+                STATE.phone = document.querySelector('input[name="phoneNumber"]').value;
+                STATE.website = document.querySelector('input[name="companyWebsite"]').value;
+
+                console.log('Submission:', STATE);
+
+                // Convert Sets to Arrays for JSON
+                const payload = {
+                    ...STATE,
+                    roles: Array.from(STATE.roles),
+                    timezones: Array.from(STATE.timezones)
+                };
+                // alert('Finding matches for:\n' + JSON.stringify(payload, null, 2));
+                // Here you would redirect or fetch results
+
+                // 1. Hide Form & Sticky Footer
+                document.getElementById('singlePageForm').classList.add('hidden');
+                document.getElementById('stickyFooter').classList.remove('visible');
+
+                // 2. Show Modal
+                const modal = document.getElementById('searchingModal');
+                const progressBar = document.getElementById('progressBar');
+                const statusText = document.getElementById('statusText');
+
+                modal.classList.remove('hidden');
+
+                // 3. Animate Progress
+                let progress = 0;
+                const totalTime = 3000; // 3 seconds
+                const intervalTime = 50;
+                const steps = totalTime / intervalTime;
+                const increment = 100 / steps;
+
+                const timer = setInterval(() => {
+                    progress += increment;
+                    progressBar.style.width = `${Math.min(progress, 100)}%`;
+
+                    // Status Text Updates
+                    if (progress > 30 && progress < 60) {
+                        statusText.innerText = "Analyzing your specific requirements...";
+                    } else if (progress >= 60 && progress < 90) {
+                        statusText.innerText = "Shortlisting the best partners...";
+                    } else if (progress >= 90) {
+                        statusText.innerText = "Finalizing your matches...";
+                    }
+
+                    if (progress >= 100) {
+                        clearInterval(timer);
+                        setTimeout(showResults, 500); // Small delay before showing results
+                    }
+                }, intervalTime);
+            });
+
+            async function showResults(cachedData = null) {
+                // Hide Modal
+                document.getElementById('searchingModal').classList.add('hidden');
+
+                // Show Results View
+                const resultsView = document.getElementById('resultsView');
+                resultsView.classList.remove('hidden');
+
+                const grid = document.getElementById('resultsGrid');
+                grid.innerHTML = '<div class="loader-container"><div class="orbit-spinner"></div></div>';
+
+                if (cachedData) {
+                    renderGrid(cachedData.selected, cachedData.logoMap);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+
+                try {
+                    // Update URL state
+                    const newUrl = window.location.pathname + '?view=results';
+                    window.history.pushState({ path: newUrl }, '', newUrl);
+
+                    // Fetch random companies with logos
+                    const { data: companies, error } = await supabaseClient
+                        .from('bpos')
+                        .select('id, company_name, city, total_employees')
+                        .eq('is_active', true)
+                        .limit(20);
+
+                    if (error) throw error;
+
+                    const { data: logos } = await supabaseClient
+                        .from('bpo_media')
+                        .select('bpo_id, file_url')
+                        .eq('media_type', 'logo')
+                        .eq('is_primary', true);
+
+                    const logoMap = {};
+                    if (logos) {
+                        logos.forEach(l => logoMap[l.bpo_id] = l.file_url);
+                    }
+
+                    const companiesWithLogos = companies.filter(c => logoMap[c.id]);
+                    const shuffled = companiesWithLogos.sort(() => 0.5 - Math.random());
+                    const selected = shuffled.slice(0, 3);
+
+                    if (selected.length < 3) {
+                        const remaining = companies.filter(c => !logoMap[c.id]).slice(0, 3 - selected.length);
+                        selected.push(...remaining);
+                    }
+
+                    // Cache results
+                    localStorage.setItem('resolute_connect_matches', JSON.stringify({ selected, logoMap }));
+
+                    renderGrid(selected, logoMap);
+
+                } catch (err) {
+                    console.error("Error fetching results:", err);
+                    grid.innerHTML = '<p>Sorry, we could not load matches at this time.</p>';
+                }
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function renderGrid(selected, logoMap) {
+                const grid = document.getElementById('resultsGrid');
+                grid.innerHTML = selected.map(provider => {
+                    const logoUrl = logoMap[provider.id];
+                    const initials = provider.company_name.substring(0, 2).toUpperCase();
+                    const logoHtml = logoUrl
+                        ? `<img src="${logoUrl}" alt="${provider.company_name}" style="width: 100%; height: 100%; object-fit: contain;">`
+                        : initials;
+
+                    return `
+                        <div class="provider-card">
+                            <div class="card-header">
+                                <div class="provider-logo" style="background-color: #F0F0F0;">
+                                    ${logoHtml}
+                                </div>
+                                <div class="provider-info">
+                                    <h3>${provider.company_name}</h3>
+                                    <div class="provider-meta">${provider.city || 'Philippines'} • ${provider.total_employees || '50+'}</div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="card-stat">
+                                    <span class="stat-label">Specialization</span>
+                                    <span class="stat-value">Healthcare</span>
+                                </div>
+                                <div class="card-stat">
+                                    <span class="stat-label">Client Rating</span>
+                                    <span class="stat-value">★ ${(4.5 + Math.random() * 0.5).toFixed(1)}/5.0</span>
+                                </div>
+                                <div class="tag-container">
+                                    <span class="tag">Verified</span>
+                                    <span class="tag">HIPAA Compliant</span>
+                                    <span class="tag">ISO 27001</span>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a href="member-detail.html?id=${provider.id}&from=connect" class="view-profile-btn">View Profile</a>
+                            </div>
+                        </div>
+                    `}).join('');
+            }
+
+            function getUrlParameter(name) {
+                const results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                return results ? decodeURIComponent(results[1]) : null;
+            }
+        });
+    </script>
+</body>
+
+</html>
+```
