@@ -61,8 +61,35 @@
 
         @media (max-width: 768px) {
             .hero-logo {
-                height: 126px;
-                margin-bottom: 15px;
+                height: 48px;
+                margin-bottom: 32px;
+            }
+
+            .hero {
+                padding: 120px 20px 80px;
+                text-align: center;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                padding: 0 20px;
+                gap: 40px;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+                line-height: 1.1;
+            }
+
+            .hero p {
+                margin: 0 auto 40px;
+                font-size: 18px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                margin-top: 40px;
             }
         }
 
@@ -139,7 +166,7 @@
         }
 
         .hero h1 {
-            font-size: clamp(48px, 6vw, 76px);
+            font-size: clamp(32px, 6vw, 76px);
             font-weight: 800;
             color: var(--white);
             line-height: 1.2;
