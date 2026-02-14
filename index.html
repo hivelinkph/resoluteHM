@@ -61,8 +61,8 @@
 
         @media (max-width: 768px) {
             .hero-logo {
-                height: 126px;
-                margin-bottom: 15px;
+                height: 80px;
+                margin-bottom: 20px;
             }
         }
 
@@ -131,10 +131,10 @@
             z-index: 2;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 60px;
+            padding: 0 40px;
             display: grid;
             grid-template-columns: 1.2fr 0.8fr;
-            gap: 80px;
+            gap: 60px;
             align-items: center;
         }
 
@@ -234,7 +234,7 @@
         .stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
+            gap: 24px;
             margin-top: 60px;
         }
 
@@ -271,7 +271,7 @@
         /* Services Section */
         .services {
             background: var(--bg-light);
-            padding: 100px 60px;
+            padding: 80px 40px;
         }
 
         .services-container {
@@ -352,7 +352,7 @@
         /* Why Choose Us */
         .why-choose {
             background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-            padding: 100px 60px;
+            padding: 80px 40px;
             color: var(--white);
         }
 
@@ -398,7 +398,7 @@
         /* Footer CTA */
         .footer-cta {
             background: var(--white);
-            padding: 80px 60px;
+            padding: 60px 40px;
             text-align: center;
         }
 
@@ -424,6 +424,17 @@
             .hero-content {
                 grid-template-columns: 1fr;
                 gap: 40px;
+                text-align: center;
+            }
+
+            .hero h1 {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero p {
+                margin-left: auto;
+                margin-right: auto;
             }
 
             .stats {
@@ -444,15 +455,23 @@
             .why-choose,
             .footer-cta,
             .logo-marquee-section {
-                padding: 60px 30px;
+                padding: 60px 20px;
             }
 
             .stats {
                 grid-template-columns: 1fr;
+                max-width: 400px;
+                margin-left: auto;
+                margin-right: auto;
             }
 
             .service-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .marquee-item {
+                margin: 0 20px;
+                height: 60px;
             }
         }
 
@@ -579,6 +598,10 @@
             align-items: center;
             justify-content: center;
             position: relative;
+        }
+
+        .verified-badge-card:hover {
+            transform: translateY(-5px);
         }
 
         .award-image {

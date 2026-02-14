@@ -43,7 +43,7 @@
         /* Header */
         .header {
             background: var(--primary);
-            padding: 20px 40px;
+            padding: 20px;
             color: var(--white);
             display: flex;
             justify-content: space-between;
@@ -91,8 +91,8 @@
         /* Container */
         .container {
             max-width: 1400px;
-            margin: 40px auto;
-            padding: 0 40px;
+            margin: 30px auto;
+            padding: 0 20px;
         }
 
         /* Tabs */
@@ -325,10 +325,52 @@
             background: rgba(54, 63, 77, 0.05);
         }
 
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-light);
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
+                gap: 12px;
+            }
+
+            .btn-logout {
+                width: 100%;
+            }
+
+            .container {
+                margin: 20px auto;
+            }
+
+            .tab {
+                padding: 12px 20px;
+            }
+
+            .card {
+                padding: 24px 16px;
+            }
+
+            .card h2 {
+                font-size: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-primary {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -417,8 +459,8 @@
 
     <script>
         // Supabase configuration
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const SUPABASE_URL = 'https://llvsayyfvwkqbmhnmumh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdnNheXlmdndrcWJtaG5tdW1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4OTQ4NzAsImV4cCI6MjA4NjQ3MDg3MH0.f05CWLxdXONJQPxRfhKxIDOZeUWtE54vYOygI6RVtoU';
 
 
         // Initialize Supabase client (stored on window, no const to prevent redeclaration)

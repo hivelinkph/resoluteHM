@@ -1,8 +1,8 @@
 // Supabase Configuration and API Helpers
 // Get your anon key from: Supabase Dashboard > Project Settings > API
 
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://llvsayyfvwkqbmhnmumh.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdnNheXlmdndrcWJtaG5tdW1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4OTQ4NzAsImV4cCI6MjA4NjQ3MDg3MH0.f05CWLxdXONJQPxRfhKxIDOZeUWtE54vYOygI6RVtoU';
 
 // Initialize Supabase client (using CDN in HTML files)
 let supabase;

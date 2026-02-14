@@ -43,7 +43,7 @@
         /* Header */
         .header {
             background: var(--primary);
-            padding: 20px 40px;
+            padding: 20px;
             color: var(--white);
             display: flex;
             justify-content: space-between;
@@ -113,8 +113,8 @@
         /* Container */
         .container {
             max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 40px;
+            margin: 30px auto;
+            padding: 0 20px;
         }
 
         /* Tabs */
@@ -430,6 +430,76 @@
             font-size: 24px;
             cursor: pointer;
             color: var(--text-light);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
+                gap: 12px;
+            }
+
+            .btn-view,
+            .btn-logout {
+                width: 100%;
+                text-align: center;
+            }
+
+            .container {
+                margin: 20px auto;
+            }
+
+            .card {
+                padding: 24px 16px;
+            }
+
+            .card h2 {
+                font-size: 20px;
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-primary {
+                width: 100%;
+            }
+
+            .list-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .item-actions {
+                width: 100%;
+                display: flex;
+                gap: 8px;
+            }
+
+            .item-actions button {
+                flex: 1;
+            }
+
+            .modal-content {
+                padding: 24px 16px;
+                width: 95%;
+            }
         }
     </style>
 </head>
@@ -876,8 +946,8 @@
 
     <script>
         // Supabase configuration
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const SUPABASE_URL = 'https://llvsayyfvwkqbmhnmumh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdnNheXlmdndrcWJtaG5tdW1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4OTQ4NzAsImV4cCI6MjA4NjQ3MDg3MH0.f05CWLxdXONJQPxRfhKxIDOZeUWtE54vYOygI6RVtoU';
 
         // Initialize Supabase (prevent redeclarations)
         if (!window.supabaseClient) {

@@ -41,7 +41,7 @@
         /* Navigation */
         .nav {
             background: var(--white);
-            padding: 20px 60px;
+            padding: 20px 40px;
         }
 
         .nav-content {
@@ -79,7 +79,7 @@
         .hero {
             background: var(--accent);
             /* Solid Teal */
-            padding: 60px;
+            padding: 40px;
             color: var(--white);
         }
 
@@ -233,7 +233,7 @@
         /* Stats Bar */
         .stats-bar {
             background: var(--white);
-            padding: 40px 60px;
+            padding: 40px;
             border-bottom: 2px solid rgba(220, 42, 145, 0.1);
         }
 
@@ -267,7 +267,7 @@
 
         /* Tabs */
         .tabs-section {
-            padding: 60px;
+            padding: 40px;
         }
 
         .tabs-container {
@@ -442,22 +442,75 @@
         }
 
         /* Responsive */
+        @media (max-width: 1024px) {
+
+            .nav,
+            .hero,
+            .stats-bar,
+            .tabs-section {
+                padding: 40px;
+            }
+        }
+
         @media (max-width: 768px) {
+
+            .nav,
+            .hero,
+            .stats-bar,
+            .tabs-section {
+                padding: 30px 20px;
+            }
+
             .hero-content {
                 grid-template-columns: 1fr;
                 text-align: center;
+                gap: 30px;
             }
 
             .company-logo-large {
                 margin: 0 auto;
+                width: 150px;
+                height: 150px;
+                padding: 15px;
             }
 
-            .nav,
-            .stats-bar,
-            .tabs-section {
-                padding: 30px;
+            .company-info h1 {
+                font-size: 32px;
             }
 
+            .company-meta {
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .contact-actions {
+                position: relative;
+                top: 0;
+                right: 0;
+                justify-content: center;
+                margin-bottom: 30px;
+                flex-wrap: wrap;
+            }
+
+            .contact-btn {
+                width: 40px;
+                height: 40px;
+            }
+
+            .stat-value {
+                font-size: 32px;
+            }
+
+            .tab-btn {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            .info-grid,
+            .service-list,
+            .personnel-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -502,8 +555,8 @@
     <!-- Scripts -->
     <script>
         // Supabase Configuration
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const SUPABASE_URL = 'https://llvsayyfvwkqbmhnmumh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdnNheXlmdndrcWJtaG5tdW1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4OTQ4NzAsImV4cCI6MjA4NjQ3MDg3MH0.f05CWLxdXONJQPxRfhKxIDOZeUWtE54vYOygI6RVtoU';
 
         // Initialize Supabase client
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

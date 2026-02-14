@@ -200,7 +200,7 @@
 
         /* Members Section */
         .members-section {
-            padding: 60px;
+            padding: 40px 60px;
         }
 
         .members-container {
@@ -327,28 +327,75 @@
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
 
             .header,
             .search-section,
             .members-section {
-                padding: 30px;
+                padding: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 40px 20px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .login-dropdown {
+                margin-left: 0 !important;
+                width: 100%;
+            }
+
+            .login-btn {
+                width: 100%;
             }
 
             .header-logo {
-                height: 60px;
+                height: 50px;
             }
 
             .header-text h1 {
                 font-size: 28px;
             }
 
-            .members-grid {
-                grid-template-columns: 1fr;
+            .header-text p {
+                font-size: 16px;
+            }
+
+            .search-section {
+                padding: 30px 20px;
             }
 
             .search-box {
                 flex-direction: column;
+                gap: 12px;
+            }
+
+            .search-btn {
+                width: 100%;
+            }
+
+            .members-section {
+                padding: 30px 20px;
+            }
+
+            .members-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .member-card {
+                padding: 24px;
+            }
+
+            .member-logo-container {
+                height: 80px;
             }
         }
     </style>
@@ -400,8 +447,8 @@
         console.log('🚀 Script starting...');
 
         // Supabase Configuration
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const SUPABASE_URL = 'https://llvsayyfvwkqbmhnmumh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdnNheXlmdndrcWJtaG5tdW1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4OTQ4NzAsImV4cCI6MjA4NjQ3MDg3MH0.f05CWLxdXONJQPxRfhKxIDOZeUWtE54vYOygI6RVtoU';
 
         // Initialize Supabase
         console.log('🔧 Creating Supabase client...');

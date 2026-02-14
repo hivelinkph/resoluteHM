@@ -46,7 +46,7 @@
             background: var(--white);
             border-radius: 24px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            padding: 60px;
+            padding: 40px;
             max-width: 500px;
             width: 90%;
         }
@@ -228,8 +228,23 @@
 
         @media (max-width: 768px) {
             .top-nav {
-                top: 20px;
-                left: 20px;
+                position: relative;
+                top: 0;
+                left: 0;
+                width: 90%;
+                margin: 20px auto;
+            }
+
+            .login-container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 16px;
             }
         }
     </style>
@@ -279,8 +294,8 @@
 
     <script>
         // Supabase configuration
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const SUPABASE_URL = 'https://llvsayyfvwkqbmhnmumh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdnNheXlmdndrcWJtaG5tdW1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4OTQ4NzAsImV4cCI6MjA4NjQ3MDg3MH0.f05CWLxdXONJQPxRfhKxIDOZeUWtE54vYOygI6RVtoU';
 
         // Initialize Supabase client once (stored on window to prevent duplicate declarations)
         if (!window.supabaseClient) {
