@@ -650,16 +650,19 @@
             width: 100%;
         }
 
-        /* Fullscreen Modal */
+        /* Dynamic Modal */
         .modal-fullscreen .modal-content {
-            width: 98vw;
-            height: 96vh;
-            max-width: none;
-            max-height: none;
+            width: fit-content;
+            height: fit-content;
+            min-width: 600px;
+            max-width: 95vw;
+            max-height: 95vh;
             display: flex;
             flex-direction: column;
             padding: 24px;
             border-radius: 12px;
+            overflow: hidden;
+            /* Header/Footer fixed, content scrolls */
         }
 
         .modal-fullscreen .close-modal {
@@ -1401,25 +1404,26 @@
     <div id="ocrPreviewModal" class="modal modal-fullscreen">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('ocrPreviewModal')">&times;</span>
-            <h2 id="ocrPreviewTitle" style="margin-top: 0;">Document Verification Details</h2>
-            <p id="ocrPreviewRemark"
-                style="color: var(--error); font-weight: 600; margin-bottom: 20px; font-size: 18px;"></p>
+            <div style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                <h2 id="ocrPreviewTitle" style="margin: 0; font-size: 20px;">Document Verification Details</h2>
+                <p id="ocrPreviewRemark"
+                    style="color: var(--error); font-weight: 600; margin-top: 8px; margin-bottom: 0; font-size: 16px;">
+                </p>
+            </div>
 
             <div
-                style="flex-grow: 1; background: #eee; border-radius: 12px; position: relative; overflow: auto; display: flex; align-items: flex-start; justify-content: center; padding: 20px;">
+                style="flex-grow: 1; background: #525659; border-radius: 8px; position: relative; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 40px 20px;">
                 <div class="preview-container" id="ocrPreviewContainer"
-                    style="display: inline-block; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                    <img id="ocrPreviewImg" src=""
-                        style="display: block; width: auto; max-width: 100%; height: auto; border-radius: 4px;">
+                    style="display: block; position: relative; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 850px; max-width: 100%;">
+                    <img id="ocrPreviewImg" src="" style="display: block; width: 100%; height: auto;">
                     <!-- Highlights go here -->
                 </div>
             </div>
 
             <div
-                style="margin-top: 20px; font-size: 14px; color: #666; background: #f9f9f9; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent);">
-                <strong>AI Accuracy Note:</strong> The red boxes indicate areas where the AI detected inconsistencies,
-                expired dates, or missing statutory keywords. If this is a false rejection, please re-upload a clearer
-                image.
+                style="margin-top: 15px; font-size: 13px; color: #666; background: #f0f7f6; padding: 12px; border-radius: 6px; border-left: 4px solid var(--primary);">
+                <strong>AI Auditor Insight:</strong> The red highlights indicate inconsistencies or outdated information
+                detected during OCR. Scroll through the document to verify all pages.
             </div>
         </div>
     </div>
@@ -1501,7 +1505,8 @@
 
         function renderAccreditationDocs() {
             const container = document.getElementById('accreditationDocs');
-            const docs = [...ACCREDITATION_DOCS[companyType], ...ACCREDITATION_DOCS.shared];
+            const type = companyType || 'corporation';
+            const docs = [...ACCREDITATION_DOCS[type], ...ACCREDITATION_DOCS.shared];
 
             container.innerHTML = docs.map(doc => {
                 const state = uploadedDocs[doc.id] || { status: 'pending', remark: '' };
@@ -1537,7 +1542,7 @@
                         <div class="doc-actions">
                             <input type="file" id="file_${doc.id}" style="display:none" onchange="handleDocUpload('${doc.id}')">
                             <button class="upload-btn" onclick="document.getElementById('file_${doc.id}').click()">
-                                ${state.status === 'pending' ? 'Upload' : 'Replace'}
+                                ${state.status === 'pending' && !state.remark ? 'Upload' : 'Replace'}
                             </button>
                         </div>
                     </div>
@@ -1545,21 +1550,62 @@
             }).join('');
         }
 
-        function handleDocUpload(docId) {
+        async function handleDocUpload(docId) {
             const fileInput = document.getElementById(`file_${docId}`);
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
                 const reader = new FileReader();
 
-                reader.onload = function (e) {
+                reader.onload = async function (e) {
+                    const localDataUrl = e.target.result;
                     uploadedDocs[docId] = {
                         status: 'pending',
-                        remark: '',
+                        remark: 'Uploading to server...',
                         fileName: file.name,
-                        dataUrl: e.target.result,
-                        failCoords: [] // For encircling
+                        dataUrl: localDataUrl,
+                        failCoords: []
                     };
                     renderAccreditationDocs();
+
+                    try {
+                        // 1. Upload to Supabase Storage
+                        const fileExt = file.name.split('.').pop();
+                        const fileName = `${userBpoId}/${docId}_${Date.now()}.${fileExt}`;
+                        const filePath = `accreditation-docs/${fileName}`;
+
+                        const { data: uploadData, error: uploadError } = await window.supabaseClient.storage
+                            .from('bpo-assets')
+                            .upload(filePath, file, { upsert: true });
+
+                        if (uploadError) throw uploadError;
+
+                        // 2. Get Public URL
+                        const { data: { publicUrl } } = window.supabaseClient.storage
+                            .from('bpo-assets')
+                            .getPublicUrl(filePath);
+
+                        // 3. Upsert to bpo_accreditation table
+                        const { error: dbError } = await window.supabaseClient
+                            .from('bpo_accreditation')
+                            .upsert({
+                                bpo_id: userBpoId,
+                                doc_id: docId,
+                                file_url: publicUrl,
+                                status: 'pending',
+                                remark: 'Saved. Ready for AI Verification.'
+                            }, { onConflict: 'bpo_id,doc_id' });
+
+                        if (dbError) throw dbError;
+
+                        uploadedDocs[docId].dataUrl = publicUrl; // Use public URL for future reference
+                        uploadedDocs[docId].remark = 'Saved. Ready for AI Verification.';
+                        renderAccreditationDocs();
+
+                    } catch (err) {
+                        console.error('Upload Error:', err);
+                        uploadedDocs[docId].remark = 'Upload failed. Please try again.';
+                        renderAccreditationDocs();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -1653,10 +1699,22 @@
                     uploadedDocs[id].status = passed ? 'success' : 'error';
                     uploadedDocs[id].remark = remark;
                     uploadedDocs[id].failCoords = failCoords; // Store for preview
+
+                    // Persist results to DB
+                    await window.supabaseClient
+                        .from('bpo_accreditation')
+                        .update({
+                            status: uploadedDocs[id].status,
+                            remark: uploadedDocs[id].remark,
+                            fail_coords: uploadedDocs[id].failCoords,
+                            updated_at: new Date().toISOString()
+                        })
+                        .match({ bpo_id: userBpoId, doc_id: id });
+
                     renderAccreditationDocs();
                 }
 
-                msg.innerText = 'AI OCR Review complete. Statutory results updated.';
+                msg.innerText = 'AI OCR Review complete. Statutory results updated and saved.';
             } catch (err) {
                 console.error('OCR Error:', err);
                 msg.className = 'message error';
@@ -1753,7 +1811,8 @@
                     { data: personnel },
                     { data: certifications },
                     { data: technology },
-                    { data: media }
+                    { data: media },
+                    { data: accreditation }
                 ] = await Promise.all([
                     window.supabaseClient.from('bpo_services').select('*').eq('bpo_id', userBpoId),
                     window.supabaseClient.from('bpo_operations').select('*').eq('bpo_id', userBpoId).single(),
@@ -1762,7 +1821,8 @@
                     window.supabaseClient.from('bpo_personnel').select('*').eq('bpo_id', userBpoId),
                     window.supabaseClient.from('bpo_certifications').select('*').eq('bpo_id', userBpoId),
                     window.supabaseClient.from('bpo_technology').select('*').eq('bpo_id', userBpoId),
-                    window.supabaseClient.from('bpo_media').select('*').eq('bpo_id', userBpoId)
+                    window.supabaseClient.from('bpo_media').select('*').eq('bpo_id', userBpoId),
+                    window.supabaseClient.from('bpo_accreditation').select('*').eq('bpo_id', userBpoId)
                 ]);
 
                 bpoData.services = services || [];
@@ -1773,6 +1833,7 @@
                 bpoData.certifications = certifications || [];
                 bpoData.technology = technology || [];
                 bpoData.media = media || [];
+                bpoData.accreditation = accreditation || [];
 
                 populateUI();
                 document.getElementById('loading').style.display = 'none';
@@ -1786,6 +1847,22 @@
 
         function populateUI() {
             const c = bpoData.company;
+
+            // Determine Company Type for Accreditation
+            companyType = (c.ownership_type && c.ownership_type.toLowerCase().includes('sole')) ? 'sole_prop' : 'corporation';
+
+            // Populate uploadedDocs from DB
+            uploadedDocs = {};
+            if (bpoData.accreditation) {
+                bpoData.accreditation.forEach(row => {
+                    uploadedDocs[row.doc_id] = {
+                        status: row.status,
+                        remark: row.remark,
+                        dataUrl: row.file_url, // Use saved URL as dataUrl
+                        failCoords: row.fail_coords || []
+                    };
+                });
+            }
 
             // Header
             document.getElementById('companyName').textContent = c.company_name;
