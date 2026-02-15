@@ -501,6 +501,166 @@
                 width: 95%;
             }
         }
+
+        /* Accreditation UI */
+        .accreditation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .type-selector {
+            display: flex;
+            gap: 12px;
+            background: #f0f2f5;
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .type-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Graphik', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-light);
+            background: transparent;
+        }
+
+        .type-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .doc-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .doc-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .doc-item:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .doc-info {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .status-pending {
+            background: #F5F7F9;
+            color: #9AB0C1;
+        }
+
+        .status-success {
+            background: #E8F5E9;
+            color: var(--success);
+        }
+
+        .status-error {
+            background: #FFE5E5;
+            color: var(--error);
+        }
+
+        .doc-details h4 {
+            font-family: 'Graphik', sans-serif;
+            font-size: 15px;
+            margin-bottom: 4px;
+            color: var(--text-dark);
+        }
+
+        .doc-details .remark {
+            font-size: 12px;
+            color: var(--error);
+            font-weight: 600;
+            display: none;
+        }
+
+        .doc-details .remark.visible {
+            display: block;
+        }
+
+        .doc-details .subtext {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .doc-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .upload-btn {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn-verify-all {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-family: 'Graphik', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 14px;
+            margin-top: 24px;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .doc-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .doc-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
     </style>
 </head>
 
@@ -532,7 +692,33 @@
                 <button class="tab-btn" onclick="switchTab('team')">Team</button>
                 <button class="tab-btn" onclick="switchTab('certifications')">Certifications</button>
                 <button class="tab-btn" onclick="switchTab('technology')">Technology</button>
+                <button class="tab-btn" onclick="switchTab('tier1')">Tier 1 Accreditation</button>
                 <button class="tab-btn" onclick="switchTab('questionnaire')">Questionnaire</button>
+            </div>
+
+            <!-- Tab: Tier 1 Accreditation -->
+            <div id="tier1" class="tab-content">
+                <div class="card">
+                    <div class="accreditation-header">
+                        <div>
+                            <h2>Tier 1 Accreditation</h2>
+                            <p style="font-size: 14px; color: var(--text-light);">Upload statutory documents for
+                                baseline verification.</p>
+                        </div>
+                        <div class="type-selector">
+                            <button class="type-btn active" onclick="setCompanyType('corporation')">Corporation</button>
+                            <button class="type-btn" onclick="setCompanyType('sole_prop')">Single Proprietary</button>
+                        </div>
+                    </div>
+
+                    <div id="tier1Message" class="message"></div>
+
+                    <div class="doc-list" id="accreditationDocs">
+                        <!-- Documents will be rendered here -->
+                    </div>
+
+                    <button class="btn-verify-all" onclick="simulateAIVerification()">Run AI Compliance Check</button>
+                </div>
             </div>
 
             <!-- Tab 1: Overview -->
@@ -988,8 +1174,114 @@
             document.getElementById(tabName).classList.add('active');
 
             if (tabName === 'questionnaire') {
+                loadAllData(); // Ensure fresh data
                 loadQuestionnaire();
             }
+
+            if (tabName === 'tier1') {
+                renderAccreditationDocs();
+            }
+        }
+
+        // --- Tier 1 Accreditation Logic ---
+        let companyType = 'corporation';
+        let uploadedDocs = {};
+
+        const ACCREDITATION_DOCS = {
+            corporation: [
+                { id: 'sec', name: 'SEC Registration', sub: 'Securities and Exchange Commission' },
+                { id: 'articles', name: 'Articles of Incorporation & By-Laws', sub: 'Complete signed document' },
+                { id: 'affidavit', name: 'Treasurer’s Affidavit', sub: 'Notarized copy' },
+                { id: 'bank', name: 'Bank Certificate', sub: 'Paid-up Capital proof' }
+            ],
+            sole_prop: [
+                { id: 'dti', name: 'DTI Registration', sub: 'Department of Trade and Industry' }
+            ],
+            shared: [
+                { id: 'mayor', name: 'Mayor’s/Business Permit (LGU)', sub: 'Current year permit', expiryCheck: true },
+                { id: 'bir', name: 'BIR Registration & TIN', sub: 'Form 2303' },
+                { id: 'auth_print', name: 'Authority to Print', sub: 'BIR Official Receipts/Invoices' },
+                { id: 'books', name: 'Books of Accounts Registration', sub: 'Registered ledger proof' },
+                { id: 'sss', name: 'SSS Employer Registration', sub: 'Social Security System' },
+                { id: 'philhealth', name: 'PhilHealth Employer Registration', sub: 'Member registration' },
+                { id: 'pagibig', name: 'Pag-IBIG Fund Employer Registration', sub: 'Employer ID proof' },
+                { id: 'peza', name: 'PEZA Registration', sub: 'Optional (if applying for incentives)' },
+                { id: 'npc', name: 'Data Privacy Registration', sub: 'National Privacy Commission (NPC)' }
+            ]
+        };
+
+        function setCompanyType(type) {
+            companyType = type;
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.classList.toggle('active',
+                    (type === 'corporation' && btn.innerText.includes('Corporation')) ||
+                    (type === 'sole_prop' && btn.innerText.includes('Proprietary'))
+                );
+            });
+            renderAccreditationDocs();
+        }
+
+        function renderAccreditationDocs() {
+            const container = document.getElementById('accreditationDocs');
+            const docs = [...ACCREDITATION_DOCS[companyType], ...ACCREDITATION_DOCS.shared];
+
+            container.innerHTML = docs.map(doc => {
+                const state = uploadedDocs[doc.id] || { status: 'pending', remark: '' };
+                const icon = state.status === 'success' ? '✓' : (state.status === 'error' ? '✕' : '🕒');
+
+                return `
+                    <div class="doc-item">
+                        <div class="doc-info">
+                            <div class="status-icon status-${state.status}">${icon}</div>
+                            <div class="doc-details">
+                                <h4>${doc.name}</h4>
+                                <p class="subtext">${doc.sub}</p>
+                                <div class="remark ${state.remark ? 'visible' : ''}">⚠ ${state.remark}</div>
+                            </div>
+                        </div>
+                        <div class="doc-actions">
+                            <input type="file" id="file_${doc.id}" style="display:none" onchange="handleDocUpload('${doc.id}')">
+                            <button class="upload-btn" onclick="document.getElementById('file_${doc.id}').click()">
+                                ${state.status === 'pending' ? 'Upload' : 'Replace'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function handleDocUpload(docId) {
+            const fileInput = document.getElementById(`file_${docId}`);
+            if (fileInput.files.length > 0) {
+                // Simulate upload
+                uploadedDocs[docId] = { status: 'success', remark: '', fileName: fileInput.files[0].name };
+                renderAccreditationDocs();
+            }
+        }
+
+        function simulateAIVerification() {
+            const msg = document.getElementById('tier1Message');
+            msg.style.display = 'block';
+            msg.className = 'message success';
+            msg.innerText = 'AI Review in progress... Analyzing document dates and validity.';
+
+            setTimeout(() => {
+                // Mock verification logic
+                Object.keys(uploadedDocs).forEach(id => {
+                    // Specific mock for Mayor's Permit error if "2025" is in name (per user request example)
+                    if (id === 'mayor' && uploadedDocs[id].fileName.includes('2025')) {
+                        uploadedDocs[id].status = 'error';
+                        uploadedDocs[id].remark = 'Verification failed: Permit is dated 2025. Current requirement is 2026.';
+                    } else if (id === 'sec' || id === 'dti') {
+                        // Just random success for others
+                        uploadedDocs[id].status = 'success';
+                        uploadedDocs[id].remark = '';
+                    }
+                });
+
+                msg.innerText = 'AI Review complete. Please check the results below.';
+                renderAccreditationDocs();
+            }, 1500);
         }
 
         // --- Auth & Init ---
