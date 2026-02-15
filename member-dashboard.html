@@ -1438,6 +1438,126 @@
             }
         });
 
+        // --- Questionnaire Logic ---
+        async function loadQuestionnaire() {
+            const list = document.getElementById('memberQuestionnaireList');
+            list.innerHTML = '<div class="loading">Loading questions...</div>';
+
+            try {
+                // Fetch questions and options
+                const { data: questions, error: qError } = await window.supabaseClient
+                    .from('questionnaire_questions')
+                    .select('*, questionnaire_options(*)')
+                    .eq('is_active', true)
+                    .order('display_order');
+
+                if (qError) throw qError;
+
+                // Fetch current member's responses
+                const { data: responses, error: rError } = await window.supabaseClient
+                    .from('member_questionnaire_responses')
+                    .select('question_id, option_id')
+                    .eq('bpo_id', userBpoId);
+
+                if (rError) throw rError;
+
+                const responseMap = {};
+                responses.forEach(r => {
+                    if (!responseMap[r.question_id]) responseMap[r.question_id] = new Set();
+                    responseMap[r.question_id].add(r.option_id);
+                });
+
+                if (!questions || questions.length === 0) {
+                    list.innerHTML = '<p>No questionnaire available at this time.</p>';
+                    return;
+                }
+
+                list.innerHTML = questions.map(q => `
+                    <div style="margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid #F0F0F0;">
+                        <h3 style="margin-bottom: 8px; font-size: 18px;">${q.question_text}</h3>
+                        <p style="font-size: 14px; color: #666; margin-bottom: 16px;">${q.question_subtitle || ''}</p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
+                            ${(q.questionnaire_options || []).sort((a, b) => a.display_order - b.display_order).map(opt => {
+                    const isChecked = responseMap[q.id] && responseMap[q.id].has(opt.id);
+                    return `
+                                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: ${isChecked ? 'rgba(45, 209, 172, 0.05)' : '#FAFAFA'}; border-radius: 8px; border: 1px solid ${isChecked ? 'var(--accent)' : '#EEE'}; transition: all 0.2s;">
+                                        <input type="${q.question_type === 'checkbox' ? 'checkbox' : 'radio'}" 
+                                               name="q-${q.id}" 
+                                               value="${opt.id}" 
+                                               ${isChecked ? 'checked' : ''}
+                                               onchange="this.parentElement.style.background = this.checked ? 'rgba(45, 209, 172, 0.05)' : '#FAFAFA'; this.parentElement.style.borderColor = this.checked ? 'var(--accent)' : '#EEE';"
+                                        >
+                                        <span style="font-size: 14px;">${opt.option_text}</span>
+                                    </label>
+                                `;
+                }).join('')}
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error("Error loading questionnaire:", err);
+                list.innerHTML = '<p style="color:red">Error loading questionnaire. Please try again.</p>';
+            }
+        }
+
+        async function saveQuestionnaireResponses() {
+            const btn = document.getElementById('saveQuestionnaireBtn');
+            const msg = document.getElementById('questionnaireMessage');
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+
+            try {
+                // Collect all selected options
+                const selections = [];
+                const questionDivs = document.querySelectorAll('#memberQuestionnaireList > div');
+
+                questionDivs.forEach(div => {
+                    const inputs = div.querySelectorAll('input:checked');
+                    if (inputs.length > 0) {
+                        const questionId = inputs[0].name.replace('q-', '');
+                        inputs.forEach(input => {
+                            selections.push({
+                                bpo_id: userBpoId,
+                                question_id: questionId,
+                                option_id: input.value
+                            });
+                        });
+                    }
+                });
+
+                // Delete existing responses for this BPO
+                const { error: delError } = await window.supabaseClient
+                    .from('member_questionnaire_responses')
+                    .delete()
+                    .eq('bpo_id', userBpoId);
+
+                if (delError) throw delError;
+
+                // Insert new responses if any
+                if (selections.length > 0) {
+                    const { error: insError } = await window.supabaseClient
+                        .from('member_questionnaire_responses')
+                        .insert(selections);
+                    if (insError) throw insError;
+                }
+
+                msg.className = 'message success';
+                msg.textContent = '✓ Profile questionnaire responses saved successfully!';
+                msg.style.display = 'block';
+                setTimeout(() => msg.style.display = 'none', 3000);
+
+            } catch (err) {
+                console.error("Error saving responses:", err);
+                msg.className = 'message error';
+                msg.textContent = 'Error saving responses: ' + err.message;
+                msg.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Save All Responses';
+            }
+        }
+
         // Logout
         async function logout() {
             await window.supabaseClient.auth.signOut();
