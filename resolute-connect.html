@@ -670,7 +670,7 @@
         /* Results View */
         .results-view {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1300px;
             margin: 0 auto;
             text-align: left;
             animation: fadeIn 0.5s ease;
@@ -684,8 +684,8 @@
 
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 32px;
         }
 
         .provider-card {
@@ -703,19 +703,18 @@
         }
 
         .card-header {
-            padding: 20px;
+            padding: 28px;
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
             border-bottom: 1px solid #f9f9f9;
         }
 
         .provider-logo {
-            width: 70px;
-            /* Increased from 50px (40% bigger) */
-            height: 70px;
+            width: 90px;
+            height: 90px;
             background: #ffffff;
-            border-radius: 8px;
+            border-radius: 12px;
             object-fit: cover;
             display: flex;
             align-items: center;
@@ -726,25 +725,25 @@
         }
 
         .provider-info h3 {
-            font-size: 18px;
+            font-size: 24px;
             color: #333;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .provider-meta {
-            font-size: 13px;
+            font-size: 16px;
             color: #777;
         }
 
         .card-body {
-            padding: 20px;
+            padding: 28px;
         }
 
         .card-stat {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 14px;
+            margin-bottom: 12px;
+            font-size: 18px;
         }
 
         .stat-label {
@@ -766,9 +765,9 @@
         .tag {
             background: #E8F4FD;
             color: #0056b3;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 11px;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 14px;
             font-weight: 600;
         }
 
@@ -782,7 +781,7 @@
             color: var(--primary);
             font-weight: 700;
             text-decoration: none;
-            font-size: 14px;
+            font-size: 18px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -1505,7 +1504,7 @@
                     return `
                         <div class="provider-card">
                             <div class="card-header">
-                                <div class="provider-logo" style="background-color: #F0F0F0;">
+                                <div class="provider-logo" style="background-color: #ffffff; border: 1px solid #f0f0f0;">
                                     ${logoHtml}
                                 </div>
                                 <div class="provider-info">
