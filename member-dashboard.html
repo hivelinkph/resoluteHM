@@ -21,12 +21,21 @@
             /* Kyte Navy */
             --accent: #2DD1AC;
             /* Kyte Teal */
+            --accent-hover: #24b896;
             --white: #FFFFFF;
             --text-dark: #363F4D;
             --text-light: #5F6B7A;
-            --bg-light: #F9FAFB;
+            --bg-light: #F4F7F9;
+            --sidebar-bg: #FFFFFF;
+            --border-color: #E2E8F0;
             --success: #2E7D32;
-            --error: #C62828;
+            --error: #D32F2F;
+            --shadow-sm: 0 2px 4px rgba(54, 63, 77, 0.05);
+            --shadow-md: 0 4px 20px rgba(54, 63, 77, 0.08);
+            --shadow-lg: 0 10px 30px rgba(54, 63, 77, 0.12);
+            --radius-sm: 4px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
         }
 
         * {
@@ -44,89 +53,136 @@
         /* Header */
         .header {
             background: var(--primary);
-            padding: 20px;
+            padding: 16px 40px;
             color: var(--white);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 80px;
         }
 
         .header h1 {
             font-family: 'Graphik', Arial, sans-serif;
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 2px;
         }
 
         .company-name {
-            font-size: 18px;
-            opacity: 0.9;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent);
         }
 
         .header-actions {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             align-items: center;
         }
 
         .btn-logout {
-            padding: 10px 24px;
-            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            background: transparent;
             color: var(--white);
-            border: 1px solid var(--white);
-            border-radius: 4px;
-            /* Kyte standard */
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-sm);
             font-family: 'Graphik', Arial, sans-serif;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
-            font-size: 14px;
+            font-size: 12px;
+            letter-spacing: 0.05em;
         }
 
         .btn-logout:hover {
-            background: var(--white);
-            color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--white);
         }
 
         .btn-view {
-            padding: 10px 24px;
+            padding: 10px 20px;
             background: var(--accent);
-            color: var(--white);
-            border: 1px solid var(--accent);
-            border-radius: 4px;
-            /* Kyte standard */
+            color: var(--primary);
+            border: 1.5px solid var(--accent);
+            border-radius: var(--radius-sm);
             font-family: 'Graphik', Arial, sans-serif;
             font-weight: 700;
             cursor: pointer;
             text-decoration: none;
             transition: all 0.3s ease;
             text-transform: uppercase;
-            font-size: 14px;
+            font-size: 12px;
+            letter-spacing: 0.05em;
         }
 
         .btn-view:hover {
-            background: transparent;
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
             color: var(--white);
-            border-color: var(--white);
         }
 
         /* Sidebar Layout */
         .dashboard-layout {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 30px;
-            margin-top: 30px;
+            display: flex;
+            margin: 0;
+            min-height: calc(100vh - 80px);
         }
 
         .sidebar {
-            background: white;
-            padding: 24px;
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
-            height: fit-content;
+            width: 300px;
+            background: var(--sidebar-bg);
+            padding: 40px 20px;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            flex-shrink: 0;
             position: sticky;
-            top: 100px;
+            top: 80px;
+            height: calc(100vh - 80px);
+            z-index: 10;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                padding: 20px;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                flex-direction: row;
+                overflow-x: auto;
+                gap: 12px;
+                background: var(--white);
+            }
+
+            .sidebar-nav {
+                flex-direction: row;
+                width: 100%;
+            }
+
+            .sidebar-btn {
+                margin-bottom: 0;
+                flex: 1;
+                justify-content: center;
+                white-space: nowrap;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
         }
 
         .sidebar-nav {
@@ -136,79 +192,98 @@
         }
 
         .sidebar-btn {
-            padding: 14px 20px;
+            padding: 16px 24px;
             background: transparent;
-            border: none;
-            border-radius: 12px;
-            font-family: 'Raleway', sans-serif;
+            border: 1px solid transparent;
+            border-radius: var(--radius-md);
+            font-family: 'Graphik', Arial, sans-serif;
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 600;
             color: var(--text-light);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-align: left;
             display: flex;
             align-items: center;
-            gap: 12px;
-            text-transform: none;
+            gap: 16px;
+            margin-bottom: 8px;
         }
 
         .sidebar-btn i {
-            font-size: 18px;
+            font-size: 20px;
             width: 24px;
-            text-align: center;
+            transition: transform 0.3s ease;
         }
 
         .sidebar-btn:hover {
-            background: #f8f9fa;
+            background: var(--bg-light);
             color: var(--primary);
+            padding-left: 28px;
         }
 
         .sidebar-btn.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(220, 42, 145, 0.2);
+            background: var(--accent);
+            color: var(--white);
+            box-shadow: 0 8px 16px rgba(45, 209, 172, 0.25);
+            border-color: var(--accent);
+        }
+
+        .sidebar-btn.active i {
+            transform: scale(1.1);
         }
 
         /* Container & Tabs */
         .container {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 0 20px;
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            flex-grow: 1;
+            min-width: 0;
+            padding: 40px;
+            background: var(--bg-light);
+            min-height: calc(100vh - 80px);
+            overflow-x: hidden;
         }
 
         .tabs-nav {
             display: flex;
-            gap: 4px;
-            margin-bottom: 24px;
-            background: #f0f2f5;
-            padding: 4px;
-            border-radius: 10px;
+            gap: 8px;
+            margin-bottom: 32px;
+            padding: 6px;
+            background: rgba(54, 63, 77, 0.04);
+            border-radius: var(--radius-md);
             width: fit-content;
+            border: 1px solid rgba(54, 63, 77, 0.05);
         }
 
         .tab-btn {
-            padding: 10px 20px;
+            padding: 10px 24px;
             background: transparent;
             border: none;
             border-radius: 8px;
             font-family: 'Graphik', Arial, sans-serif;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--text-light);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
             white-space: nowrap;
         }
 
         .tab-btn:hover {
             color: var(--primary);
+            background: rgba(255, 255, 255, 0.5);
         }
 
         .tab-btn.active {
-            background: white;
-            color: var(--primary);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            background: var(--white);
+            color: var(--accent);
+            box-shadow: var(--shadow-sm);
         }
 
         /* Tier Subnav */
@@ -231,8 +306,8 @@
 
         .tier-btn.active {
             background: white;
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(45, 209, 172, 0.1);
         }
 
         .tier-btn h3 {
@@ -248,7 +323,7 @@
         }
 
         .tier-btn.active h3 {
-            color: var(--primary);
+            color: var(--accent);
         }
 
         .tab-btn.active {
@@ -273,12 +348,6 @@
             animation: fadeIn 0.4s ease;
         }
 
-        .main-content {
-            background: #f8f9fa;
-            border-radius: 20px;
-            min-height: 80vh;
-        }
-
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -294,10 +363,130 @@
         /* Card */
         .card {
             background: var(--white);
-            border-radius: 16px;
-            padding: 32px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            margin-bottom: 24px;
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 32px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Seal & Animations */
+        .sidebar-seal {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .sidebar-seal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes subtle-float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Fullscreen Seal Modal */
+        .seal-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .seal-modal.active {
+            display: flex;
+        }
+
+        .seal-modal-content {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+            animation: modalScale 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        .seal-modal-close {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .seal-modal-close:hover {
+            transform: scale(1.1) rotate(90deg);
+            background: #ff6b81;
+        }
+
+        @keyframes modalScale {
+            from {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 15px rgba(45, 209, 172, 0.3));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 30px rgba(45, 209, 172, 0.6));
+            }
+        }
+
+        .loader-ring {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(45, 209, 172, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .card h2 {
@@ -328,11 +517,12 @@
 
         label {
             display: block;
-            font-family: 'Raleway', Arial, sans-serif;
+            font-family: 'Graphik', Arial, sans-serif;
             font-weight: 600;
             color: var(--text-dark);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-size: 14px;
+            letter-spacing: 0.01em;
         }
 
         input[type="text"],
@@ -344,12 +534,14 @@
         textarea,
         select {
             width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #E0E0E0;
-            border-radius: 8px;
-            font-family: 'Crimson Pro', Georgia, serif;
-            font-size: 16px;
-            transition: all 0.3s ease;
+            padding: 14px 18px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: 'Roboto', Arial, sans-serif;
+            font-size: 15px;
+            color: var(--text-dark);
+            background: var(--white);
+            transition: all 0.2s ease;
         }
 
         textarea {
@@ -361,8 +553,9 @@
         textarea:focus,
         select:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(220, 42, 145, 0.1);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(45, 209, 172, 0.1);
+            background: var(--white);
         }
 
         .btn-primary {
@@ -398,8 +591,8 @@
         .btn-secondary {
             padding: 10px 20px;
             background: transparent;
-            color: var(--primary);
-            border: 1px solid var(--primary);
+            color: var(--accent);
+            border: 1px solid var(--accent);
             border-radius: 4px;
             /* Kyte standard */
             font-family: 'Graphik', Arial, sans-serif;
@@ -411,7 +604,7 @@
         }
 
         .btn-secondary:hover {
-            background: var(--primary);
+            background: var(--accent);
             color: var(--white);
         }
 
@@ -474,9 +667,9 @@
         }
 
         .item-details h4 {
-            font-family: 'Raleway', Arial, sans-serif;
+            font-family: 'Graphik', Arial, sans-serif;
             font-size: 16px;
-            font-weight: 700;
+            font-weight: 600;
             color: var(--text-dark);
             margin-bottom: 4px;
         }
@@ -497,8 +690,8 @@
         }
 
         .logo-upload:hover {
-            border-color: var(--primary);
-            background: rgba(220, 42, 145, 0.02);
+            border-color: var(--accent);
+            background: rgba(45, 209, 172, 0.05);
         }
 
         .logo-preview {
@@ -653,7 +846,7 @@
 
         .type-btn.active {
             background: white;
-            color: var(--primary);
+            color: var(--accent);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
@@ -835,7 +1028,7 @@
 
         .type-btn.active {
             background: white;
-            color: var(--primary);
+            color: var(--accent);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
@@ -1066,6 +1259,27 @@
                         <i>🛡️</i> Accreditation
                     </button>
                 </nav>
+
+                <div class="sidebar-seals-container"
+                    style="display: flex; flex-direction: column; gap: 12px; margin-top: -30px;">
+                    <div id="sidebarSeal3" class="sidebar-seal" style="text-align: center; display: none;">
+                        <img src="resaward3.png" alt="Resolute Certified"
+                            style="width: 160px; animation: subtle-float 3s ease-in-out infinite; cursor: pointer;"
+                            onclick="openSealFullscreen(this.src)">
+                    </div>
+
+                    <div id="sidebarSeal2" class="sidebar-seal" style="text-align: center; display: none;">
+                        <img src="resaward2.png" alt="Resolute Validated"
+                            style="width: 160px; animation: subtle-float 3s ease-in-out infinite; cursor: pointer;"
+                            onclick="openSealFullscreen(this.src)">
+                    </div>
+
+                    <div id="sidebarSeal" class="sidebar-seal" style="text-align: center; display: none;">
+                        <img src="resaward.png" alt="Resolute Verified"
+                            style="width: 160px; animation: subtle-float 3s ease-in-out infinite; cursor: pointer;"
+                            onclick="openSealFullscreen(this.src)">
+                    </div>
+                </div>
             </aside>
 
             <!-- Content Area -->
@@ -1390,12 +1604,7 @@
                     </div>
 
                     <div id="tier3Content" class="tier-content" style="display:none">
-                        <div class="card" style="text-align: center; padding: 60px;">
-                            <div style="font-size: 48px; margin-bottom: 20px;">🏆</div>
-                            <h2>Tier 3: Certification</h2>
-                            <p>The highest level of HIMAP accreditation. Requires extensive third-party audits and
-                                excellence in service delivery standards.</p>
-                        </div>
+                        <!-- Content populated by renderTier3Content -->
                     </div>
                 </div>
 
@@ -1606,123 +1815,300 @@
     </div>
 
 
-    <script>
-        // Supabase configuration
-        const SUPABASE_URL = 'https://llvsayyfvwkqbmhnmumh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdnNheXlmdndrcWJtaG5tdW1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4OTQ4NzAsImV4cCI6MjA4NjQ3MDg3MH0.f05CWLxdXONJQPxRfhKxIDOZeUWtE54vYOygI6RVtoU';
+    <!-- Audit Progress Modal -->
+    <div id="auditModal" class="modal">
+        <div class="modal-content" style="text-align: center; padding: 40px; max-width: 500px;">
+            <div id="auditLoader" class="loader-ring"></div>
+            <h2 id="auditTitle" style="margin-top: 24px; font-size: 24px; color: var(--primary);">AI Compliance Audit
+            </h2>
+            <div id="auditProgress" style="margin: 24px 0; font-size: 16px; color: var(--text-dark);">
+                Checking: <span id="currentDocName" style="font-weight: 700; color: var(--accent);">---</span>
+            </div>
+            <div
+                style="background: var(--bg-light); padding: 20px; border-radius: 16px; margin-bottom: 24px; border: 1px solid var(--border-color);">
+                <div
+                    style="font-size: 12px; color: var(--text-light); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">
+                    Audit Status</div>
+                <div style="font-size: 28px; font-weight: 700; color: var(--primary);">
+                    <span id="passedCount">0</span> / <span id="totalDocCount">0</span> Passed
+                </div>
+            </div>
+            <p id="auditStatusMessage" style="color: var(--text-light); line-height: 1.6; font-size: 14px;">Initializing
+                neural scan of statutory documents...</p>
+        </div>
+    </div>
 
-        // Initialize Supabase (prevent redeclarations)
-        if (!window.supabaseClient) {
-            window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        }
+    <!-- Tier 1 Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content" style="text-align: center; padding: 50px; max-width: 550px;">
+            <div style="font-size: 64px; margin-bottom: 20px;">🎉</div>
+            <h2 style="color: var(--primary); font-size: 28px; font-weight: 700; margin-bottom: 12px;">Congratulations!
+            </h2>
+            <p style="font-size: 16px; color: var(--text-light); margin-bottom: 32px; line-height: 1.5;">You have passed
+                Tier 1 - Validation.<br>Your company is now Resolute Verified.</p>
 
-        // Global State
-        let currentUser = null;
-        let userBpoId = null;
-        let bpoData = {}; // Stores all fetched data
+            <div class="seal-presentation" style="margin-bottom: 32px;">
+                <img src="resaward.png" alt="Resolute Verified Seal"
+                    style="max-height: 220px; animation: pulse-glow 2s infinite;">
+            </div>
 
-        // Major Sections Logic
-        function switchMajorTab(sectionId, btn) {
-            // Update sidebar buttons
-            document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            <button class="btn-primary" style="width: 100%; height: 50px; border-radius: var(--radius-sm);"
+                onclick="closeModal('successModal')">Continue to Dashboard</button>
+        </div>
+    </div>
 
-            // Hide all major sections
-            document.querySelectorAll('.major-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(sectionId + 'Section').classList.add('active');
+    <!-- Inspector Login Modal -->
+    <div id="inspectorLoginModal" class="modal">
+        <div class="modal-content" style="max-width: 400px; padding: 40px;">
+            <span class="close-modal" onclick="closeModal('inspectorLoginModal')">&times;</span>
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="font-size: 40px; margin-bottom: 15px;">🕵️‍♂️</div>
+                <h2 style="font-size: 22px; color: var(--primary);">Inspector Access</h2>
+                <p style="font-size: 14px; color: var(--text-light);">Authorized HIMAP Inspectors Only</p>
+            </div>
+            <form id="inspectorLoginForm" onsubmit="handleInspectorLogin(event)">
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <input type="tel" id="inspectorMobile" placeholder="09XX XXX XXXX" required>
+                </div>
+                <div class="form-group">
+                    <label>Access Password</label>
+                    <input type="password" id="inspectorPass" required>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">Login & Start
+                    Audit</button>
+            </form>
+        </div>
+    </div>
 
-            // Initialize content if needed
-            if (sectionId === 'profile') {
-                switchTab('overview');
-            } else if (sectionId === 'questionnaires') {
-                switchTab('questionnaire');
-            } else if (sectionId === 'accreditation') {
-                switchTier('tier1');
+    <!-- Inspector Password Update Modal -->
+    <div id="inspectorPasswordModal" class="modal">
+        <div class="modal-content" style="max-width: 400px; padding: 40px;">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="font-size: 40px; margin-bottom: 15px;">🛡️</div>
+                <h2 style="font-size: 22px; color: var(--primary);">Update Access Password</h2>
+                <p style="font-size: 14px; color: var(--text-light);">HIMAP Policy: Site inspectors must set a secure
+                    password upon their first login.</p>
+            </div>
+            <form id="inspectorPasswordForm" onsubmit="handleInspectorPasswordUpdate(event)">
+                <div class="form-group">
+                    <label>New Secret Password</label>
+                    <input type="password" id="newInsPass" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="confirmInsPass" required minlength="6">
+                </div>
+                <input type="hidden" id="tempInsId">
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">Verify &
+                    Continue</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tier 2 Assessment Modal -->
+    <div id="tier2AuditModal" class="modal">
+        <div class="modal-content" style="max-width: 600px; padding: 40px;">
+            <span class="close-modal" onclick="closeModal('tier2AuditModal')">&times;</span>
+            <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 24px;">
+                <h2 style="font-size: 24px; color: var(--primary);">Physical Site Assessment</h2>
+                <p style="font-size: 14px; color: var(--text-light);">HIMAP Tier 2 - Operational Validation</p>
+            </div>
+
+            <div id="checklistContainer" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;">
+                <!-- Checklist items will be populated here -->
+            </div>
+
+            <div
+                style="background: #fff8e1; border-left: 4px solid #ffb300; padding: 15px; border-radius: 4px; margin-bottom: 24px;">
+                <p style="font-size: 13px; color: #795548; margin: 0;"><strong>Inspector Note:</strong> All items must
+                    be physically verified on site. By clicking assess, you confirm the company meets all HIMAP
+                    operational standards.</p>
+            </div>
+
+            <button class="btn-primary" style="width: 100%;" onclick="submitTier2Assessment()">Complete
+                Assessment</button>
+        </div>
+    </div>
+
+    <!-- Tier 2 Success Modal -->
+    <div id="successTier2Modal" class="modal">
+        <div class="modal-content" style="text-align: center; padding: 50px; max-width: 550px;">
+            <div style="font-size: 64px; margin-bottom: 20px;">🎖️</div>
+            <h2 style="color: var(--primary); font-size: 28px; font-weight: 700; margin-bottom: 12px;">Validation
+                Complete!</h2>
+            <p style="font-size: 16px; color: var(--text-light); margin-bottom: 32px; line-height: 1.5;">
+                Congratulations! Your company has passed Tier 2 - Validation.<br>Your physical operations are now
+                Resolute Validated.</p>
+
+            <div class="seal-presentation" style="margin-bottom: 32px;">
+                <img src="resaward2.png" alt="Resolute Validated Seal"
+                    style="max-height: 220px; animation: pulse-glow 2s infinite;">
+            </div>
+
+            <button class="btn-primary" style="width: 100%; height: 50px; border-radius: var(--radius-sm);"
+                onclick="closeModal('successTier2Modal')">Return to Dashboard</button>
+        </div>
+        <!-- Tier 3 Success Modal -->
+        <div id="successTier3Modal" class="modal">
+            <div class="modal-content" style="text-align: center; padding: 50px; max-width: 550px;">
+                <div style="font-size: 64px; margin-bottom: 20px;">🏆</div>
+                <h2 style="color: var(--primary); font-size: 28px; font-weight: 700; margin-bottom: 12px;">Platinum
+                    Accreditation!</h2>
+                <p style="font-size: 16px; color: var(--text-light); margin-bottom: 32px; line-height: 1.5;">
+                    Exceptional achievement! Your company has achieved Tier 3 - Certification.<br>You are now a HIMAP
+                    Resolute
+                    Certified member.</p>
+
+                <div class="seal-presentation" style="margin-bottom: 32px;">
+                    <img src="resaward3.png" alt="Resolute Certified Seal"
+                        style="max-height: 220px; animation: pulse-glow 2s infinite;">
+                </div>
+
+                <button class="btn-primary" style="width: 100%; height: 50px; border-radius: var(--radius-sm);"
+                    onclick="closeModal('successTier3Modal')">Return to Dashboard</button>
+            </div>
+        </div>
+
+        <script>
+            // Supabase configuration
+            const SUPABASE_URL = 'https://llvsayyfvwkqbmhnmumh.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdnNheXlmdndrcWJtaG5tdW1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4OTQ4NzAsImV4cCI6MjA4NjQ3MDg3MH0.f05CWLxdXONJQPxRfhKxIDOZeUWtE54vYOygI6RVtoU';
+
+            // Initialize Supabase (prevent redeclarations)
+            if (!window.supabaseClient) {
+                window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             }
-        }
 
-        // Tier Logic
-        function switchTier(tierId) {
-            document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tierId + 'Btn').classList.add('active');
+            // Global State
+            let currentUser = null;
+            let userBpoId = null;
+            let bpoData = {}; // Stores all fetched data
 
-            document.querySelectorAll('.tier-content').forEach(c => c.style.display = 'none');
-            document.getElementById(tierId + 'Content').style.display = 'block';
+            // Major Sections Logic
+            function switchMajorTab(sectionId, btn) {
+                // Update sidebar buttons
+                document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
 
-            if (tierId === 'tier1') {
+                // Hide all major sections
+                document.querySelectorAll('.major-section').forEach(s => s.classList.remove('active'));
+                document.getElementById(sectionId + 'Section').classList.add('active');
+
+                // Initialize content if needed
+                if (sectionId === 'profile') {
+                    switchTab('overview');
+                } else if (sectionId === 'questionnaires') {
+                    switchTab('questionnaire');
+                } else if (sectionId === 'accreditation') {
+                    switchTier('tier1');
+                }
+            }
+
+            // Check if Tier 1 is passed
+            function checkTier1Passed() {
+                // If they already have Tier 2 or 3, Tier 1 is implicit
+                const hasHigherTier = (uploadedDocs['tier2_inspection'] && uploadedDocs['tier2_inspection'].status === 'success') ||
+                    (uploadedDocs['tier3_verification'] && uploadedDocs['tier3_verification'].status === 'success');
+                if (hasHigherTier) return true;
+
+                const type = companyType || 'corporation';
+                const allDocs = [...ACCREDITATION_DOCS[type], ...ACCREDITATION_DOCS.shared];
+                const requiredDocs = allDocs.filter(d => d.required);
+
+                if (requiredDocs.length === 0) return false;
+
+                const passedCount = requiredDocs.filter(d => uploadedDocs[d.id] && uploadedDocs[d.id].status === 'success').length;
+                return passedCount === requiredDocs.length;
+            }
+
+            // Tier Logic
+            function switchTier(tierId) {
+                document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById(tierId + 'Btn').classList.add('active');
+
+                document.querySelectorAll('.tier-content').forEach(c => c.style.display = 'none');
+                const contentDiv = document.getElementById(tierId + 'Content');
+                contentDiv.style.display = 'block';
+
+                if (tierId === 'tier1') {
+                    renderAccreditationDocs();
+                } else if (tierId === 'tier2') {
+                    renderTier2Content();
+                } else if (tierId === 'tier3') {
+                    renderTier3Content();
+                }
+            }
+
+            // Current Minor Tab Logic (Inside Profile)
+            function switchTab(tabName) {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${tabName}'`));
+                });
+
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(tabName).classList.add('active');
+
+                if (tabName === 'questionnaire') {
+                    loadAllData();
+                    loadQuestionnaire();
+                }
+            }
+
+            // --- Tier 1 Accreditation Logic ---
+            let companyType = 'corporation';
+            let uploadedDocs = {};
+
+            const ACCREDITATION_DOCS = {
+                corporation: [
+                    { id: 'sec', name: 'SEC Registration', sub: 'Securities and Exchange Commission', required: true },
+                    { id: 'articles', name: 'Articles of Incorporation & By-Laws', sub: 'Complete signed document', required: true },
+                    { id: 'affidavit', name: 'Treasurer’s Affidavit', sub: 'Notarized copy' },
+                    { id: 'bank', name: 'Bank Certificate', sub: 'Paid-up Capital proof' }
+                ],
+                sole_prop: [
+                    { id: 'dti', name: 'DTI Registration', sub: 'Department of Trade and Industry', required: true }
+                ],
+                shared: [
+                    { id: 'mayor', name: 'Mayor’s/Business Permit (LGU)', sub: 'Current year permit', expiryCheck: true, required: true },
+                    { id: 'bir', name: 'BIR Registration (Form 2303)', sub: 'Bureau of Internal Revenue', required: true },
+                    { id: 'invoice_service', name: 'Service Invoice Sample', sub: 'Company official service invoice' },
+                    { id: 'invoice_sales', name: 'Sales Invoice Sample', sub: 'Company official sales invoice' },
+                    { id: 'sss', name: 'SSS Employer Registration', sub: 'Social Security System' },
+                    { id: 'philhealth', name: 'PhilHealth Employer Registration', sub: 'Health insurance registration' },
+                    { id: 'pagibig', name: 'Pag-IBIG Fund Employer Registration', sub: 'Home Development Mutual Fund' },
+                    { id: 'peza', name: 'PEZA Registration', sub: 'Economic Zone Authority (if applicable)' },
+                    { id: 'npc', name: 'Data Privacy Registration', sub: 'National Privacy Commission (NPC)' }
+                ]
+            };
+
+            function setCompanyType(type) {
+                companyType = type;
+                document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+                if (type === 'corporation') document.getElementById('corpBtn').classList.add('active');
+                else document.getElementById('soleBtn').classList.add('active');
                 renderAccreditationDocs();
             }
-        }
 
-        // Current Minor Tab Logic (Inside Profile)
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${tabName}'`));
-            });
+            function renderAccreditationDocs() {
+                const container = document.getElementById('accreditationDocs');
+                const type = companyType || 'corporation';
+                const docs = [...ACCREDITATION_DOCS[type], ...ACCREDITATION_DOCS.shared];
 
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(tabName).classList.add('active');
+                container.innerHTML = docs.map(doc => {
+                    const state = uploadedDocs[doc.id] || { status: 'pending', remark: '' };
+                    const hasStatus = state.status !== 'pending';
+                    const isPassed = state.status === 'success';
+                    const hasThumb = !!state.dataUrl;
 
-            if (tabName === 'questionnaire') {
-                loadAllData();
-                loadQuestionnaire();
-            }
-        }
-
-        // --- Tier 1 Accreditation Logic ---
-        let companyType = 'corporation';
-        let uploadedDocs = {};
-
-        const ACCREDITATION_DOCS = {
-            corporation: [
-                { id: 'sec', name: 'SEC Registration', sub: 'Securities and Exchange Commission' },
-                { id: 'articles', name: 'Articles of Incorporation & By-Laws', sub: 'Complete signed document' },
-                { id: 'affidavit', name: 'Treasurer’s Affidavit', sub: 'Notarized copy' },
-                { id: 'bank', name: 'Bank Certificate', sub: 'Paid-up Capital proof' }
-            ],
-            sole_prop: [
-                { id: 'dti', name: 'DTI Registration', sub: 'Department of Trade and Industry' }
-            ],
-            shared: [
-                { id: 'mayor', name: 'Mayor’s/Business Permit (LGU)', sub: 'Current year permit', expiryCheck: true },
-                { id: 'bir', name: 'BIR Registration (Form 2303)', sub: 'Bureau of Internal Revenue' },
-                { id: 'invoice_service', name: 'Service Invoice Sample', sub: 'Company official service invoice' },
-                { id: 'invoice_sales', name: 'Sales Invoice Sample', sub: 'Company official sales invoice' },
-                { id: 'sss', name: 'SSS Employer Registration', sub: 'Social Security System' },
-                { id: 'philhealth', name: 'PhilHealth Employer Registration', sub: 'Health insurance registration' },
-                { id: 'pagibig', name: 'Pag-IBIG Fund Employer Registration', sub: 'Home Development Mutual Fund' },
-                { id: 'peza', name: 'PEZA Registration', sub: 'Economic Zone Authority (if applicable)' },
-                { id: 'npc', name: 'Data Privacy Registration', sub: 'National Privacy Commission (NPC)' }
-            ]
-        };
-
-        function setCompanyType(type) {
-            companyType = type;
-            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
-            if (type === 'corporation') document.getElementById('corpBtn').classList.add('active');
-            else document.getElementById('soleBtn').classList.add('active');
-            renderAccreditationDocs();
-        }
-
-        function renderAccreditationDocs() {
-            const container = document.getElementById('accreditationDocs');
-            const type = companyType || 'corporation';
-            const docs = [...ACCREDITATION_DOCS[type], ...ACCREDITATION_DOCS.shared];
-
-            container.innerHTML = docs.map(doc => {
-                const state = uploadedDocs[doc.id] || { status: 'pending', remark: '' };
-                const hasStatus = state.status !== 'pending';
-                const isPassed = state.status === 'success';
-                const hasThumb = !!state.dataUrl;
-
-                return `
+                    return `
                     <div class="doc-item">
                         <div class="doc-info">
                             <div class="doc-thumbnail-container ${hasStatus ? 'has-status' : ''}" 
                                  onclick="${hasStatus ? `openOCRPreview('${doc.id}')` : `document.getElementById('file_${doc.id}').click()`}">
                                 ${hasThumb
-                        ? `<img src="${state.dataUrl}" class="doc-thumbnail">`
-                        : `<div style="padding: 20px; text-align: center; color: #999; font-size: 20px;">📄</div>`}
+                            ? `<img src="${state.dataUrl}" class="doc-thumbnail">`
+                            : `<div style="padding: 20px; text-align: center; color: #999; font-size: 20px;">📄</div>`}
                                 
                                 <div class="status-overlay">
                                     <div class="overlay-badge ${isPassed ? 'badge-passed' : 'badge-failed'}">
@@ -1748,354 +2134,964 @@
                         </div>
                     </div>
                 `;
-            }).join('');
-        }
+                }).join('');
+            }
 
-        async function handleDocUpload(docId) {
-            const fileInput = document.getElementById(`file_${docId}`);
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const reader = new FileReader();
+            async function handleDocUpload(docId) {
+                const fileInput = document.getElementById(`file_${docId}`);
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const reader = new FileReader();
 
-                reader.onload = async function (e) {
-                    const localDataUrl = e.target.result;
-                    uploadedDocs[docId] = {
-                        status: 'pending',
-                        remark: 'Uploading to server...',
-                        fileName: file.name,
-                        dataUrl: localDataUrl,
-                        failCoords: []
+                    reader.onload = async function (e) {
+                        const localDataUrl = e.target.result;
+                        uploadedDocs[docId] = {
+                            status: 'pending',
+                            remark: 'Uploading to server...',
+                            fileName: file.name,
+                            dataUrl: localDataUrl,
+                            failCoords: []
+                        };
+                        renderAccreditationDocs();
+
+                        try {
+                            // 1. Upload to Supabase Storage
+                            const fileExt = file.name.split('.').pop();
+                            const fileName = `${userBpoId}/${docId}_${Date.now()}.${fileExt}`;
+                            const filePath = `accreditation-docs/${fileName}`;
+
+                            const { data: uploadData, error: uploadError } = await window.supabaseClient.storage
+                                .from('bpo-assets')
+                                .upload(filePath, file, { upsert: true });
+
+                            if (uploadError) throw uploadError;
+
+                            // 2. Get Public URL
+                            const { data: { publicUrl } } = window.supabaseClient.storage
+                                .from('bpo-assets')
+                                .getPublicUrl(filePath);
+
+                            // 3. Upsert to bpo_accreditation table
+                            const { error: dbError } = await window.supabaseClient
+                                .from('bpo_accreditation')
+                                .upsert({
+                                    bpo_id: userBpoId,
+                                    doc_id: docId,
+                                    file_url: publicUrl,
+                                    status: 'pending',
+                                    remark: 'Saved. Ready for AI Verification.'
+                                }, { onConflict: 'bpo_id,doc_id' });
+
+                            if (dbError) throw dbError;
+
+                            uploadedDocs[docId].dataUrl = publicUrl; // Use public URL for future reference
+                            uploadedDocs[docId].remark = 'Saved. Ready for AI Verification.';
+                            renderAccreditationDocs();
+
+                        } catch (err) {
+                            console.error('Upload Error:', err);
+                            uploadedDocs[docId].remark = 'Upload failed. Please try again.';
+                            renderAccreditationDocs();
+                        }
                     };
-                    renderAccreditationDocs();
+                    reader.readAsDataURL(file);
+                }
+            }
 
-                    try {
-                        // 1. Upload to Supabase Storage
-                        const fileExt = file.name.split('.').pop();
-                        const fileName = `${userBpoId}/${docId}_${Date.now()}.${fileExt}`;
-                        const filePath = `accreditation-docs/${fileName}`;
+            async function simulateAIVerification() {
+                const type = companyType || 'corporation';
+                const allPotentialDocs = [...ACCREDITATION_DOCS[type], ...ACCREDITATION_DOCS.shared];
+                const docsToVerify = allPotentialDocs.filter(doc => {
+                    const state = uploadedDocs[doc.id];
+                    return state && state.status !== 'success' && state.dataUrl;
+                });
 
-                        const { data: uploadData, error: uploadError } = await window.supabaseClient.storage
-                            .from('bpo-assets')
-                            .upload(filePath, file, { upsert: true });
+                if (docsToVerify.length === 0) {
+                    const msg = document.getElementById('tier1Message');
+                    if (msg) {
+                        msg.style.display = 'block';
+                        msg.className = 'message error';
+                        msg.innerText = 'No new documents uploaded for verification.';
+                    }
+                    return;
+                }
 
-                        if (uploadError) throw uploadError;
+                // Prepare Audit Modal
+                const auditModal = document.getElementById('auditModal');
+                const currentDocName = document.getElementById('currentDocName');
+                const passedCountElem = document.getElementById('passedCount');
+                const totalDocCountElem = document.getElementById('totalDocCount');
+                const auditStatusMessage = document.getElementById('auditStatusMessage');
 
-                        // 2. Get Public URL
-                        const { data: { publicUrl } } = window.supabaseClient.storage
-                            .from('bpo-assets')
-                            .getPublicUrl(filePath);
+                const requiredDocsCount = allPotentialDocs.filter(d => d.required).length;
+                let passedCount = allPotentialDocs.filter(d => uploadedDocs[d.id] && uploadedDocs[d.id].status === 'success').length;
+                passedCountElem.innerText = passedCount;
+                totalDocCountElem.innerText = requiredDocsCount;
+                openModal('auditModal');
 
-                        // 3. Upsert to bpo_accreditation table
-                        const { error: dbError } = await window.supabaseClient
+                try {
+                    const currentYear = new Date().getFullYear().toString(); // 2026
+                    const companyName = (bpoData.company && bpoData.company.company_name) ? bpoData.company.company_name.toUpperCase() : '';
+
+                    for (const docInfo of docsToVerify) {
+                        const id = docInfo.id;
+                        const doc = uploadedDocs[id];
+                        currentDocName.innerText = docInfo.name;
+                        auditStatusMessage.innerText = `Analyzing document structure and verifying statutory data for ${docInfo.name}...`;
+
+                        // Run Tesseract OCR
+                        const result = await Tesseract.recognize(
+                            doc.dataUrl,
+                            'eng',
+                            {
+                                logger: m => {
+                                    if (m.status === 'recognizing text') {
+                                        const progress = Math.round(m.progress * 100);
+                                        auditStatusMessage.innerText = `OCR Scanning: ${progress}% complete...`;
+                                    }
+                                }
+                            }
+                        );
+
+                        const ocrText = result.data.text.toUpperCase();
+                        const words = result.data.words;
+
+                        let passed = true;
+                        let remark = '✓ Validity Verified via AI OCR Scan';
+                        let failCoords = [];
+
+                        // Document-specific verification logic
+                        switch (id) {
+                            case 'mayor':
+                                const yearsMayor = words.filter(w => /\b20\d{2}\b/.test(w.text));
+                                const hasCurrentMayor = yearsMayor.some(y => y.text.includes(currentYear));
+
+                                if (!hasCurrentMayor) {
+                                    passed = false;
+                                    remark = `Verification failed: Document date is not current (${currentYear}).`;
+                                    if (yearsMayor.length > 0) {
+                                        failCoords = yearsMayor.map(y => y.bbox);
+                                        remark += ` Found year ${yearsMayor[0].text} instead.`;
+                                    }
+                                }
+                                break;
+
+                            case 'bir':
+                                // BIR 2303 special check: Just check for current year per user request
+                                const yearsBIR = words.filter(w => /\b20\d{2}\b/.test(w.text));
+                                const hasCurrentBIR = yearsBIR.some(y => y.text.includes(currentYear));
+
+                                if (!hasCurrentBIR) {
+                                    passed = false;
+                                    remark = `Verification failed: BIR registration not valid for current year (${currentYear}).`;
+                                    if (yearsBIR.length > 0) {
+                                        failCoords = yearsBIR.map(y => y.bbox);
+                                    }
+                                }
+                                break;
+
+                            case 'sec':
+                                if (!ocrText.includes('SECURITIES AND EXCHANGE COMMISSION')) {
+                                    passed = false;
+                                    remark = 'Verification failed: SEC official headers not detected.';
+                                }
+                                break;
+
+                            default:
+                                if (ocrText.length < 50) {
+                                    passed = false;
+                                    remark = 'Verification failed: Document is blurry or unreadable.';
+                                }
+                        }
+
+                        // Optional Check: Company Name Match
+                        if (passed && companyName && !ocrText.includes(companyName.split(' ')[0])) {
+                            console.warn(`Company name part ${companyName.split(' ')[0]} not found in OCR text.`);
+                            remark += ' (Pending manual name audit)';
+                        }
+
+                        uploadedDocs[id].status = passed ? 'success' : 'error';
+                        uploadedDocs[id].remark = remark;
+                        uploadedDocs[id].failCoords = failCoords;
+
+                        if (passed) {
+                            passedCount++;
+                            passedCountElem.innerText = passedCount;
+                        }
+
+                        // Update DB
+                        await window.supabaseClient
                             .from('bpo_accreditation')
                             .upsert({
                                 bpo_id: userBpoId,
-                                doc_id: docId,
-                                file_url: publicUrl,
-                                status: 'pending',
-                                remark: 'Saved. Ready for AI Verification.'
+                                doc_id: id,
+                                status: uploadedDocs[id].status,
+                                remark: uploadedDocs[id].remark,
+                                fail_coords: uploadedDocs[id].failCoords,
+                                updated_at: new Date().toISOString()
                             }, { onConflict: 'bpo_id,doc_id' });
 
-                        if (dbError) throw dbError;
-
-                        uploadedDocs[docId].dataUrl = publicUrl; // Use public URL for future reference
-                        uploadedDocs[docId].remark = 'Saved. Ready for AI Verification.';
                         renderAccreditationDocs();
-
-                    } catch (err) {
-                        console.error('Upload Error:', err);
-                        uploadedDocs[docId].remark = 'Upload failed. Please try again.';
-                        renderAccreditationDocs();
+                        await new Promise(r => setTimeout(r, 1000)); // Small pause for UX
                     }
-                };
-                reader.readAsDataURL(file);
-            }
-        }
 
-        async function simulateAIVerification() {
-            const msg = document.getElementById('tier1Message');
-            msg.style.display = 'block';
-            msg.className = 'message success';
-            msg.innerText = 'AI OCR Verification in progress... Scanning document structures.';
+                    closeModal('auditModal');
 
-            // Important: only verify docs that aren't already successful
-            const docsToVerify = Object.keys(uploadedDocs).filter(id => uploadedDocs[id].status !== 'success');
+                    // Check Completion
+                    if (checkTier1Passed()) {
+                        setTimeout(() => {
+                            openModal('successModal');
+                            const seal = document.getElementById('sidebarSeal');
+                            if (seal) {
+                                seal.style.display = 'block';
+                                setTimeout(() => seal.classList.add('visible'), 100);
+                            }
+                        }, 500);
+                    }
 
-            if (docsToVerify.length === 0) {
-                msg.className = 'message error';
-                msg.innerText = 'No new documents uploaded for verification.';
-                return;
+                } catch (err) {
+                    console.error('OCR Error:', err);
+                    closeModal('auditModal');
+                    alert('Audit interrupted due to a technical error. Please check your internet connection or image quality.');
+                }
             }
 
-            try {
-                const currentYear = new Date().getFullYear().toString();
-                const companyName = (bpoData.company && bpoData.company.company_name) ? bpoData.company.company_name.toUpperCase() : '';
+            function openOCRPreview(docId, source = 'tier1') {
+                const doc = uploadedDocs[docId];
+                if (!doc) return;
 
-                for (const id of docsToVerify) {
-                    const doc = uploadedDocs[id];
-                    msg.innerText = `AI Review: Analyzing ${doc.fileName}...`;
+                const modal = document.getElementById('ocrPreviewModal');
+                const img = document.getElementById('ocrPreviewImg');
+                const container = document.getElementById('ocrPreviewContainer');
+                const remark = document.getElementById('ocrPreviewRemark');
 
-                    // Run Tesseract OCR with full result
-                    const result = await Tesseract.recognize(
-                        doc.dataUrl,
-                        'eng',
-                        { logger: m => console.log(m.status + ': ' + Math.round(m.progress * 100) + '%') }
-                    );
+                img.src = doc.dataUrl;
+                remark.innerText = doc.status === 'error' ? '⚠ ' + doc.remark : '✓ Verification Details';
 
-                    const ocrText = result.data.text.toUpperCase();
-                    const words = result.data.words;
+                // Clear existing highlights
+                container.querySelectorAll('.ocr-highlight').forEach(h => h.remove());
 
-                    let passed = true;
-                    let remark = '✓ Validity Verified via AI OCR Scan';
-                    let failCoords = [];
+                // Add highlights if failed
+                if (doc.status === 'error' && doc.failCoords && doc.failCoords.length > 0) {
+                    // We need to wait for image to load to get its displayed dimensions
+                    img.onload = () => {
+                        const naturalWidth = img.naturalWidth;
+                        const naturalHeight = img.naturalHeight;
+                        const displayWidth = img.clientWidth;
+                        const displayHeight = img.clientHeight;
+                        const scaleX = displayWidth / naturalWidth;
+                        const scaleY = displayHeight / naturalHeight;
 
-                    // Document-specific verification logic
-                    switch (id) {
-                        case 'mayor':
-                            // Find years in the document
-                            const years = words.filter(w => /\b20\d{2}\b/.test(w.text));
-                            const hasCurrent = years.some(y => y.text.includes(currentYear));
-
-                            if (!hasCurrent) {
-                                passed = false;
-                                remark = `Verification failed: Document date is not current (${currentYear}).`;
-                                // If we found an old year, encircle it
-                                if (years.length > 0) {
-                                    failCoords = years.map(y => y.bbox);
-                                    remark += ` Found year ${years[0].text} instead.`;
-                                }
-                            }
-                            break;
-
-                        case 'sec':
-                            if (!ocrText.includes('SECURITIES AND EXCHANGE COMMISSION')) {
-                                passed = false;
-                                remark = 'Verification failed: SEC official headers not detected.';
-                            }
-                            break;
-
-                        case 'bir':
-                            if (!ocrText.includes('2303')) {
-                                passed = false;
-                                remark = 'Verification failed: BIR Form 2303 registration number missing.';
-                                const birWords = words.filter(w => w.text.includes('BIR') || w.text.includes('BIRTH'));
-                                failCoords = birWords.map(w => w.bbox);
-                            }
-                            break;
-
-                        default:
-                            // Generic check for readability
-                            if (ocrText.length < 50) {
-                                passed = false;
-                                remark = 'Verification failed: Document is blurry or unreadable.';
-                            }
-                    }
-
-                    // Optional Check: Company Name Match (if OCR is clear enough)
-                    if (passed && companyName && !ocrText.includes(companyName.split(' ')[0])) {
-                        console.warn(`Company name part ${companyName.split(' ')[0]} not found in OCR text. Flagged for manual audit.`);
-                        remark += ' (Pending manual name audit)';
-                    }
-
-                    uploadedDocs[id].status = passed ? 'success' : 'error';
-                    uploadedDocs[id].remark = remark;
-                    uploadedDocs[id].failCoords = failCoords; // Store for preview
-
-                    // Persist results to DB
-                    await window.supabaseClient
-                        .from('bpo_accreditation')
-                        .update({
-                            status: uploadedDocs[id].status,
-                            remark: uploadedDocs[id].remark,
-                            fail_coords: uploadedDocs[id].failCoords,
-                            updated_at: new Date().toISOString()
-                        })
-                        .match({ bpo_id: userBpoId, doc_id: id });
-
-                    renderAccreditationDocs();
+                        doc.failCoords.forEach(box => {
+                            const highlight = document.createElement('div');
+                            highlight.className = 'ocr-highlight';
+                            highlight.style.left = (box.x0 * scaleX) + 'px';
+                            highlight.style.top = (box.y0 * scaleY) + 'px';
+                            highlight.style.width = ((box.x1 - box.x0) * scaleX) + 'px';
+                            highlight.style.height = ((box.y1 - box.y0) * scaleY) + 'px';
+                            container.appendChild(highlight);
+                        });
+                    };
                 }
 
-                msg.innerText = 'AI OCR Review complete. Statutory results updated and saved.';
-            } catch (err) {
-                console.error('OCR Error:', err);
-                msg.className = 'message error';
-                msg.innerText = 'Error during OCR processing. Please check image quality.';
-            }
-        }
-
-        function openOCRPreview(docId) {
-            const doc = uploadedDocs[docId];
-            if (!doc) return;
-
-            const modal = document.getElementById('ocrPreviewModal');
-            const img = document.getElementById('ocrPreviewImg');
-            const container = document.getElementById('ocrPreviewContainer');
-            const remark = document.getElementById('ocrPreviewRemark');
-
-            img.src = doc.dataUrl;
-            remark.innerText = doc.status === 'error' ? '⚠ ' + doc.remark : '✓ Verification Details';
-
-            // Clear existing highlights
-            container.querySelectorAll('.ocr-highlight').forEach(h => h.remove());
-
-            // Add highlights if failed
-            if (doc.status === 'error' && doc.failCoords && doc.failCoords.length > 0) {
-                // We need to wait for image to load to get its displayed dimensions
-                img.onload = () => {
-                    const naturalWidth = img.naturalWidth;
-                    const naturalHeight = img.naturalHeight;
-                    const displayWidth = img.clientWidth;
-                    const displayHeight = img.clientHeight;
-                    const scaleX = displayWidth / naturalWidth;
-                    const scaleY = displayHeight / naturalHeight;
-
-                    doc.failCoords.forEach(box => {
-                        const highlight = document.createElement('div');
-                        highlight.className = 'ocr-highlight';
-                        highlight.style.left = (box.x0 * scaleX) + 'px';
-                        highlight.style.top = (box.y0 * scaleY) + 'px';
-                        highlight.style.width = ((box.x1 - box.x0) * scaleX) + 'px';
-                        highlight.style.height = ((box.y1 - box.y0) * scaleY) + 'px';
-                        container.appendChild(highlight);
-                    });
-                };
+                openModal('ocrPreviewModal');
             }
 
-            openModal('ocrPreviewModal');
-        }
+            // --- Tier 2 Validation Logic ---
+            const TIER2_CHECKLIST = [
+                { id: 'physical_security', label: 'Physical Security (CCTV, Access Control)', desc: 'Verified working CCTV in production area and access control systems.' },
+                { id: 'workstation_std', label: 'Workstation Standard (Space & Ergonomics)', desc: 'Desks and chairs meet occupational health standards for BPO workers.' },
+                { id: 'it_infra', label: 'IT Infrastructure & Server Security', desc: 'Secure server room with redundant power and backup UPS.' },
+                { id: 'data_privacy', label: 'Data Privacy & Clean Desk Policy', desc: 'Employees adhere to clean desk policy; no mobile phones in production area.' },
+                { id: 'facilities', label: 'Employee Facilities (Pantry & First Aid)', desc: 'Adequate pantry facilities and visible first aid stations.' },
+                { id: 'fire_safety', label: 'Fire Safety & Occupational Health', desc: 'Working fire extinguishers and clearly marked emergency exits.' },
+                { id: 'network_red', label: 'Network Redundancy Proof', desc: 'Dual ISP setup verified on-site.' },
+                { id: 'bcp_protocol', label: 'Business Continuity Plan (BCP)', desc: 'BCP protocols posted and employees aware of procedures.' }
+            ];
 
-        // --- Auth & Init ---
-        async function checkAuth() {
-            const { data: { session } } = await window.supabaseClient.auth.getSession();
-            if (!session) {
-                window.location.href = 'login.html?role=member';
-                return false;
+            function renderTier2Content() {
+                const container = document.getElementById('tier2Content');
+                const isTier1Passed = checkTier1Passed();
+                const t2Status = uploadedDocs['tier2_inspection'] ? uploadedDocs['tier2_inspection'].status : 'locked';
+
+                if (!isTier1Passed) {
+                    container.innerHTML = `
+                    <div class="card" style="text-align: center; padding: 60px;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">🔒</div>
+                        <h2>Tier 2: Validation</h2>
+                        <p style="color: var(--text-light); max-width: 500px; margin: 0 auto;">This tier involves formal validation of operational capabilities and physical site inspection. Available to Verified Tier 1 members only.</p>
+                    </div>
+                `;
+                    return;
+                }
+
+                if (t2Status === 'success') {
+                    container.innerHTML = `
+                    <div class="card" style="text-align: center; padding: 60px;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">🎖️</div>
+                        <h2 style="color: var(--accent);">Resolute Validated</h2>
+                        <p style="color: var(--text-light); margin-bottom: 24px;">Your physical site and operational capabilities have been verified by HIMAP.</p>
+                        <div style="display: inline-block; padding: 20px; border: 2px solid var(--accent); border-radius: 12px; background: #f0fff4;">
+                            <img src="resaward2.png" style="width: 120px; margin-bottom: 10px;">
+                            <p style="font-size: 12px; font-weight: 700; color: var(--accent); text-transform: uppercase;">Tier 2 Certificate Active</p>
+                        </div>
+                    </div>
+                `;
+                    return;
+                }
+
+                if (t2Status === 'pending_inspection') {
+                    container.innerHTML = `
+                    <div class="card">
+                        <div style="text-align: center; padding: 40px; border-bottom: 1px solid var(--border-color); margin-bottom: 30px;">
+                            <div style="font-size: 40px; margin-bottom: 15px;">🔍</div>
+                            <h2>Inspection Requested</h2>
+                            <p style="color: var(--text-light);">Expect a surprise inspection within the same month of your application.</p>
+                        </div>
+                        <div style="padding: 0 20px 40px;">
+                            <h3 style="margin-bottom: 15px;">Inspection Checklist</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 30px;">
+                                ${TIER2_CHECKLIST.map(item => `
+                                    <div style="padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 13px; color: var(--text-dark); background: #fafafa;">
+                                        🕒 ${item.label}
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div style="text-align: center; background: var(--bg-light); padding: 30px; border-radius: 12px;">
+                                <p style="font-size: 14px; color: var(--text-light); margin-bottom: 15px;">Authorized HIMAP Inspector arrived on site?</p>
+                                <button class="btn-primary" onclick="openModal('inspectorLoginModal')">Inspector Login</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                    return;
+                }
+
+                // Default: Ready to request
+                container.innerHTML = `
+                <div class="card">
+                    <div style="padding: 40px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px;">
+                            <div>
+                                <h2 style="font-size: 24px; color: var(--primary);">Tier 2 Site Validation</h2>
+                                <p style="color: var(--text-light); margin-top: 4px;">Operational capability verification & physical site assessment.</p>
+                            </div>
+                            <button class="btn-primary" onclick="handleRequestInspection()">Request Inspection</button>
+                        </div>
+
+                        <h3 style="margin-bottom: 20px; font-size: 16px;">Assessment Categories</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            ${TIER2_CHECKLIST.map(item => `
+                                <div style="display: flex; gap: 15px; padding: 15px; border: 1px solid var(--border-color); border-radius: 12px;">
+                                    <div style="font-size: 20px;">📋</div>
+                                    <div>
+                                        <h4 style="font-size: 14px; margin-bottom: 4px;">${item.label}</h4>
+                                        <p style="font-size: 12px; color: var(--text-light);">${item.desc}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
             }
 
-            const { data: profile } = await window.supabaseClient
-                .from('user_profiles')
-                .select('*')
-                .eq('user_id', session.user.id)
-                .single();
+            async function handleRequestInspection() {
+                try {
+                    // Upsert to bpo_accreditation as 'pending_inspection'
+                    const { error } = await window.supabaseClient
+                        .from('bpo_accreditation')
+                        .upsert({
+                            bpo_id: userBpoId,
+                            doc_id: 'tier2_inspection',
+                            status: 'pending_inspection',
+                            remark: 'Inspection requested by member.'
+                        }, { onConflict: 'bpo_id,doc_id' });
 
-            if (!profile || !profile.is_active || !profile.bpo_id) {
-                alert('Account inactive or not assigned to company.');
-                await window.supabaseClient.auth.signOut();
-                window.location.href = 'login.html';
-                return false;
+                    if (error) throw error;
+
+                    uploadedDocs['tier2_inspection'] = { status: 'pending_inspection', remark: 'Inspection requested.' };
+                    renderTier2Content();
+                    alert('Inspection request submitted successfully. A HIMAP inspector will visit your site this month.');
+                } catch (err) {
+                    console.error('Request Inspection Error:', err);
+                    alert('Failed to submit inspection request.');
+                }
             }
 
-            currentUser = profile;
-            userBpoId = profile.bpo_id;
-            return true;
-        }
+            async function handleInspectorLogin(e) {
+                e.preventDefault();
+                const mobile = document.getElementById('inspectorMobile').value;
+                const pass = document.getElementById('inspectorPass').value;
 
-        // --- Data Loading ---
-        async function loadAllData() {
-            try {
-                // Fetch BPO Core Data
-                const { data: company, error } = await window.supabaseClient
-                    .from('bpos')
+                try {
+                    const { data: inspector, error } = await window.supabaseClient
+                        .from('inspectors')
+                        .select('*')
+                        .eq('mobile_number', mobile)
+                        .single();
+
+                    if (error || !inspector) {
+                        alert('Invalid Inspector Credentials.');
+                        return;
+                    }
+
+                    if (inspector.password !== pass) {
+                        alert('Incorrect password.');
+                        return;
+                    }
+
+                    if (inspector.is_temporary) {
+                        document.getElementById('tempInsId').value = inspector.id;
+                        closeModal('inspectorLoginModal');
+                        openModal('inspectorPasswordModal');
+                    } else {
+                        closeModal('inspectorLoginModal');
+                        // Check if we are in Tier 2 or Tier 3 context
+                        const activeTierBtn = document.querySelector('.tier-btn.active');
+                        if (activeTierBtn && activeTierBtn.id === 'tier3Btn') {
+                            openTier3Audit();
+                        } else {
+                            openTier2Audit();
+                        }
+                    }
+                } catch (err) {
+                    console.error('Inspector Login Error:', err);
+                    alert('Connection error during inspector authentication.');
+                }
+            }
+
+            async function handleInspectorPasswordUpdate(e) {
+                e.preventDefault();
+                const newPass = document.getElementById('newInsPass').value;
+                const confirmPass = document.getElementById('confirmInsPass').value;
+                const insId = document.getElementById('tempInsId').value;
+
+                if (!newPass || newPass.length < 6) {
+                    alert('Password must be at least 6 characters.');
+                    return;
+                }
+
+                if (newPass !== confirmPass) {
+                    alert('Passwords do not match.');
+                    return;
+                }
+
+                try {
+                    const { error } = await window.supabaseClient
+                        .from('inspectors')
+                        .update({
+                            password: newPass,
+                            is_temporary: false,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', insId);
+
+                    if (error) throw error;
+
+                    alert('✓ Password updated successfully. Access verified.');
+                    closeModal('inspectorPasswordModal');
+
+                    // Check if we are in Tier 2 or Tier 3 context
+                    const activeTierBtn = document.querySelector('.tier-btn.active');
+                    if (activeTierBtn && activeTierBtn.id === 'tier3Btn') {
+                        openTier3Audit();
+                    } else {
+                        openTier2Audit();
+                    }
+                } catch (err) {
+                    console.error('Password Update Error:', err);
+                    alert('Failed to update password.');
+                }
+            }
+
+            // --- Tier 3 Certification Logic ---
+            const TIER3_DOCS = [
+                { id: 'iso_9001', name: 'ISO 9001:2015', sub: 'Quality Management System' },
+                { id: 'iso_27001', name: 'ISO 27001:2022', sub: 'Information Security Management' }
+            ];
+
+            const TIER3_AUDIT_ITEMS = [
+                { id: 'third_party_audit', label: 'Third-Party ISO Audit Verification', desc: 'Verified authenticity of ISO certificates with the issuing certification body.' },
+                { id: 'excellence_standards', label: 'HIMAP Service Excellence Standards', desc: 'Company demonstrates performance metrics consistent with global BPO benchmarks.' }
+            ];
+
+            function renderTier3Content() {
+                const container = document.getElementById('tier3Content');
+                const isTier2Passed = uploadedDocs['tier2_inspection'] && uploadedDocs['tier2_inspection'].status === 'success';
+                const t3Status = uploadedDocs['tier3_verification'] ? uploadedDocs['tier3_verification'].status : 'locked';
+
+                if (!isTier2Passed) {
+                    container.innerHTML = `
+                    <div class="card" style="text-align: center; padding: 60px;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">🔒</div>
+                        <h2>Tier 3: Certification</h2>
+                        <p style="color: var(--text-light); max-width: 500px; margin: 0 auto;">Tier 3 Certification requires ISO 9001 and ISO 27001 readiness. Available to Validated Tier 2 members only.</p>
+                    </div>
+                `;
+                    return;
+                }
+
+                if (t3Status === 'success') {
+                    container.innerHTML = `
+                    <div class="card" style="text-align: center; padding: 60px;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">🏆</div>
+                        <h2 style="color: #E5E4E2; text-shadow: 0 0 10px rgba(0,0,0,0.1);">Resolute Certified</h2>
+                        <p style="color: var(--text-light); margin-bottom: 24px;">Your company has reached the peak of HIMAP accreditation standards.</p>
+                        <div style="display: inline-block; padding: 20px; border: 2px solid #E5E4E2; border-radius: 12px; background: #fafafa;">
+                            <img src="resaward3.png" style="width: 120px; margin-bottom: 10px;">
+                            <p style="font-size: 12px; font-weight: 700; color: #7f8c8d; text-transform: uppercase;">Platinum Member</p>
+                        </div>
+                    </div>
+                `;
+                    return;
+                }
+
+                container.innerHTML = `
+                <div class="card">
+                    <div class="accreditation-header">
+                        <div>
+                            <h2>Global Excellence Certification (Tier 3)</h2>
+                            <p style="font-size: 14px; color: var(--text-light);">Upload your international certifications for final platinum verification.</p>
+                        </div>
+                    </div>
+                    
+                    <div id="tier3Message" class="message"></div>
+                    <div class="doc-list" id="tier3Docs"></div>
+                    
+                    <div style="margin-top: 30px; display: flex; gap: 20px;">
+                        <button class="btn-verify-all" onclick="simulateTier3AI()" style="flex: 1;">Run AI Certificate Check</button>
+                        ${checkTier3AIReady() ? `
+                            <button class="btn-primary" onclick="openModal('inspectorLoginModal')" style="flex: 1; background: var(--primary);">Human Auditor Login</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+                renderTier3DocsList();
+            }
+
+            function renderTier3DocsList() {
+                const container = document.getElementById('tier3Docs');
+                if (!container) return;
+
+                container.innerHTML = TIER3_DOCS.map(doc => {
+                    const state = uploadedDocs[doc.id] || { status: 'pending', remark: '' };
+                    const hasStatus = state.status !== 'pending';
+                    const isPassed = state.status === 'success';
+                    const hasThumb = !!state.dataUrl;
+
+                    return `
+                    <div class="doc-item">
+                        <div class="doc-info">
+                            <div class="doc-thumbnail-container ${hasStatus ? 'has-status' : ''}" 
+                                 onclick="${hasStatus ? `openOCRPreview('${doc.id}', 'tier3')` : `document.getElementById('file_${doc.id}').click()`}">
+                                ${hasThumb
+                            ? `<img src="${state.dataUrl}" class="doc-thumbnail">`
+                            : `<div style="padding: 20px; text-align: center; color: #999; font-size: 20px;">📄</div>`}
+                                
+                                <div class="status-overlay">
+                                    <div class="overlay-badge ${isPassed ? 'badge-passed' : 'badge-failed'}">
+                                        ${isPassed ? '✓' : '✕'}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="doc-details">
+                                <h4 style="display: flex; align-items: center; gap: 8px;">
+                                    ${doc.name}
+                                    ${isPassed ? '<span style="color: #2DD1AC; font-size: 11px;">(PASSED)</span>' : ''}
+                                    ${state.status === 'error' ? '<span style="color: #FF5252; font-size: 11px;">(FAILED)</span>' : ''}
+                                </h4>
+                                <p class="subtext">${doc.sub}</p>
+                                <div class="remark ${state.remark ? 'visible' : ''}">⚠ ${state.remark}</div>
+                            </div>
+                        </div>
+                        <div class="doc-actions">
+                            <input type="file" id="file_${doc.id}" style="display:none" onchange="handleTier3DocUpload('${doc.id}')">
+                            <button class="upload-btn" onclick="document.getElementById('file_${doc.id}').click()">
+                                ${state.status === 'pending' && !state.remark ? 'Upload' : 'Replace'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                }).join('');
+            }
+
+            async function handleTier3DocUpload(docId) {
+                // Reuse handleDocUpload logic
+                await handleDocUpload(docId);
+                renderTier3Content();
+            }
+
+            function checkTier3AIReady() {
+                return TIER3_DOCS.every(doc => uploadedDocs[doc.id] && uploadedDocs[doc.id].status === 'success');
+            }
+
+            async function simulateTier3AI() {
+                const docsToVerify = TIER3_DOCS.filter(doc => {
+                    const state = uploadedDocs[doc.id];
+                    return state && state.status !== 'success' && state.dataUrl;
+                });
+
+                if (docsToVerify.length === 0) {
+                    alert('No new ISO certificates to verify.');
+                    return;
+                }
+
+                // Prepare Audit Modal
+                document.getElementById('totalDocCount').innerText = TIER3_DOCS.length;
+                document.getElementById('passedCount').innerText = TIER3_DOCS.filter(d => uploadedDocs[d.id] && uploadedDocs[d.id].status === 'success').length;
+                openModal('auditModal');
+
+                try {
+                    for (const docInfo of docsToVerify) {
+                        const id = docInfo.id;
+                        const doc = uploadedDocs[id];
+                        document.getElementById('currentDocName').innerText = docInfo.name;
+                        document.getElementById('auditStatusMessage').innerText = `Verifying ISO Standard compliance for ${docInfo.name}...`;
+
+                        // Run OCR
+                        const result = await Tesseract.recognize(doc.dataUrl, 'eng');
+                        const ocrText = result.data.text.toUpperCase();
+
+                        let passed = true;
+                        let remark = '✓ ISO Standard Verified via AI Neural Match';
+
+                        if (id === 'iso_9001') {
+                            const currentYear = new Date().getFullYear(); // 2026
+                            const hasStandard = ocrText.includes('ISO 9001');
+
+                            // Check for validity year (2026, 2027, 2028, etc.)
+                            const yearMatch = ocrText.match(/202[6-9]|203[0-9]/);
+
+                            if (!hasStandard) {
+                                passed = false;
+                                remark = 'Verification failed: ISO 9001 markers not found.';
+                            } else if (!yearMatch) {
+                                passed = false;
+                                remark = `Verification failed: Certificate appears to be expired (no validity for ${currentYear} detected).`;
+                            } else {
+                                remark = `✓ ISO 9001 Verified (Valid until ${yearMatch[0]})`;
+                            }
+                        } else if (id === 'iso_27001') {
+                            if (!ocrText.includes('27001') || (!ocrText.includes('INFORMATION') && !ocrText.includes('SECURITY'))) {
+                                passed = false;
+                                remark = 'Verification failed: ISO 27001 markers not found.';
+                            }
+                        }
+
+                        uploadedDocs[id].status = passed ? 'success' : 'error';
+                        uploadedDocs[id].remark = remark;
+
+                        // Update DB
+                        await window.supabaseClient
+                            .from('bpo_accreditation')
+                            .upsert({
+                                bpo_id: userBpoId,
+                                doc_id: id,
+                                status: uploadedDocs[id].status,
+                                remark: uploadedDocs[id].remark,
+                                updated_at: new Date().toISOString()
+                            }, { onConflict: 'bpo_id,doc_id' });
+
+                        document.getElementById('passedCount').innerText = TIER3_DOCS.filter(d => uploadedDocs[d.id] && uploadedDocs[d.id].status === 'success').length;
+                        await new Promise(r => setTimeout(r, 1500));
+                    }
+                    closeModal('auditModal');
+                    renderTier3Content();
+                } catch (err) {
+                    console.error('Tier 3 AI Error:', err);
+                    closeModal('auditModal');
+                    alert('AI verification failed.');
+                }
+            }
+
+            function openTier3Audit() {
+                const container = document.getElementById('checklistContainer');
+                container.innerHTML = `
+                <div style="margin-bottom: 20px; padding: 15px; background: #f0f7f6; border-radius: 12px; border-left: 4px solid var(--accent);">
+                    <h4 style="font-size: 14px; color: var(--primary);">ISO Certificates Verified by AI</h4>
+                    <p style="font-size: 12px; color: var(--text-light);">Auditor must perform final verification of physical originals.</p>
+                </div>
+            ` + TIER3_AUDIT_ITEMS.map(item => `
+                <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; border: 1px solid #e9ecef;">
+                    <input type="checkbox" id="check_${item.id}" class="inspector-check" style="width: 20px; height: 20px; cursor: pointer;">
+                    <div style="flex-grow: 1;">
+                        <h4 style="font-size: 14px; margin: 0; color: var(--primary);">${item.label}</h4>
+                        <p style="font-size: 12px; margin: 2px 0 0; color: var(--text-light);">${item.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+
+                // Change modal button action
+                const btn = document.querySelector('#tier2AuditModal .btn-primary');
+                btn.setAttribute('onclick', 'submitTier3Assessment()');
+                btn.innerText = 'Approve Platinum Certification';
+
+                openModal('tier2AuditModal');
+            }
+
+            async function submitTier3Assessment() {
+                const checks = document.querySelectorAll('.inspector-check');
+                const allChecked = Array.from(checks).every(c => c.checked);
+
+                if (!allChecked) {
+                    alert('All criteria must be verified to grant Tier 3 Certification.');
+                    return;
+                }
+                try {
+                    const { error } = await window.supabaseClient
+                        .from('bpo_accreditation')
+                        .upsert({
+                            bpo_id: userBpoId,
+                            doc_id: 'tier3_verification',
+                            status: 'success',
+                            remark: 'HIMAP Platinum Certification Granted by Auditor.',
+                            updated_at: new Date().toISOString()
+                        }, { onConflict: 'bpo_id,doc_id' });
+
+                    if (error) throw error;
+
+                    uploadedDocs['tier3_verification'] = { status: 'success', remark: 'Passed' };
+                    closeModal('tier2AuditModal');
+                    renderTier3Content();
+                    openModal('successTier3Modal');
+
+                    const seal3 = document.getElementById('sidebarSeal3');
+                    if (seal3) {
+                        seal3.style.display = 'block';
+                        setTimeout(() => seal3.classList.add('visible'), 100);
+                    }
+                } catch (err) {
+                    console.error('T3 Submission Error:', err);
+                    alert('Failed to grant certification.');
+                }
+            }
+
+            function openTier2Audit() {
+                // Reset button action in case it was changed by Tier 3
+                const btn = document.querySelector('#tier2AuditModal .btn-primary');
+                btn.setAttribute('onclick', 'submitTier2Assessment()');
+                btn.innerText = 'Complete Assessment';
+
+                const container = document.getElementById('checklistContainer');
+                container.innerHTML = TIER2_CHECKLIST.map(item => `
+                <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; border: 1px solid #e9ecef;">
+                    <input type="checkbox" id="check_${item.id}" class="inspector-check" style="width: 20px; height: 20px; cursor: pointer;">
+                    <div style="flex-grow: 1;">
+                        <h4 style="font-size: 14px; margin: 0; color: var(--primary);">${item.label}</h4>
+                        <p style="font-size: 12px; margin: 2px 0 0; color: var(--text-light);">${item.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+                openModal('tier2AuditModal');
+            }
+
+            async function submitTier2Assessment() {
+                const checks = document.querySelectorAll('.inspector-check');
+                const allChecked = Array.from(checks).every(c => c.checked);
+
+                if (!allChecked) {
+                    alert('All checklist items must be verified and checked to pass Tier 2.');
+                    return;
+                }
+
+                try {
+                    // Update Supabase
+                    const { error } = await window.supabaseClient
+                        .from('bpo_accreditation')
+                        .upsert({
+                            bpo_id: userBpoId,
+                            doc_id: 'tier2_inspection',
+                            status: 'success',
+                            remark: 'Passed physical site inspection by authorized inspector.',
+                            updated_at: new Date().toISOString()
+                        }, { onConflict: 'bpo_id,doc_id' });
+
+                    if (error) throw error;
+
+                    uploadedDocs['tier2_inspection'] = { status: 'success', remark: 'Passed' };
+                    closeModal('tier2AuditModal');
+
+                    // Show Success Flow
+                    renderTier2Content();
+                    openModal('successTier2Modal');
+
+                    const seal2 = document.getElementById('sidebarSeal2');
+                    if (seal2) {
+                        seal2.style.display = 'block';
+                        setTimeout(() => seal2.classList.add('visible'), 100);
+                    }
+                } catch (err) {
+                    console.error('Assessment Submission Error:', err);
+                    alert('Critical error saving assessment.');
+                }
+            }
+
+            // --- Auth & Init ---
+            async function checkAuth() {
+                const { data: { session } } = await window.supabaseClient.auth.getSession();
+                if (!session) {
+                    window.location.href = 'login.html?role=member';
+                    return false;
+                }
+
+                const { data: profile } = await window.supabaseClient
+                    .from('user_profiles')
                     .select('*')
-                    .eq('id', userBpoId)
+                    .eq('user_id', session.user.id)
                     .single();
 
-                if (error) throw error;
-                bpoData.company = company;
+                if (!profile || !profile.is_active || !profile.bpo_id) {
+                    alert('Account inactive or not assigned to company.');
+                    await window.supabaseClient.auth.signOut();
+                    window.location.href = 'login.html';
+                    return false;
+                }
 
-                // Parallel Fetch for Related Tables
-                const [
-                    { data: services },
-                    { data: operations },
-                    { data: clients },
-                    { data: locations },
-                    { data: personnel },
-                    { data: certifications },
-                    { data: technology },
-                    { data: media },
-                    { data: accreditation }
-                ] = await Promise.all([
-                    window.supabaseClient.from('bpo_services').select('*').eq('bpo_id', userBpoId),
-                    window.supabaseClient.from('bpo_operations').select('*').eq('bpo_id', userBpoId).single(),
-                    window.supabaseClient.from('bpo_clients_profile').select('*').eq('bpo_id', userBpoId).single(),
-                    window.supabaseClient.from('bpo_locations').select('*').eq('bpo_id', userBpoId),
-                    window.supabaseClient.from('bpo_personnel').select('*').eq('bpo_id', userBpoId),
-                    window.supabaseClient.from('bpo_certifications').select('*').eq('bpo_id', userBpoId),
-                    window.supabaseClient.from('bpo_technology').select('*').eq('bpo_id', userBpoId),
-                    window.supabaseClient.from('bpo_media').select('*').eq('bpo_id', userBpoId),
-                    window.supabaseClient.from('bpo_accreditation').select('*').eq('bpo_id', userBpoId)
-                ]);
-
-                bpoData.services = services || [];
-                bpoData.operations = operations || {};
-                bpoData.clients = clients || {};
-                bpoData.locations = locations || [];
-                bpoData.personnel = personnel || [];
-                bpoData.certifications = certifications || [];
-                bpoData.technology = technology || [];
-                bpoData.media = media || [];
-                bpoData.accreditation = accreditation || [];
-
-                populateUI();
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('content').style.display = 'block';
-
-            } catch (error) {
-                console.error('Error loading data:', error);
-                alert('Failed to load dashboard data.');
-            }
-        }
-
-        function populateUI() {
-            const c = bpoData.company;
-
-            // Determine Company Type for Accreditation
-            companyType = (c.ownership_type && c.ownership_type.toLowerCase().includes('sole')) ? 'sole_prop' : 'corporation';
-
-            // Populate uploadedDocs from DB
-            uploadedDocs = {};
-            if (bpoData.accreditation) {
-                bpoData.accreditation.forEach(row => {
-                    uploadedDocs[row.doc_id] = {
-                        status: row.status,
-                        remark: row.remark,
-                        dataUrl: row.file_url, // Use saved URL as dataUrl
-                        failCoords: row.fail_coords || []
-                    };
-                });
+                currentUser = profile;
+                userBpoId = profile.bpo_id;
+                return true;
             }
 
-            // Header
-            document.getElementById('companyName').textContent = c.company_name;
-            document.getElementById('viewPublicLink').href = `member-detail.html?id=${c.id}`;
-            document.getElementById('viewPublicLink').style.display = 'inline-block';
+            // --- Data Loading ---
+            async function loadAllData() {
+                try {
+                    // Fetch BPO Core Data
+                    const { data: company, error } = await window.supabaseClient
+                        .from('bpos')
+                        .select('*')
+                        .eq('id', userBpoId)
+                        .single();
 
-            // Tab 1: Overview
-            document.getElementById('companyNameInput').value = c.company_name || '';
-            document.getElementById('tradeName').value = c.trade_name || '';
-            document.getElementById('description').value = c.company_description || '';
-            document.getElementById('website').value = c.website_url || '';
-            document.getElementById('linkedin').value = c.linkedin_url || '';
-            document.getElementById('contactEmail').value = c.email || '';
-            document.getElementById('phone').value = c.contact_number || '';
-            document.getElementById('messenger').value = c.messenger_handle || '';
-            document.getElementById('whatsapp').value = c.whatsapp_number || '';
-            document.getElementById('viber').value = c.viber_number || '';
-            document.getElementById('telegram').value = c.telegram_username || '';
-            document.getElementById('facebook').value = c.facebook_handle || '';
-            document.getElementById('instagram').value = c.instagram_handle || '';
-            document.getElementById('yearEstablished').value = c.year_established || '';
+                    if (error) throw error;
+                    bpoData.company = company;
 
-            // Logo
-            const logo = bpoData.media.find(m => m.media_type === 'logo');
-            if (logo) {
-                document.getElementById('logoPreview').src = logo.media_url || logo.file_url; // Handle both column names if unsure
-                document.getElementById('logoPreview').style.display = 'block';
-                document.getElementById('uploadText').style.display = 'none';
+                    // Parallel Fetch for Related Tables
+                    const [
+                        { data: services },
+                        { data: operations },
+                        { data: clients },
+                        { data: locations },
+                        { data: personnel },
+                        { data: certifications },
+                        { data: technology },
+                        { data: media },
+                        { data: accreditation }
+                    ] = await Promise.all([
+                        window.supabaseClient.from('bpo_services').select('*').eq('bpo_id', userBpoId),
+                        window.supabaseClient.from('bpo_operations').select('*').eq('bpo_id', userBpoId).single(),
+                        window.supabaseClient.from('bpo_clients_profile').select('*').eq('bpo_id', userBpoId).single(),
+                        window.supabaseClient.from('bpo_locations').select('*').eq('bpo_id', userBpoId),
+                        window.supabaseClient.from('bpo_personnel').select('*').eq('bpo_id', userBpoId),
+                        window.supabaseClient.from('bpo_certifications').select('*').eq('bpo_id', userBpoId),
+                        window.supabaseClient.from('bpo_technology').select('*').eq('bpo_id', userBpoId),
+                        window.supabaseClient.from('bpo_media').select('*').eq('bpo_id', userBpoId),
+                        window.supabaseClient.from('bpo_accreditation').select('*').eq('bpo_id', userBpoId)
+                    ]);
+
+                    bpoData.services = services || [];
+                    bpoData.operations = operations || {};
+                    bpoData.clients = clients || {};
+                    bpoData.locations = locations || [];
+                    bpoData.personnel = personnel || [];
+                    bpoData.certifications = certifications || [];
+                    bpoData.technology = technology || [];
+                    bpoData.media = media || [];
+                    bpoData.accreditation = accreditation || [];
+
+                    populateUI();
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('content').style.display = 'flex';
+
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    alert('Failed to load dashboard data.');
+                }
             }
 
-            // Tab 2: Services
-            renderList('servicesList', bpoData.services, (item) => `
+            function populateUI() {
+                const c = bpoData.company;
+
+                // Determine Company Type for Accreditation
+                companyType = (c.ownership_type && c.ownership_type.toLowerCase().includes('sole')) ? 'sole_prop' : 'corporation';
+
+                // Populate uploadedDocs from DB
+                uploadedDocs = {};
+                if (bpoData.accreditation) {
+                    bpoData.accreditation.forEach(row => {
+                        uploadedDocs[row.doc_id] = {
+                            status: row.status,
+                            remark: row.remark,
+                            dataUrl: row.file_url, // Use saved URL as dataUrl
+                            failCoords: row.fail_coords || []
+                        };
+                    });
+                }
+
+                // Header
+                document.getElementById('companyName').textContent = c.company_name;
+                document.getElementById('viewPublicLink').href = `member-detail.html?id=${c.id}`;
+                document.getElementById('viewPublicLink').style.display = 'inline-block';
+
+                // Accreditation Status & Seal
+                if (bpoData.accreditation && uploadedDocs) {
+                    // Tier 1 logic
+                    const t1Passed = checkTier1Passed();
+                    if (t1Passed) {
+                        const seal = document.getElementById('sidebarSeal');
+                        if (seal) {
+                            seal.style.display = 'block';
+                            setTimeout(() => seal.classList.add('visible'), 100);
+                        }
+                    }
+
+                    // Tier 3 logic
+                    const t3Passed = uploadedDocs['tier3_verification'] && uploadedDocs['tier3_verification'].status === 'success';
+                    if (t3Passed) {
+                        const seal3 = document.getElementById('sidebarSeal3');
+                        if (seal3) {
+                            seal3.style.display = 'block';
+                            setTimeout(() => seal3.classList.add('visible'), 100);
+                        }
+                    }
+
+                    // Tier 2 logic
+                    const t2Passed = uploadedDocs['tier2_inspection'] && uploadedDocs['tier2_inspection'].status === 'success';
+                    if (t2Passed) {
+                        const seal2 = document.getElementById('sidebarSeal2');
+                        if (seal2) {
+                            seal2.style.display = 'block';
+                            setTimeout(() => seal2.classList.add('visible'), 100);
+                        }
+                    }
+                }
+
+                // Tab 1: Overview
+                document.getElementById('companyNameInput').value = c.company_name || '';
+                document.getElementById('tradeName').value = c.trade_name || '';
+                document.getElementById('description').value = c.company_description || '';
+                document.getElementById('website').value = c.website_url || '';
+                document.getElementById('linkedin').value = c.linkedin_url || '';
+                document.getElementById('contactEmail').value = c.email || '';
+                document.getElementById('phone').value = c.contact_number || '';
+                document.getElementById('messenger').value = c.messenger_handle || '';
+                document.getElementById('whatsapp').value = c.whatsapp_number || '';
+                document.getElementById('viber').value = c.viber_number || '';
+                document.getElementById('telegram').value = c.telegram_username || '';
+                document.getElementById('facebook').value = c.facebook_handle || '';
+                document.getElementById('instagram').value = c.instagram_handle || '';
+                document.getElementById('yearEstablished').value = c.year_established || '';
+
+                // Logo
+                const logo = bpoData.media.find(m => m.media_type === 'logo');
+                if (logo) {
+                    document.getElementById('logoPreview').src = logo.media_url || logo.file_url; // Handle both column names if unsure
+                    document.getElementById('logoPreview').style.display = 'block';
+                    document.getElementById('uploadText').style.display = 'none';
+                }
+
+                // Tab 2: Services
+                renderList('servicesList', bpoData.services, (item) => `
                 <div class="item-details">
                     <h4>${item.service_name} ${item.is_primary_service ? '(Primary)' : ''}</h4>
                     <p>${item.service_category}</p>
@@ -2103,36 +3099,36 @@
                 <button class="btn-danger" onclick="deleteItem('bpo_services', '${item.id}')">Remove</button>
             `);
 
-            // Tab 3: Operations
-            const ops = bpoData.operations;
-            document.getElementById('totalEmployees').value = c.total_employees || ''; // Usually in BPOs table
-            document.getElementById('healthcareFTEs').value = c.healthcare_fte_count || '';
-            if (ops) {
-                document.getElementById('deliveryModel').value = ops.delivery_model || 'Onsite';
-                document.getElementById('workShifts').value = ops.work_shifts || '';
-                document.getElementById('compliance').value = ops.compliance_frameworks || '';
-                document.getElementById('ehrSystems').value = ops.ehr_systems_supported || '';
-            }
+                // Tab 3: Operations
+                const ops = bpoData.operations;
+                document.getElementById('totalEmployees').value = c.total_employees || ''; // Usually in BPOs table
+                document.getElementById('healthcareFTEs').value = c.healthcare_fte_count || '';
+                if (ops) {
+                    document.getElementById('deliveryModel').value = ops.delivery_model || 'Onsite';
+                    document.getElementById('workShifts').value = ops.work_shifts || '';
+                    document.getElementById('compliance').value = ops.compliance_frameworks || '';
+                    document.getElementById('ehrSystems').value = ops.ehr_systems_supported || '';
+                }
 
-            // Tab 3.5: Clients Profile
-            const cp = bpoData.clients;
-            if (cp) {
-                document.getElementById('activeClients').value = cp.no_of_active_clients || '';
-                document.getElementById('yearsHealthcare').value = cp.years_serving_healthcare || '';
-                document.getElementById('targetMarket').value = cp.target_market || '';
-                document.getElementById('clientTypes').value = cp.client_types || '';
-                document.getElementById('avgClientSize').value = cp.average_client_size || '';
-                document.getElementById('largestClientType').value = cp.largest_client_type || '';
-            }
+                // Tab 3.5: Clients Profile
+                const cp = bpoData.clients;
+                if (cp) {
+                    document.getElementById('activeClients').value = cp.no_of_active_clients || '';
+                    document.getElementById('yearsHealthcare').value = cp.years_serving_healthcare || '';
+                    document.getElementById('targetMarket').value = cp.target_market || '';
+                    document.getElementById('clientTypes').value = cp.client_types || '';
+                    document.getElementById('avgClientSize').value = cp.average_client_size || '';
+                    document.getElementById('largestClientType').value = cp.largest_client_type || '';
+                }
 
 
-            // Tab 4: Locations (HQ + Others)
-            document.getElementById('address').value = c.headquarters_address || '';
-            document.getElementById('city').value = c.city || '';
-            // document.getElementById('region').value = c.province || ''; // Region/Province
-            // document.getElementById('zip').value = ''; // Zip not always used
+                // Tab 4: Locations (HQ + Others)
+                document.getElementById('address').value = c.headquarters_address || '';
+                document.getElementById('city').value = c.city || '';
+                // document.getElementById('region').value = c.province || ''; // Region/Province
+                // document.getElementById('zip').value = ''; // Zip not always used
 
-            renderList('locationsList', bpoData.locations, (item) => `
+                renderList('locationsList', bpoData.locations, (item) => `
                 <div class="item-details">
                     <h4>${item.location_name}</h4>
                     <p>${item.city}, ${item.province || ''}</p>
@@ -2140,8 +3136,8 @@
                 <button class="btn-danger" onclick="deleteItem('bpo_locations', '${item.id}')">Remove</button>
             `);
 
-            // Tab 5: Team
-            renderList('teamList', bpoData.personnel, (item) => `
+                // Tab 5: Team
+                renderList('teamList', bpoData.personnel, (item) => `
                 <div class="item-details">
                     <h4>${item.full_name} ${item.is_executive ? '(Exec)' : ''}</h4>
                     <p>${item.position_title}</p>
@@ -2149,8 +3145,8 @@
                 <button class="btn-danger" onclick="deleteItem('bpo_personnel', '${item.id}')">Remove</button>
             `);
 
-            // Tab 6: Certifications
-            renderList('certList', bpoData.certifications, (item) => `
+                // Tab 6: Certifications
+                renderList('certList', bpoData.certifications, (item) => `
                 <div class="item-details">
                     <h4>${item.certification_name}</h4>
                     <p>Issuer: ${item.issuing_body || 'N/A'}</p>
@@ -2158,319 +3154,319 @@
                 <button class="btn-danger" onclick="deleteItem('bpo_certifications', '${item.id}')">Remove</button>
             `);
 
-            // Tab 7: Technology
-            renderList('techList', bpoData.technology, (item) => `
+                // Tab 7: Technology
+                renderList('techList', bpoData.technology, (item) => `
                 <div class="item-details">
                     <h4>${item.system_name}</h4>
                     <p>${item.system_type || ''}</p>
                 </div>
                 <button class="btn-danger" onclick="deleteItem('bpo_technology', '${item.id}')">Remove</button>
             `);
-        }
-
-        // --- Helper for Lists ---
-        function renderList(elementId, items, templateFn) {
-            const container = document.getElementById(elementId);
-            container.innerHTML = '';
-            if (!items || items.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: var(--text-light);">No items listed.</p>';
-                return;
             }
-            items.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'list-item';
-                div.innerHTML = templateFn(item);
-                container.appendChild(div);
-            });
-        }
 
-        // --- Save Functions ---
-
-        // Save Basic Info
-        document.getElementById('basicForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await updateTable('bpos', userBpoId, {
-                company_name: document.getElementById('companyNameInput').value,
-                trade_name: document.getElementById('tradeName').value,
-                company_description: document.getElementById('description').value,
-                website_url: document.getElementById('website').value,
-                linkedin_url: document.getElementById('linkedin').value,
-                email: document.getElementById('contactEmail').value,
-                contact_number: document.getElementById('phone').value,
-                messenger_handle: document.getElementById('messenger').value,
-                whatsapp_number: document.getElementById('whatsapp').value,
-                viber_number: document.getElementById('viber').value,
-                telegram_username: document.getElementById('telegram').value,
-                facebook_handle: document.getElementById('facebook').value,
-                instagram_handle: document.getElementById('instagram').value,
-                year_established: document.getElementById('yearEstablished').value || null
-            }, 'basicMessage');
-        });
-
-        // Save HQ
-        document.getElementById('hqForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await updateTable('bpos', userBpoId, {
-                headquarters_address: document.getElementById('address').value,
-                city: document.getElementById('city').value,
-                // province: document.getElementById('region').value
-            }, 'hqMessage');
-        });
-
-        // Save Operations
-        // Save Operations
-        document.getElementById('opsForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            // 1. Update Core Stats (in bpos table)
-            await window.supabaseClient.from('bpos').update({
-                total_employees: document.getElementById('totalEmployees').value || null,
-                healthcare_fte_count: document.getElementById('healthcareFTEs').value || null,
-            }).eq('id', userBpoId);
-
-            // 2. Update/Insert Operations Details
-            const opsData = {
-                bpo_id: userBpoId,
-                delivery_model: document.getElementById('deliveryModel').value,
-                work_shifts: document.getElementById('workShifts').value,
-                compliance_frameworks: document.getElementById('compliance').value,
-                ehr_systems_supported: document.getElementById('ehrSystems').value
-            };
-
-            let { error } = await window.supabaseClient.from('bpo_operations').upsert(opsData, { onConflict: 'bpo_id' });
-
-            showMessage('opsMessage', error ? 'error' : 'success', error ? error.message : 'Operations data saved!');
-        });
-
-        // Save Client Profile
-        document.getElementById('clientForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const clientData = {
-                bpo_id: userBpoId,
-                target_market: document.getElementById('targetMarket').value,
-                client_types: document.getElementById('clientTypes').value,
-                average_client_size: document.getElementById('avgClientSize').value,
-                no_of_active_clients: document.getElementById('activeClients').value || null,
-                largest_client_type: document.getElementById('largestClientType').value,
-                years_serving_healthcare: document.getElementById('yearsHealthcare').value || null
-            };
-
-            const { error } = await window.supabaseClient.from('bpo_clients_profile').upsert(clientData, { onConflict: 'bpo_id' });
-
-            showMessage('clientMessage', error ? 'error' : 'success', error ? error.message : 'Client profile saved!');
-        });
-
-
-        // --- Generic Update Helper ---
-        async function updateTable(table, id, data, messageId) {
-            const msg = document.getElementById(messageId);
-            msg.style.display = 'none';
-
-            try {
-                const { error } = await window.supabaseClient.from(table).update(data).eq('id', id);
-                if (error) throw error;
-                showMessage(messageId, 'success', 'Changes saved successfully!');
-            } catch (err) {
-                console.error(err);
-                showMessage(messageId, 'error', err.message || 'Failed to save');
-            }
-        }
-
-        function showMessage(id, type, text) {
-            const el = document.getElementById(id);
-            el.className = `message ${type}`;
-            el.textContent = text;
-            el.style.display = 'block';
-            setTimeout(() => el.style.display = 'none', 3000);
-        }
-
-        // --- List Management (Add/Delete) ---
-
-        async function deleteItem(table, id) {
-            if (!confirm('Are you sure you want to remove this item?')) return;
-
-            try {
-                const { error } = await window.supabaseClient.from(table).delete().eq('id', id);
-                if (error) throw error;
-                loadAllData(); // Reload to refresh list
-            } catch (err) {
-                alert('Error removing item: ' + err.message);
-            }
-        }
-
-        // --- Modals ---
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-        // Add Service
-        document.getElementById('serviceForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await addItem('bpo_services', {
-                bpo_id: userBpoId,
-                service_name: document.getElementById('serviceName').value,
-                service_category: document.getElementById('serviceCategory').value,
-                description: document.getElementById('serviceDesc').value,
-                tools_used: document.getElementById('serviceTools').value,
-                is_primary_service: document.getElementById('servicePrimary').checked
-            }, 'serviceModal');
-        });
-
-        // Add Location
-        document.getElementById('locationFormModal').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await addItem('bpo_locations', {
-                bpo_id: userBpoId,
-                location_name: document.getElementById('locName').value,
-                address: document.getElementById('locAddress').value,
-                city: document.getElementById('locCity').value,
-                province: document.getElementById('locProvince').value,
-                headcount: document.getElementById('locHeadcount').value || null
-            }, 'locationModal');
-        });
-
-        // Add Team
-        document.getElementById('teamForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await addItem('bpo_personnel', {
-                bpo_id: userBpoId,
-                full_name: document.getElementById('teamName').value,
-                position_title: document.getElementById('teamTitle').value,
-                bio: document.getElementById('teamBio').value,
-                photo_url: document.getElementById('teamPhoto').value,
-                linkedin_profile: document.getElementById('teamLinkedIn').value,
-                is_executive: document.getElementById('teamExec').checked
-            }, 'teamModal');
-        });
-
-        // Add Cert
-        document.getElementById('certForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await addItem('bpo_certifications', {
-                bpo_id: userBpoId,
-                certification_name: document.getElementById('certName').value,
-                issuing_body: document.getElementById('certIssuer').value,
-                valid_until: document.getElementById('certDate').value || null
-            }, 'certModal');
-        });
-
-        // Add Tech
-        document.getElementById('techForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await addItem('bpo_technology', {
-                bpo_id: userBpoId,
-                system_name: document.getElementById('techName').value,
-                system_type: document.getElementById('techType').value,
-                version: document.getElementById('techVersion').value,
-                notes: document.getElementById('techNotes').value
-            }, 'techModal');
-        });
-
-        async function addItem(table, data, modalId) {
-            try {
-                const { error } = await window.supabaseClient.from(table).insert(data);
-                if (error) throw error;
-                closeModal(modalId);
-                loadAllData(); // Refresh info
-                document.getElementById(modalId).querySelector('form').reset();
-            } catch (err) {
-                alert('Error adding item: ' + err.message);
-            }
-        }
-
-        // --- Logo Upload ---
-        document.getElementById('logoFile').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            // Preview
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById('logoPreview').src = e.target.result;
-                document.getElementById('logoPreview').style.display = 'block';
-                document.getElementById('uploadText').style.display = 'none';
-                document.getElementById('uploadBtn').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        });
-
-        document.getElementById('uploadBtn').addEventListener('click', async () => {
-            const file = document.getElementById('logoFile').files[0];
-            if (!file) return;
-
-            try {
-                const filename = `${userBpoId}-logo-${Date.now()}.${file.name.split('.').pop()}`;
-                const { error: upErr } = await window.supabaseClient.storage
-                    .from('bpo-assets')
-                    .upload(`logos/${filename}`, file);
-
-                if (upErr) throw upErr;
-
-                const { data: urlData } = window.supabaseClient.storage
-                    .from('bpo-assets')
-                    .getPublicUrl(`logos/${filename}`);
-
-                // Save to DB
-                const { error: dbErr } = await window.supabaseClient
-                    .from('bpo_media')
-                    .upsert({
-                        bpo_id: userBpoId,
-                        media_type: 'logo',
-                        file_url: urlData.publicUrl,
-                        is_primary: true
-                    }, { onConflict: 'bpo_id, media_type' });
-
-                if (dbErr) throw dbErr;
-
-                showMessage('logoMessage', 'success', 'Logo uploaded!');
-                document.getElementById('uploadBtn').style.display = 'none';
-
-            } catch (err) {
-                showMessage('logoMessage', 'error', err.message);
-            }
-        });
-
-        // --- Questionnaire Logic ---
-        async function loadQuestionnaire() {
-            const list = document.getElementById('memberQuestionnaireList');
-            list.innerHTML = '<div class="loading">Loading questions...</div>';
-
-            try {
-                // Fetch questions and options
-                const { data: questions, error: qError } = await window.supabaseClient
-                    .from('questionnaire_questions')
-                    .select('*, questionnaire_options(*)')
-                    .eq('is_active', true)
-                    .order('display_order');
-
-                if (qError) throw qError;
-
-                // Fetch current member's responses
-                const { data: responses, error: rError } = await window.supabaseClient
-                    .from('member_questionnaire_responses')
-                    .select('question_id, option_id')
-                    .eq('bpo_id', userBpoId);
-
-                if (rError) throw rError;
-
-                const responseMap = {};
-                responses.forEach(r => {
-                    if (!responseMap[r.question_id]) responseMap[r.question_id] = new Set();
-                    responseMap[r.question_id].add(r.option_id);
-                });
-
-                if (!questions || questions.length === 0) {
-                    list.innerHTML = '<p>No questionnaire available at this time.</p>';
+            // --- Helper for Lists ---
+            function renderList(elementId, items, templateFn) {
+                const container = document.getElementById(elementId);
+                container.innerHTML = '';
+                if (!items || items.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: var(--text-light);">No items listed.</p>';
                     return;
                 }
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'list-item';
+                    div.innerHTML = templateFn(item);
+                    container.appendChild(div);
+                });
+            }
 
-                list.innerHTML = questions.map(q => `
+            // --- Save Functions ---
+
+            // Save Basic Info
+            document.getElementById('basicForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updateTable('bpos', userBpoId, {
+                    company_name: document.getElementById('companyNameInput').value,
+                    trade_name: document.getElementById('tradeName').value,
+                    company_description: document.getElementById('description').value,
+                    website_url: document.getElementById('website').value,
+                    linkedin_url: document.getElementById('linkedin').value,
+                    email: document.getElementById('contactEmail').value,
+                    contact_number: document.getElementById('phone').value,
+                    messenger_handle: document.getElementById('messenger').value,
+                    whatsapp_number: document.getElementById('whatsapp').value,
+                    viber_number: document.getElementById('viber').value,
+                    telegram_username: document.getElementById('telegram').value,
+                    facebook_handle: document.getElementById('facebook').value,
+                    instagram_handle: document.getElementById('instagram').value,
+                    year_established: document.getElementById('yearEstablished').value || null
+                }, 'basicMessage');
+            });
+
+            // Save HQ
+            document.getElementById('hqForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updateTable('bpos', userBpoId, {
+                    headquarters_address: document.getElementById('address').value,
+                    city: document.getElementById('city').value,
+                    // province: document.getElementById('region').value
+                }, 'hqMessage');
+            });
+
+            // Save Operations
+            // Save Operations
+            document.getElementById('opsForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // 1. Update Core Stats (in bpos table)
+                await window.supabaseClient.from('bpos').update({
+                    total_employees: document.getElementById('totalEmployees').value || null,
+                    healthcare_fte_count: document.getElementById('healthcareFTEs').value || null,
+                }).eq('id', userBpoId);
+
+                // 2. Update/Insert Operations Details
+                const opsData = {
+                    bpo_id: userBpoId,
+                    delivery_model: document.getElementById('deliveryModel').value,
+                    work_shifts: document.getElementById('workShifts').value,
+                    compliance_frameworks: document.getElementById('compliance').value,
+                    ehr_systems_supported: document.getElementById('ehrSystems').value
+                };
+
+                let { error } = await window.supabaseClient.from('bpo_operations').upsert(opsData, { onConflict: 'bpo_id' });
+
+                showMessage('opsMessage', error ? 'error' : 'success', error ? error.message : 'Operations data saved!');
+            });
+
+            // Save Client Profile
+            document.getElementById('clientForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const clientData = {
+                    bpo_id: userBpoId,
+                    target_market: document.getElementById('targetMarket').value,
+                    client_types: document.getElementById('clientTypes').value,
+                    average_client_size: document.getElementById('avgClientSize').value,
+                    no_of_active_clients: document.getElementById('activeClients').value || null,
+                    largest_client_type: document.getElementById('largestClientType').value,
+                    years_serving_healthcare: document.getElementById('yearsHealthcare').value || null
+                };
+
+                const { error } = await window.supabaseClient.from('bpo_clients_profile').upsert(clientData, { onConflict: 'bpo_id' });
+
+                showMessage('clientMessage', error ? 'error' : 'success', error ? error.message : 'Client profile saved!');
+            });
+
+
+            // --- Generic Update Helper ---
+            async function updateTable(table, id, data, messageId) {
+                const msg = document.getElementById(messageId);
+                msg.style.display = 'none';
+
+                try {
+                    const { error } = await window.supabaseClient.from(table).update(data).eq('id', id);
+                    if (error) throw error;
+                    showMessage(messageId, 'success', 'Changes saved successfully!');
+                } catch (err) {
+                    console.error(err);
+                    showMessage(messageId, 'error', err.message || 'Failed to save');
+                }
+            }
+
+            function showMessage(id, type, text) {
+                const el = document.getElementById(id);
+                el.className = `message ${type}`;
+                el.textContent = text;
+                el.style.display = 'block';
+                setTimeout(() => el.style.display = 'none', 3000);
+            }
+
+            // --- List Management (Add/Delete) ---
+
+            async function deleteItem(table, id) {
+                if (!confirm('Are you sure you want to remove this item?')) return;
+
+                try {
+                    const { error } = await window.supabaseClient.from(table).delete().eq('id', id);
+                    if (error) throw error;
+                    loadAllData(); // Reload to refresh list
+                } catch (err) {
+                    alert('Error removing item: ' + err.message);
+                }
+            }
+
+            // --- Modals ---
+            function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+            function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+            // Add Service
+            document.getElementById('serviceForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await addItem('bpo_services', {
+                    bpo_id: userBpoId,
+                    service_name: document.getElementById('serviceName').value,
+                    service_category: document.getElementById('serviceCategory').value,
+                    description: document.getElementById('serviceDesc').value,
+                    tools_used: document.getElementById('serviceTools').value,
+                    is_primary_service: document.getElementById('servicePrimary').checked
+                }, 'serviceModal');
+            });
+
+            // Add Location
+            document.getElementById('locationFormModal').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await addItem('bpo_locations', {
+                    bpo_id: userBpoId,
+                    location_name: document.getElementById('locName').value,
+                    address: document.getElementById('locAddress').value,
+                    city: document.getElementById('locCity').value,
+                    province: document.getElementById('locProvince').value,
+                    headcount: document.getElementById('locHeadcount').value || null
+                }, 'locationModal');
+            });
+
+            // Add Team
+            document.getElementById('teamForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await addItem('bpo_personnel', {
+                    bpo_id: userBpoId,
+                    full_name: document.getElementById('teamName').value,
+                    position_title: document.getElementById('teamTitle').value,
+                    bio: document.getElementById('teamBio').value,
+                    photo_url: document.getElementById('teamPhoto').value,
+                    linkedin_profile: document.getElementById('teamLinkedIn').value,
+                    is_executive: document.getElementById('teamExec').checked
+                }, 'teamModal');
+            });
+
+            // Add Cert
+            document.getElementById('certForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await addItem('bpo_certifications', {
+                    bpo_id: userBpoId,
+                    certification_name: document.getElementById('certName').value,
+                    issuing_body: document.getElementById('certIssuer').value,
+                    valid_until: document.getElementById('certDate').value || null
+                }, 'certModal');
+            });
+
+            // Add Tech
+            document.getElementById('techForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await addItem('bpo_technology', {
+                    bpo_id: userBpoId,
+                    system_name: document.getElementById('techName').value,
+                    system_type: document.getElementById('techType').value,
+                    version: document.getElementById('techVersion').value,
+                    notes: document.getElementById('techNotes').value
+                }, 'techModal');
+            });
+
+            async function addItem(table, data, modalId) {
+                try {
+                    const { error } = await window.supabaseClient.from(table).insert(data);
+                    if (error) throw error;
+                    closeModal(modalId);
+                    loadAllData(); // Refresh info
+                    document.getElementById(modalId).querySelector('form').reset();
+                } catch (err) {
+                    alert('Error adding item: ' + err.message);
+                }
+            }
+
+            // --- Logo Upload ---
+            document.getElementById('logoFile').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                // Preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('logoPreview').src = e.target.result;
+                    document.getElementById('logoPreview').style.display = 'block';
+                    document.getElementById('uploadText').style.display = 'none';
+                    document.getElementById('uploadBtn').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            });
+
+            document.getElementById('uploadBtn').addEventListener('click', async () => {
+                const file = document.getElementById('logoFile').files[0];
+                if (!file) return;
+
+                try {
+                    const filename = `${userBpoId}-logo-${Date.now()}.${file.name.split('.').pop()}`;
+                    const { error: upErr } = await window.supabaseClient.storage
+                        .from('bpo-assets')
+                        .upload(`logos/${filename}`, file);
+
+                    if (upErr) throw upErr;
+
+                    const { data: urlData } = window.supabaseClient.storage
+                        .from('bpo-assets')
+                        .getPublicUrl(`logos/${filename}`);
+
+                    // Save to DB
+                    const { error: dbErr } = await window.supabaseClient
+                        .from('bpo_media')
+                        .upsert({
+                            bpo_id: userBpoId,
+                            media_type: 'logo',
+                            file_url: urlData.publicUrl,
+                            is_primary: true
+                        }, { onConflict: 'bpo_id, media_type' });
+
+                    if (dbErr) throw dbErr;
+
+                    showMessage('logoMessage', 'success', 'Logo uploaded!');
+                    document.getElementById('uploadBtn').style.display = 'none';
+
+                } catch (err) {
+                    showMessage('logoMessage', 'error', err.message);
+                }
+            });
+
+            // --- Questionnaire Logic ---
+            async function loadQuestionnaire() {
+                const list = document.getElementById('memberQuestionnaireList');
+                list.innerHTML = '<div class="loading">Loading questions...</div>';
+
+                try {
+                    // Fetch questions and options
+                    const { data: questions, error: qError } = await window.supabaseClient
+                        .from('questionnaire_questions')
+                        .select('*, questionnaire_options(*)')
+                        .eq('is_active', true)
+                        .order('display_order');
+
+                    if (qError) throw qError;
+
+                    // Fetch current member's responses
+                    const { data: responses, error: rError } = await window.supabaseClient
+                        .from('member_questionnaire_responses')
+                        .select('question_id, option_id')
+                        .eq('bpo_id', userBpoId);
+
+                    if (rError) throw rError;
+
+                    const responseMap = {};
+                    responses.forEach(r => {
+                        if (!responseMap[r.question_id]) responseMap[r.question_id] = new Set();
+                        responseMap[r.question_id].add(r.option_id);
+                    });
+
+                    if (!questions || questions.length === 0) {
+                        list.innerHTML = '<p>No questionnaire available at this time.</p>';
+                        return;
+                    }
+
+                    list.innerHTML = questions.map(q => `
                     <div style="margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid #F0F0F0;">
                         <h3 style="margin-bottom: 8px; font-size: 18px;">${q.question_text}</h3>
                         <p style="font-size: 14px; color: #666; margin-bottom: 16px;">${q.question_subtitle || ''}</p>
                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
                             ${(q.questionnaire_options || []).sort((a, b) => a.display_order - b.display_order).map(opt => {
-                    const isChecked = responseMap[q.id] && responseMap[q.id].has(opt.id);
-                    return `
+                        const isChecked = responseMap[q.id] && responseMap[q.id].has(opt.id);
+                        return `
                                     <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: ${isChecked ? 'rgba(45, 209, 172, 0.05)' : '#FAFAFA'}; border-radius: 8px; border: 1px solid ${isChecked ? 'var(--accent)' : '#EEE'}; transition: all 0.2s;">
                                         <input type="${q.question_type === 'checkbox' ? 'checkbox' : 'radio'}" 
                                                name="q-${q.id}" 
@@ -2481,88 +3477,114 @@
                                         <span style="font-size: 14px;">${opt.option_text}</span>
                                     </label>
                                 `;
-                }).join('')}
+                    }).join('')}
                         </div>
                     </div>
                 `).join('');
 
-            } catch (err) {
-                console.error("Error loading questionnaire:", err);
-                list.innerHTML = '<p style="color:red">Error loading questionnaire. Please try again.</p>';
-            }
-        }
-
-        async function saveQuestionnaireResponses() {
-            const btn = document.getElementById('saveQuestionnaireBtn');
-            const msg = document.getElementById('questionnaireMessage');
-            btn.disabled = true;
-            btn.textContent = 'Saving...';
-
-            try {
-                // Collect all selected options
-                const selections = [];
-                const questionDivs = document.querySelectorAll('#memberQuestionnaireList > div');
-
-                questionDivs.forEach(div => {
-                    const inputs = div.querySelectorAll('input:checked');
-                    if (inputs.length > 0) {
-                        const questionId = inputs[0].name.replace('q-', '');
-                        inputs.forEach(input => {
-                            selections.push({
-                                bpo_id: userBpoId,
-                                question_id: questionId,
-                                option_id: input.value
-                            });
-                        });
-                    }
-                });
-
-                // Delete existing responses for this BPO
-                const { error: delError } = await window.supabaseClient
-                    .from('member_questionnaire_responses')
-                    .delete()
-                    .eq('bpo_id', userBpoId);
-
-                if (delError) throw delError;
-
-                // Insert new responses if any
-                if (selections.length > 0) {
-                    const { error: insError } = await window.supabaseClient
-                        .from('member_questionnaire_responses')
-                        .insert(selections);
-                    if (insError) throw insError;
+                } catch (err) {
+                    console.error("Error loading questionnaire:", err);
+                    list.innerHTML = '<p style="color:red">Error loading questionnaire. Please try again.</p>';
                 }
-
-                msg.className = 'message success';
-                msg.textContent = '✓ Profile questionnaire responses saved successfully!';
-                msg.style.display = 'block';
-                setTimeout(() => msg.style.display = 'none', 3000);
-
-            } catch (err) {
-                console.error("Error saving responses:", err);
-                msg.className = 'message error';
-                msg.textContent = 'Error saving responses: ' + err.message;
-                msg.style.display = 'block';
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Save All Responses';
             }
-        }
 
-        // Logout
-        async function logout() {
-            await window.supabaseClient.auth.signOut();
-            window.location.href = 'login.html';
-        }
+            async function saveQuestionnaireResponses() {
+                const btn = document.getElementById('saveQuestionnaireBtn');
+                const msg = document.getElementById('questionnaireMessage');
+                btn.disabled = true;
+                btn.textContent = 'Saving...';
 
-        // Init
-        document.addEventListener('DOMContentLoaded', async () => {
-            if (await checkAuth()) {
-                await loadAllData();
+                try {
+                    // Collect all selected options
+                    const selections = [];
+                    const questionDivs = document.querySelectorAll('#memberQuestionnaireList > div');
+
+                    questionDivs.forEach(div => {
+                        const inputs = div.querySelectorAll('input:checked');
+                        if (inputs.length > 0) {
+                            const questionId = inputs[0].name.replace('q-', '');
+                            inputs.forEach(input => {
+                                selections.push({
+                                    bpo_id: userBpoId,
+                                    question_id: questionId,
+                                    option_id: input.value
+                                });
+                            });
+                        }
+                    });
+
+                    // Delete existing responses for this BPO
+                    const { error: delError } = await window.supabaseClient
+                        .from('member_questionnaire_responses')
+                        .delete()
+                        .eq('bpo_id', userBpoId);
+
+                    if (delError) throw delError;
+
+                    // Insert new responses if any
+                    if (selections.length > 0) {
+                        const { error: insError } = await window.supabaseClient
+                            .from('member_questionnaire_responses')
+                            .insert(selections);
+                        if (insError) throw insError;
+                    }
+
+                    msg.className = 'message success';
+                    msg.textContent = '✓ Profile questionnaire responses saved successfully!';
+                    msg.style.display = 'block';
+                    setTimeout(() => msg.style.display = 'none', 3000);
+
+                } catch (err) {
+                    console.error("Error saving responses:", err);
+                    msg.className = 'message error';
+                    msg.textContent = 'Error saving responses: ' + err.message;
+                    msg.style.display = 'block';
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = 'Save All Responses';
+                }
             }
-        });
 
-    </script>
+            // Logout
+            async function logout() {
+                await window.supabaseClient.auth.signOut();
+                window.location.href = 'login.html';
+            }
+
+            // Init
+            document.addEventListener('DOMContentLoaded', async () => {
+                if (await checkAuth()) {
+                    await loadAllData();
+                }
+            });
+
+        </script>
+        <!-- Fullscreen Seal Modal -->
+        <div id="sealModal" class="seal-modal" onclick="closeSealFullscreen()">
+            <button class="seal-modal-close">&times;</button>
+            <img id="sealModalImg" class="seal-modal-content" src="">
+        </div>
+
+        <script>
+            function openSealFullscreen(src) {
+                const modal = document.getElementById('sealModal');
+                const img = document.getElementById('sealModalImg');
+                img.src = src;
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeSealFullscreen() {
+                const modal = document.getElementById('sealModal');
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            // Close on Esc key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeSealFullscreen();
+            });
+        </script>
 </body>
 
 </html>

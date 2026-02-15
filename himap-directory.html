@@ -326,6 +326,90 @@
             color: var(--text-light);
         }
 
+        /* Seal Badges in Grid */
+        .member-seal-badges {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            min-height: 48px;
+        }
+
+        .grid-seal {
+            height: 62px;
+            /* 40% bigger than 44px */
+            width: auto;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .grid-seal:hover {
+            transform: scale(1.1);
+        }
+
+        /* Fullscreen Seal Modal */
+        .seal-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .seal-modal.active {
+            display: flex;
+        }
+
+        .seal-modal-content {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+            animation: modalScale 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        .seal-modal-close {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .seal-modal-close:hover {
+            transform: scale(1.1) rotate(90deg);
+            background: #ff6b81;
+        }
+
+        @keyframes modalScale {
+            from {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
 
@@ -514,6 +598,32 @@
                     });
                 }
 
+                // Fetch all accreditation statuses
+                const { data: accData, error: accError } = await supabaseClient
+                    .from('bpo_accreditation')
+                    .select('*')
+                    .eq('status', 'success');
+
+                if (accError) {
+                    console.warn('⚠️ Could not fetch accreditation:', accError);
+                } else {
+                    const accMap = {};
+                    accData.forEach(row => {
+                        if (!accMap[row.bpo_id]) accMap[row.bpo_id] = [];
+                        accMap[row.bpo_id].push(row.doc_id);
+                    });
+
+                    data.forEach(company => {
+                        const docs = accMap[company.id] || [];
+                        const isSoleProp = company.ownership_type?.toLowerCase().includes('sole');
+                        const requiredT1Count = isSoleProp ? 3 : 4;
+
+                        company.t1 = docs.filter(d => d !== 'tier2_inspection' && d !== 'tier3_verification').length >= requiredT1Count;
+                        company.t2 = docs.includes('tier2_inspection');
+                        company.t3 = docs.includes('tier3_verification');
+                    });
+                }
+
                 allMembers = data;
                 filteredMembers = data;
                 displayMembers(data);
@@ -548,6 +658,11 @@
                         <p class="member-description">
                             ${m.company_description || 'Leading healthcare BPO solutions provider'}
                         </p>
+                        <div class="member-seal-badges">
+                            ${m.t3 ? `<img src="resaward3.png" class="grid-seal" title="Platinum Certified" onclick="openSealFullscreen(event, this.src)">` : ''}
+                            ${m.t2 ? `<img src="resaward2.png" class="grid-seal" title="Validated Member" onclick="openSealFullscreen(event, this.src)">` : ''}
+                            ${m.t1 ? `<img src="resaward.png" class="grid-seal" title="Verified Member" onclick="openSealFullscreen(event, this.src)">` : ''}
+                        </div>
                     </div>
                     ${m.total_employees || m.healthcare_fte_count ? `
                         <div class="member-stats">
@@ -617,6 +732,36 @@
             document.addEventListener('click', () => {
                 loginMenu.classList.remove('show');
             });
+        });
+    </script>
+    <!-- Fullscreen Seal Modal -->
+    <div id="sealModal" class="seal-modal" onclick="closeSealFullscreen()">
+        <button class="seal-modal-close">&times;</button>
+        <img id="sealModalImg" class="seal-modal-content" src="">
+    </div>
+
+    <script>
+        function openSealFullscreen(event, src) {
+            // Prevent the card click from navigating
+            event.preventDefault();
+            event.stopPropagation();
+
+            const modal = document.getElementById('sealModal');
+            const img = document.getElementById('sealModalImg');
+            img.src = src;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSealFullscreen() {
+            const modal = document.getElementById('sealModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close on Esc key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeSealFullscreen();
         });
     </script>
 </body>

@@ -392,6 +392,7 @@
             <button class="tab active" onclick="switchTab('create')">Create Member</button>
             <button class="tab" onclick="switchTab('members')">Manage Members</button>
             <button class="tab" onclick="switchTab('questionnaire')">Questionnaire</button>
+            <button class="tab" onclick="switchTab('inspectors')">Inspectors</button>
         </div>
 
         <!-- Tab: Create Member -->
@@ -467,6 +468,52 @@
 
                 <div id="questionnaireList">
                     <!-- Questions will be listed here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Inspectors Management -->
+        <div id="tab-inspectors" class="tab-content">
+            <div class="card">
+                <h2>Manage HIMAP Inspectors</h2>
+                <div class="message" id="inspectorMessage"></div>
+
+                <form id="createInspectorForm"
+                    style="margin-bottom: 40px; padding: 24px; background: #fafafa; border-radius: 12px; border: 1px solid #eee;">
+                    <h3 style="margin-bottom: 20px; font-size: 16px; color: var(--primary);">Add New Site Inspector</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="insName">Full Name</label>
+                            <input type="text" id="insName" placeholder="e.g. Juan De La Cruz" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="insMobile">Mobile Number (Login ID)</label>
+                            <input type="text" id="insMobile" placeholder="e.g. 09123456789" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="insPassword">Temporary Password</label>
+                            <input type="text" id="insPassword" placeholder="Default: Inspector2026"
+                                value="Inspector2026">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" id="addInspectorBtn">Register Inspector</button>
+                </form>
+
+                <div class="table-container">
+                    <div id="loadingInspectors" class="loading">Loading inspectors...</div>
+                    <table id="inspectorsTable" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Mobile (Login)</th>
+                                <th>Temp Pwd?</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inspectorsBody">
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -678,6 +725,8 @@
                 loadMembers();
             } else if (tab === 'questionnaire') {
                 loadQuestionnaire();
+            } else if (tab === 'inspectors') {
+                loadInspectors();
             }
         }
 
@@ -856,6 +905,90 @@
 
             if (error) alert("Error deleting option: " + error.message);
             else loadQuestionnaire();
+        }
+
+        // --- Inspector Management ---
+        async function loadInspectors() {
+            const loading = document.getElementById('loadingInspectors');
+            const table = document.getElementById('inspectorsTable');
+            const tbody = document.getElementById('inspectorsBody');
+
+            loading.style.display = 'block';
+            table.style.display = 'none';
+
+            try {
+                const { data: inspectors, error } = await window.supabaseClient
+                    .from('inspectors')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                tbody.innerHTML = (inspectors || []).map(i => `
+                    <tr>
+                        <td style="font-weight: 500;">${i.name}</td>
+                        <td>${i.mobile_number}</td>
+                        <td><span class="badge ${i.is_temporary ? 'inactive' : 'active'}">${i.is_temporary ? 'Yes' : 'No'}</span></td>
+                        <td>${new Date(i.created_at).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn-small" onclick="deleteInspector('${i.id}')">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error('Error loading inspectors:', err);
+            }
+
+            loading.style.display = 'none';
+            table.style.display = 'table';
+        }
+
+        // Add inspector
+        document.getElementById('createInspectorForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('insName').value;
+            const mobile = document.getElementById('insMobile').value;
+            const pass = document.getElementById('insPassword').value || 'Inspector2026';
+            const btn = document.getElementById('addInspectorBtn');
+            const msg = document.getElementById('inspectorMessage');
+
+            btn.disabled = true;
+            btn.textContent = 'Registering...';
+            msg.style.display = 'none';
+
+            try {
+                const { error } = await window.supabaseClient
+                    .from('inspectors')
+                    .insert({
+                        name,
+                        mobile_number: mobile,
+                        password: pass,
+                        is_temporary: true
+                    });
+
+                if (error) throw error;
+
+                msg.className = 'message success';
+                msg.textContent = '✓ Site Inspector registered successfully';
+                msg.style.display = 'block';
+                document.getElementById('createInspectorForm').reset();
+                document.getElementById('insPassword').value = 'Inspector2026';
+                loadInspectors();
+            } catch (err) {
+                msg.className = 'message error';
+                msg.textContent = err.message;
+                msg.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Register Inspector';
+            }
+        });
+
+        async function deleteInspector(id) {
+            if (!confirm('Are you sure you want to remove this site inspector?')) return;
+            const { error } = await window.supabaseClient.from('inspectors').delete().eq('id', id);
+            if (error) alert(error.message);
+            else loadInspectors();
         }
 
         // Logout
