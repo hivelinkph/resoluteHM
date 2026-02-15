@@ -1078,13 +1078,11 @@
             </div>
         </div>
 
-        <!-- Results View (Placeholder) -->
+        <!-- Results View -->
         <div id="resultsView" class="results-view hidden">
             <div class="results-header">
-                <h1>We found 3 perfect matches!</h1>
-                <p class="subtitle">Based on your requirements for <strong>.NET Development</strong> and
-                    <strong>Healthcare</strong>.
-                </p>
+                <h1>We found some great matches!</h1>
+                <p class="subtitle" id="requirementsSummary">Based on your specific requirements.</p>
             </div>
 
             <div class="results-grid" id="resultsGrid">
@@ -1393,7 +1391,7 @@
                     // 1. Fetch all active BPOs
                     const { data: companies, error } = await supabaseClient
                         .from('bpos')
-                        .select('id, company_name, city, total_employees, industry_focus')
+                        .select('id, company_name, city, total_employees')
                         .eq('is_active', true);
 
                     if (error) throw error;
@@ -1412,6 +1410,20 @@
                         if (!bpoMatchMap[r.bpo_id][r.question_id]) bpoMatchMap[r.bpo_id][r.question_id] = new Set();
                         bpoMatchMap[r.bpo_id][r.question_id].add(r.option_id);
                     });
+
+                    // 3b. Update Requirements Summary
+                    const summaryEl = document.getElementById('requirementsSummary');
+                    const selectedTexts = [];
+                    Object.values(STATE.responses).forEach(val => {
+                        if (val instanceof Set) {
+                            // Can't easily get text from Set here without more mapping, 
+                            // but we can at least show something or just leave it generic
+                        } else if (val) {
+                            // Also need mapping for text...
+                        }
+                    });
+                    // For now, let's just keep it simple or remove the hardcoded examples
+                    summaryEl.innerHTML = "Based on your unique business requirements and preferences.";
 
                     // 4. Calculate Scores based on STATE.responses
                     const scoredBpos = companies.map(bpo => {
@@ -1444,20 +1456,28 @@
                     });
 
                     // 5. Sort by score and take top 3
-                    scoredBpos.sort((a, b) => b.score - a.score || Math.random() - 0.5); // Random tied breaker
+                    scoredBpos.sort((a, b) => b.score - a.score || Math.random() - 0.5);
                     const selected = scoredBpos.slice(0, 3);
 
                     // 6. Fetch logos for selected companies
-                    const { data: logos } = await supabaseClient
-                        .from('bpo_media')
-                        .select('bpo_id, file_url')
-                        .eq('media_type', 'logo')
-                        .eq('is_primary', true)
-                        .in('bpo_id', selected.map(c => c.id));
-
                     const logoMap = {};
-                    if (logos) {
-                        logos.forEach(l => logoMap[l.bpo_id] = l.file_url);
+                    if (selected.length > 0) {
+                        const { data: logos, error: logoErr } = await supabaseClient
+                            .from('bpo_media')
+                            .select('bpo_id, file_url')
+                            .eq('media_type', 'logo')
+                            .eq('is_primary', true)
+                            .in('bpo_id', selected.map(c => c.id));
+
+                        if (!logoErr && logos) {
+                            logos.forEach(l => logoMap[l.bpo_id] = l.file_url);
+                        }
+                    }
+
+                    if (selected.length === 0) {
+                        grid.innerHTML = '<p style="text-align:center; padding: 40px; color: #666;">No providers found matching your criteria. Please try broadening your search.</p>';
+                    } else {
+                        renderGrid(selected, logoMap);
                     }
 
                     // Cache results
