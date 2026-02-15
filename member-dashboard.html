@@ -662,6 +662,237 @@
                 justify-content: flex-end;
             }
         }
+
+        /* Accreditation UI */
+        .accreditation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .type-selector {
+            display: flex;
+            gap: 12px;
+            background: #f0f2f5;
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .type-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Graphik', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-light);
+            background: transparent;
+        }
+
+        .type-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .doc-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .doc-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .doc-item:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .doc-info {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        /* Thumbnail Styles */
+        .doc-thumbnail-container {
+            width: 80px;
+            height: 100px;
+            background: #f0f2f5;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #ddd;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .doc-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .doc-thumbnail-container:hover .doc-thumbnail {
+            transform: scale(1.1);
+        }
+
+        .status-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .doc-thumbnail-container.has-status .status-overlay {
+            opacity: 1;
+        }
+
+        .overlay-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .badge-passed {
+            background: #2DD1AC;
+        }
+
+        /* Green Pass */
+        .badge-failed {
+            background: #FF5252;
+        }
+
+        /* Red X */
+
+        .doc-details h4 {
+            font-family: 'Graphik', sans-serif;
+            font-size: 15px;
+            margin-bottom: 4px;
+            color: var(--text-dark);
+        }
+
+        .doc-details .remark {
+            font-size: 12px;
+            color: var(--error);
+            font-weight: 600;
+            display: none;
+        }
+
+        .doc-details .remark.visible {
+            display: block;
+        }
+
+        .doc-details .subtext {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .doc-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .upload-btn {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn-verify-all {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-family: 'Graphik', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 14px;
+            margin-top: 24px;
+            width: 100%;
+        }
+
+        /* Failure Highlighter */
+        .preview-container {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        .ocr-highlight {
+            position: absolute;
+            border: 3px solid #FF5252;
+            border-radius: 4px;
+            background: rgba(255, 82, 82, 0.2);
+            box-shadow: 0 0 15px rgba(255, 82, 82, 0.5);
+            pointer-events: none;
+            animation: pulse-border 1.5s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .doc-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .doc-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
     </style>
 </head>
 
@@ -1147,6 +1378,25 @@
         </div>
     </div>
 
+    <!-- OCR Failure Preview Modal -->
+    <div id="ocrPreviewModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close-modal" onclick="closeModal('ocrPreviewModal')">&times;</span>
+            <h2 id="ocrPreviewTitle">Document Verification Details</h2>
+            <p id="ocrPreviewRemark" style="color: var(--error); font-weight: 600; margin-bottom: 20px;"></p>
+            <div
+                style="text-align: center; overflow: auto; max-height: 500px; background: #eee; border-radius: 8px; padding: 10px;">
+                <div class="preview-container" id="ocrPreviewContainer">
+                    <img id="ocrPreviewImg" src="" style="max-width: 100%; display: block; margin: 0 auto;">
+                    <!-- Highlights go here -->
+                </div>
+            </div>
+            <div style="margin-top: 20px; font-size: 14px; color: #666;">
+                The red boxes indicate areas where the AI detected inconsistencies or missing information.
+            </div>
+        </div>
+    </div>
+
 
     <script>
         // Supabase configuration
@@ -1228,14 +1478,31 @@
 
             container.innerHTML = docs.map(doc => {
                 const state = uploadedDocs[doc.id] || { status: 'pending', remark: '' };
-                const icon = state.status === 'success' ? '✓' : (state.status === 'error' ? '✕' : '🕒');
+                const hasStatus = state.status !== 'pending';
+                const isPassed = state.status === 'success';
+                const hasThumb = !!state.dataUrl;
 
                 return `
                     <div class="doc-item">
                         <div class="doc-info">
-                            <div class="status-icon status-${state.status}">${icon}</div>
+                            <div class="doc-thumbnail-container ${hasStatus ? 'has-status' : ''}" 
+                                 onclick="${hasStatus ? `openOCRPreview('${doc.id}')` : `document.getElementById('file_${doc.id}').click()`}">
+                                ${hasThumb
+                        ? `<img src="${state.dataUrl}" class="doc-thumbnail">`
+                        : `<div style="padding: 20px; text-align: center; color: #999; font-size: 20px;">📄</div>`}
+                                
+                                <div class="status-overlay">
+                                    <div class="overlay-badge ${isPassed ? 'badge-passed' : 'badge-failed'}">
+                                        ${isPassed ? '✓' : '✕'}
+                                    </div>
+                                </div>
+                            </div>
                             <div class="doc-details">
-                                <h4>${doc.name}</h4>
+                                <h4 style="display: flex; align-items: center; gap: 8px;">
+                                    ${doc.name}
+                                    ${isPassed ? '<span style="color: #2DD1AC; font-size: 11px;">(PASSED)</span>' : ''}
+                                    ${state.status === 'error' ? '<span style="color: #FF5252; font-size: 11px;">(FAILED)</span>' : ''}
+                                </h4>
                                 <p class="subtext">${doc.sub}</p>
                                 <div class="remark ${state.remark ? 'visible' : ''}">⚠ ${state.remark}</div>
                             </div>
@@ -1259,10 +1526,11 @@
 
                 reader.onload = function (e) {
                     uploadedDocs[docId] = {
-                        status: 'success',
+                        status: 'pending',
                         remark: '',
                         fileName: file.name,
-                        dataUrl: e.target.result // Store data for OCR
+                        dataUrl: e.target.result,
+                        failCoords: [] // For encircling
                     };
                     renderAccreditationDocs();
                 };
@@ -1274,61 +1542,140 @@
             const msg = document.getElementById('tier1Message');
             msg.style.display = 'block';
             msg.className = 'message success';
-            msg.innerText = 'AI OCR Verification in progress... Initializing Tesseract engine.';
+            msg.innerText = 'AI OCR Verification in progress... Scanning document structures.';
 
-            // Count docs to verify
-            const docsToVerify = Object.keys(uploadedDocs).filter(id => uploadedDocs[id].status === 'success');
+            // Important: only verify docs that aren't already successful
+            const docsToVerify = Object.keys(uploadedDocs).filter(id => uploadedDocs[id].status !== 'success');
 
             if (docsToVerify.length === 0) {
                 msg.className = 'message error';
-                msg.innerText = 'No documents uploaded for verification.';
+                msg.innerText = 'No new documents uploaded for verification.';
                 return;
             }
 
             try {
                 const currentYear = new Date().getFullYear().toString();
+                const companyName = (bpoData.company && bpoData.company.company_name) ? bpoData.company.company_name.toUpperCase() : '';
 
                 for (const id of docsToVerify) {
                     const doc = uploadedDocs[id];
-                    msg.innerText = `AI Review: Running OCR on ${doc.fileName}...`;
+                    msg.innerText = `AI Review: Analyzing ${doc.fileName}...`;
 
-                    // Run Tesseract OCR
-                    const { data: { text } } = await Tesseract.recognize(
+                    // Run Tesseract OCR with full result
+                    const result = await Tesseract.recognize(
                         doc.dataUrl,
                         'eng',
                         { logger: m => console.log(m.status + ': ' + Math.round(m.progress * 100) + '%') }
                     );
 
-                    console.log(`OCR Output for ${id}:`, text);
+                    const ocrText = result.data.text.toUpperCase();
+                    const words = result.data.words;
 
-                    // Verification Logic based on OCR text
-                    if (id === 'mayor') {
-                        // Check if the current year (e.g. 2026) is present in the text
-                        const yearMatch = text.match(/\b20\d{2}\b/g);
-                        const hasCurrentYear = text.includes(currentYear);
+                    let passed = true;
+                    let remark = '✓ Validity Verified via AI OCR Scan';
+                    let failCoords = [];
 
-                        if (!hasCurrentYear) {
-                            const foundYear = yearMatch ? yearMatch[0] : 'Unknown';
-                            uploadedDocs[id].status = 'error';
-                            uploadedDocs[id].remark = `Verification failed: Found year ${foundYear} in document via OCR. Required: ${currentYear}.`;
-                        } else {
-                            uploadedDocs[id].status = 'success';
-                            uploadedDocs[id].remark = '✓ Validity Verified via AI OCR Scan';
-                        }
-                    } else {
-                        // For other docs, just confirm they are readable
-                        uploadedDocs[id].status = 'success';
-                        uploadedDocs[id].remark = '✓ Statuatory Document Validated';
+                    // Document-specific verification logic
+                    switch (id) {
+                        case 'mayor':
+                            // Find years in the document
+                            const years = words.filter(w => /\b20\d{2}\b/.test(w.text));
+                            const hasCurrent = years.some(y => y.text.includes(currentYear));
+
+                            if (!hasCurrent) {
+                                passed = false;
+                                remark = `Verification failed: Document date is not current (${currentYear}).`;
+                                // If we found an old year, encircle it
+                                if (years.length > 0) {
+                                    failCoords = years.map(y => y.bbox);
+                                    remark += ` Found year ${years[0].text} instead.`;
+                                }
+                            }
+                            break;
+
+                        case 'sec':
+                            if (!ocrText.includes('SECURITIES AND EXCHANGE COMMISSION')) {
+                                passed = false;
+                                remark = 'Verification failed: SEC official headers not detected.';
+                            }
+                            break;
+
+                        case 'bir':
+                            if (!ocrText.includes('2303')) {
+                                passed = false;
+                                remark = 'Verification failed: BIR Form 2303 registration number missing.';
+                                const birWords = words.filter(w => w.text.includes('BIR') || w.text.includes('BIRTH'));
+                                failCoords = birWords.map(w => w.bbox);
+                            }
+                            break;
+
+                        default:
+                            // Generic check for readability
+                            if (ocrText.length < 50) {
+                                passed = false;
+                                remark = 'Verification failed: Document is blurry or unreadable.';
+                            }
                     }
+
+                    // Optional Check: Company Name Match (if OCR is clear enough)
+                    if (passed && companyName && !ocrText.includes(companyName.split(' ')[0])) {
+                        console.warn(`Company name part ${companyName.split(' ')[0]} not found in OCR text. Flagged for manual audit.`);
+                        remark += ' (Pending manual name audit)';
+                    }
+
+                    uploadedDocs[id].status = passed ? 'success' : 'error';
+                    uploadedDocs[id].remark = remark;
+                    uploadedDocs[id].failCoords = failCoords; // Store for preview
                     renderAccreditationDocs();
                 }
 
-                msg.innerText = 'AI OCR Review complete. Statutory validity confirmed.';
+                msg.innerText = 'AI OCR Review complete. Statutory results updated.';
             } catch (err) {
                 console.error('OCR Error:', err);
                 msg.className = 'message error';
-                msg.innerText = 'Error during OCR processing. Please ensure files are clear images.';
+                msg.innerText = 'Error during OCR processing. Please check image quality.';
             }
+        }
+
+        function openOCRPreview(docId) {
+            const doc = uploadedDocs[docId];
+            if (!doc) return;
+
+            const modal = document.getElementById('ocrPreviewModal');
+            const img = document.getElementById('ocrPreviewImg');
+            const container = document.getElementById('ocrPreviewContainer');
+            const remark = document.getElementById('ocrPreviewRemark');
+
+            img.src = doc.dataUrl;
+            remark.innerText = doc.status === 'error' ? '⚠ ' + doc.remark : '✓ Verification Details';
+
+            // Clear existing highlights
+            container.querySelectorAll('.ocr-highlight').forEach(h => h.remove());
+
+            // Add highlights if failed
+            if (doc.status === 'error' && doc.failCoords && doc.failCoords.length > 0) {
+                // We need to wait for image to load to get its displayed dimensions
+                img.onload = () => {
+                    const naturalWidth = img.naturalWidth;
+                    const naturalHeight = img.naturalHeight;
+                    const displayWidth = img.clientWidth;
+                    const displayHeight = img.clientHeight;
+                    const scaleX = displayWidth / naturalWidth;
+                    const scaleY = displayHeight / naturalHeight;
+
+                    doc.failCoords.forEach(box => {
+                        const highlight = document.createElement('div');
+                        highlight.className = 'ocr-highlight';
+                        highlight.style.left = (box.x0 * scaleX) + 'px';
+                        highlight.style.top = (box.y0 * scaleY) + 'px';
+                        highlight.style.width = ((box.x1 - box.x0) * scaleX) + 'px';
+                        highlight.style.height = ((box.y1 - box.y0) * scaleY) + 'px';
+                        container.appendChild(highlight);
+                    });
+                };
+            }
+
+            openModal('ocrPreviewModal');
         }
 
         // --- Auth & Init ---
