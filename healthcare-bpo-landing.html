@@ -648,6 +648,161 @@
             }
         }
 
+        /* Certification Tiers Section */
+        .tiers-section {
+            padding: 80px 20px;
+            background: #ffffff;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .tiers-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tiers-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .tiers-header h2 {
+            font-family: 'Graphik', Arial, sans-serif;
+            font-size: 42px;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .tiers-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .tier-card {
+            background: white;
+            border-radius: 4px;
+            padding: 40px;
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tier-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            border-color: var(--accent);
+        }
+
+        .tier-badge {
+            background: var(--accent);
+            color: white;
+            padding: 4px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 2px;
+            display: inline-block;
+            margin-bottom: 20px;
+            width: fit-content;
+            letter-spacing: 1px;
+        }
+
+        .tier-title {
+            font-family: 'Graphik', Arial, sans-serif;
+            font-size: 22px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .tier-purpose {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .tier-signals {
+            font-style: italic;
+            font-size: 15px;
+            color: var(--primary);
+            margin-bottom: 24px;
+            background: #f8fcfb;
+            padding: 16px;
+            border-radius: 4px;
+            line-height: 1.5;
+        }
+
+        .tier-list-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #999;
+            margin-bottom: 16px;
+        }
+
+        .tier-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 32px 0;
+            flex-grow: 1;
+        }
+
+        .tier-list li {
+            font-size: 13px;
+            color: #444;
+            padding-bottom: 10px;
+            padding-left: 24px;
+            position: relative;
+            line-height: 1.4;
+        }
+
+        .tier-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 900;
+        }
+
+        .tier-perception {
+            background: #FAFAFA;
+            padding: 20px;
+            border-radius: 4px;
+            margin-top: auto;
+        }
+
+        .tier-perception h4 {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .perception-item {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            color: var(--primary);
+        }
+
+        .tier-3-glow {
+            border: 2px solid var(--accent);
+            box-shadow: 0 8px 24px rgba(45, 209, 172, 0.15);
+        }
+
+        @media (max-width: 968px) {
+            .tiers-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .certs-row {
             display: flex;
             gap: 80px;
@@ -897,6 +1052,95 @@
                 </div>
                 <div class="cert-item" title="ISO 9001 Certified">
                     <img src="9001.png" alt="ISO 9001 Certified" class="cert-logo">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HIMAP Certification Tiers -->
+    <section class="tiers-section">
+        <div class="tiers-container">
+            <div class="tiers-header">
+                <h2>The Three Tiers of Excellence</h2>
+                <p>Standardizing healthcare BPO capability through formal independent measurement.</p>
+            </div>
+
+            <div class="tiers-grid">
+                <!-- Tier 1 -->
+                <div class="tier-card">
+                    <span class="tier-badge">TIER 1</span>
+                    <h3 class="tier-title">HIMAP Verified Member</h3>
+                    <div class="tier-purpose">🎯 Establish legitimacy and baseline compliance.</div>
+                    <div class="tier-signals">“This organization exists, operates legally, and meets basic HIMAP
+                        membership standards.”</div>
+
+                    <div class="tier-list-title">Review Scope</div>
+                    <ul class="tier-list">
+                        <li>Corporate registration confirmed</li>
+                        <li>Business permits verified</li>
+                        <li>Basic healthcare service scope</li>
+                        <li>US client references (if applicable)</li>
+                        <li>Data privacy registration (PH)</li>
+                        <li>Basic HIPAA awareness declaration</li>
+                    </ul>
+
+                    <div class="tier-perception">
+                        <h4>Buyer Perception</h4>
+                        <div class="perception-item">✅ Low risk of fraud</div>
+                        <div class="perception-item">✅ Legitimate provider</div>
+                    </div>
+                </div>
+
+                <!-- Tier 2 -->
+                <div class="tier-card">
+                    <span class="tier-badge">TIER 2</span>
+                    <h3 class="tier-title">HIMAP Validated Provider</h3>
+                    <div class="tier-purpose">🎯 Confirm service capability and operational readiness.</div>
+                    <div class="tier-signals">“This provider has been evaluated against defined healthcare service
+                        standards.”</div>
+
+                    <div class="tier-list-title">Review Scope</div>
+                    <ul class="tier-list">
+                        <li>Service line evaluation (RCM, Coding, etc)</li>
+                        <li>Staffing model assessment</li>
+                        <li>US healthcare experience review</li>
+                        <li>HIPAA controls & IT security review</li>
+                        <li>Business continuity plan review</li>
+                        <li>Client references validated</li>
+                    </ul>
+
+                    <div class="tier-perception">
+                        <h4>Buyer Perception</h4>
+                        <div class="perception-item">✅ Operationally capable</div>
+                        <div class="perception-item">✅ Healthcare-specific expertise</div>
+                        <div class="perception-item">✅ Risk-screened</div>
+                    </div>
+                </div>
+
+                <!-- Tier 3 -->
+                <div class="tier-card tier-3-glow">
+                    <span class="tier-badge" style="background: var(--primary);">TIER 3</span>
+                    <h3 class="tier-title">Certified Healthcare Provider</h3>
+                    <div class="tier-purpose">🎯 Recognize mature, enterprise-grade providers.</div>
+                    <div class="tier-signals">“Independently assessed standards aligned to international healthcare
+                        service governance.”</div>
+
+                    <div class="tier-list-title">Review Scope</div>
+                    <ul class="tier-list">
+                        <li>Formal security audit review (HITRUST/ISO)</li>
+                        <li>Clinical governance & QA deep-dive</li>
+                        <li>Performance metrics (accuracy, denials)</li>
+                        <li>Financial stability review</li>
+                        <li>Onsite/Virtual operational walkthrough</li>
+                        <li>Annual recertification required</li>
+                    </ul>
+
+                    <div class="tier-perception">
+                        <h4>Buyer Perception</h4>
+                        <div class="perception-item">🚀 Enterprise-ready</div>
+                        <div class="perception-item">🚀 Hospital network-ready</div>
+                        <div class="perception-item">🚀 Lower onboarding risk</div>
+                    </div>
                 </div>
             </div>
         </div>
