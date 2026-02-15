@@ -1152,85 +1152,127 @@
 
         // --- State Management ---
         const STATE = {
-            org: null,
-            industry: null,
-            roles: new Set(),
-            size: null,
-            timezones: new Set(),
-            location: null,
+            responses: {}, // Will hold [questionId]: value (single) or [questionId]: Set (multiple)
             name: '',
             email: '',
             phone: '',
             website: ''
         };
 
-        // --- Render Functions ---
-        function renderSection(containerId, data, type, stateKey) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
+        // --- Fetch & Render Questionnaire ---
+        async function initQuestionnaire() {
+            const formContainer = document.getElementById('singlePageForm');
 
-            data.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'option-item';
-                // Check if selected
-                if (type === 'radio' && STATE[stateKey] === item) div.classList.add('selected');
-                if (type === 'checkbox' && STATE[stateKey].has(item)) div.classList.add('selected');
+            try {
+                const { data: questions, error } = await supabaseClient
+                    .from('questionnaire_questions')
+                    .select(`
+                        *,
+                        questionnaire_options (*)
+                    `)
+                    .eq('is_active', true)
+                    .order('display_order');
 
-                div.innerHTML = `
-                    <div class="checkbox"></div>
-                    <span class="option-label">${item}</span>
-                `;
+                if (error) throw error;
 
-                div.onclick = () => handleSelection(div, item, type, stateKey, containerId);
-                container.appendChild(div);
-            });
-        }
+                // Clear existing static sections (except contact)
+                const sections = Array.from(formContainer.querySelectorAll('.form-section'));
+                const contactSection = document.getElementById('section-contact');
+                sections.forEach(s => {
+                    if (s.id !== 'section-contact') s.remove();
+                });
 
-        function handleSelection(element, value, type, stateKey, containerId) {
-            if (type === 'radio') {
-                // Deselect others visually
-                const container = document.getElementById(containerId);
-                Array.from(container.children).forEach(child => child.classList.remove('selected'));
+                questions.forEach((q, index) => {
+                    const section = document.createElement('div');
+                    section.className = 'form-section';
+                    section.id = `section-${q.id}`;
 
-                // Select this one
-                element.classList.add('selected');
-                STATE[stateKey] = value;
-            } else {
-                // Toggle
-                if (STATE[stateKey].has(value)) {
-                    STATE[stateKey].delete(value);
-                    element.classList.remove('selected');
-                } else {
-                    STATE[stateKey].add(value);
-                    element.classList.add('selected');
-                }
+                    // Initialize state for this question
+                    if (q.question_type === 'checkbox') {
+                        STATE.responses[q.id] = new Set();
+                    } else {
+                        STATE.responses[q.id] = null;
+                    }
 
-                // Update Chips for Roles
-                if (stateKey === 'roles') updateChips();
+                    section.innerHTML = `
+                        <div class="section-header">
+                            <div class="step-number">${index + 1}</div>
+                            <div class="section-title">
+                                <h2>${q.question_text}</h2>
+                                <div class="section-subtitle">${q.question_subtitle || ''}</div>
+                            </div>
+                        </div>
+                        <div class="search-container">
+                            <input type="text" class="search-input" placeholder="Search..."
+                                oninput="filterOptions('options-${q.id}', this.value)">
+                        </div>
+                        <div class="options-grid ${q.question_type === 'radio' ? 'radio' : ''}" id="options-${q.id}">
+                            ${q.questionnaire_options.sort((a, b) => a.display_order - b.display_order).map(opt => `
+                                <div class="option-item" onclick="handleDynamicSelection(this, '${q.id}', '${opt.id}', '${opt.option_text}', '${q.question_type}')">
+                                    <div class="checkbox"></div>
+                                    <span class="option-label">${opt.option_text}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        ${q.question_type === 'checkbox' ? `<div class="selected-chips" id="chips-${q.id}"></div>` : ''}
+                    `;
+
+                    // Insert before contact section
+                    formContainer.insertBefore(section, contactSection);
+                });
+
+            } catch (err) {
+                console.error("Error loading questionnaire:", err);
+                formContainer.innerHTML = '<div class="form-section"><h2>Oops!</h2><p>We couldn\'t load the questionnaire. Please try again later.</p></div>';
             }
         }
 
-        function updateChips() {
-            const container = document.getElementById('roles-chips');
+        function handleDynamicSelection(element, questionId, optionId, optionText, type) {
+            if (type === 'radio') {
+                const container = document.getElementById(`options-${questionId}`);
+                Array.from(container.children).forEach(child => child.classList.remove('selected'));
+                element.classList.add('selected');
+                STATE.responses[questionId] = optionId;
+            } else {
+                if (STATE.responses[questionId].has(optionId)) {
+                    STATE.responses[questionId].delete(optionId);
+                    element.classList.remove('selected');
+                } else {
+                    STATE.responses[questionId].add(optionId);
+                    element.classList.add('selected');
+                }
+                updateDynamicChips(questionId);
+            }
+        }
+
+        function updateDynamicChips(questionId) {
+            const container = document.getElementById(`chips-${questionId}`);
+            if (!container) return;
             container.innerHTML = '';
-            STATE.roles.forEach(role => {
+
+            // We need the text, so we'll find it from the elements
+            const options = Array.from(document.querySelectorAll(`#options-${questionId} .option-item`));
+
+            STATE.responses[questionId].forEach(optId => {
+                const optEl = options.find(el => el.getAttribute('onclick').includes(optId));
+                const text = optEl ? optEl.querySelector('.option-label').innerText : 'Selected';
+
                 const chip = document.createElement('div');
                 chip.className = 'chip';
-                chip.innerHTML = `${role} <span class="chip-remove" onclick="removeRole('${role}')">&times;</span>`;
+                chip.innerHTML = `${text} <span class="chip-remove" onclick="removeDynamicOption('${questionId}', '${optId}')">&times;</span>`;
                 container.appendChild(chip);
             });
         }
 
-        window.removeRole = (role) => {
-            STATE.roles.delete(role);
-            updateChips();
-            // Re-render roles list to remove highlight
-            // Note: In a real app, we'd just find the element and toggle class to avoid re-rendering
-            const el = Array.from(document.querySelectorAll('#roles-options .option-item')).find(e => e.innerText.includes(role));
-            if (el) el.classList.remove('selected');
+        window.removeDynamicOption = (questionId, optionId) => {
+            STATE.responses[questionId].delete(optionId);
+            updateDynamicChips(questionId);
+            const options = Array.from(document.querySelectorAll(`#options-${questionId} .option-item`));
+            const optEl = options.find(el => el.getAttribute('onclick').includes(optionId));
+            if (optEl) optEl.classList.remove('selected');
         };
 
-        // --- Filter Function ---
+        // --- Filter Function (Universal) ---
         window.filterOptions = (containerId, text) => {
             const container = document.getElementById(containerId);
             Array.from(container.children).forEach(child => {
@@ -1250,13 +1292,8 @@
             const singlePageForm = document.getElementById('singlePageForm');
             const stickyFooter = document.getElementById('stickyFooter');
 
-            // Render all sections
-            renderSection('org-options', DATA.orgTypes, 'radio', 'org');
-            renderSection('industry-options', DATA.industries, 'radio', 'industry'); // Assuming single industry for now
-            renderSection('roles-options', DATA.roles, 'checkbox', 'roles');
-            renderSection('size-options', DATA.teamSizes, 'radio', 'size');
-            renderSection('timezone-options', DATA.timezones, 'checkbox', 'timezones');
-            renderSection('location-options', DATA.locations, 'radio', 'location');
+            // Initialize dynamic questionnaire
+            initQuestionnaire();
 
             // Handle Persistent View
             const view = getUrlParameter('view');
@@ -1276,13 +1313,11 @@
                 welcomeScreen.classList.add('hidden');
                 singlePageForm.style.display = 'flex'; // Use flex for column layout
                 stickyFooter.classList.add('visible');
-                // Scroll to top of form
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
             // Submit Handler with Modal
-            document.getElementById('submitBtn').addEventListener('click', () => {
-                // Check simple validation first
+            document.getElementById('submitBtn').addEventListener('click', async () => {
                 const name = document.querySelector('input[name="fullName"]').value;
                 const email = document.querySelector('input[name="workEmail"]').value;
 
@@ -1291,22 +1326,10 @@
                     return;
                 }
 
-                // Update text fields
                 STATE.name = name;
                 STATE.email = email;
                 STATE.phone = document.querySelector('input[name="phoneNumber"]').value;
                 STATE.website = document.querySelector('input[name="companyWebsite"]').value;
-
-                console.log('Submission:', STATE);
-
-                // Convert Sets to Arrays for JSON
-                const payload = {
-                    ...STATE,
-                    roles: Array.from(STATE.roles),
-                    timezones: Array.from(STATE.timezones)
-                };
-                // alert('Finding matches for:\n' + JSON.stringify(payload, null, 2));
-                // Here you would redirect or fetch results
 
                 // 1. Hide Form & Sticky Footer
                 document.getElementById('singlePageForm').classList.add('hidden');
@@ -1319,9 +1342,9 @@
 
                 modal.classList.remove('hidden');
 
-                // 3. Animate Progress
+                // 3. Animate Progress & Fetch Results
                 let progress = 0;
-                const totalTime = 3000; // 3 seconds
+                const totalTime = 3000;
                 const intervalTime = 50;
                 const steps = totalTime / intervalTime;
                 const increment = 100 / steps;
@@ -1330,7 +1353,6 @@
                     progress += increment;
                     progressBar.style.width = `${Math.min(progress, 100)}%`;
 
-                    // Status Text Updates
                     if (progress > 30 && progress < 60) {
                         statusText.innerText = "Analyzing your specific requirements...";
                     } else if (progress >= 60 && progress < 90) {
@@ -1341,7 +1363,7 @@
 
                     if (progress >= 100) {
                         clearInterval(timer);
-                        setTimeout(showResults, 500); // Small delay before showing results
+                        setTimeout(showResults, 500);
                     }
                 }, intervalTime);
             });
@@ -1368,33 +1390,74 @@
                     const newUrl = window.location.pathname + '?view=results';
                     window.history.pushState({ path: newUrl }, '', newUrl);
 
-                    // Fetch random companies with logos
+                    // 1. Fetch all active BPOs
                     const { data: companies, error } = await supabaseClient
                         .from('bpos')
-                        .select('id, company_name, city, total_employees')
-                        .eq('is_active', true)
-                        .limit(20);
+                        .select('id, company_name, city, total_employees, industry_focus')
+                        .eq('is_active', true);
 
                     if (error) throw error;
 
+                    // 2. Fetch all BPO responses for questionnaire
+                    const { data: bpoResponses, error: respError } = await supabaseClient
+                        .from('member_questionnaire_responses')
+                        .select('bpo_id, question_id, option_id');
+
+                    if (respError) throw respError;
+
+                    // 3. Group BPO responses by BPO ID
+                    const bpoMatchMap = {};
+                    bpoResponses.forEach(r => {
+                        if (!bpoMatchMap[r.bpo_id]) bpoMatchMap[r.bpo_id] = {};
+                        if (!bpoMatchMap[r.bpo_id][r.question_id]) bpoMatchMap[r.bpo_id][r.question_id] = new Set();
+                        bpoMatchMap[r.bpo_id][r.question_id].add(r.option_id);
+                    });
+
+                    // 4. Calculate Scores based on STATE.responses
+                    const scoredBpos = companies.map(bpo => {
+                        let score = 0;
+                        const bpoResps = bpoMatchMap[bpo.id] || {};
+
+                        // Compare each user response to BPO profile
+                        for (const [qId, userSelection] of Object.entries(STATE.responses)) {
+                            const bpoOptions = bpoResps[qId];
+                            if (!bpoOptions) continue;
+
+                            if (userSelection instanceof Set) {
+                                // For checkbox questions, if there's any overlap, we add to score
+                                let matchCount = 0;
+                                userSelection.forEach(optId => {
+                                    if (bpoOptions.has(optId)) matchCount++;
+                                });
+                                // Weighted score based on overlap percentage if we want to be fancy
+                                if (userSelection.size > 0) {
+                                    score += (matchCount / userSelection.size);
+                                }
+                            } else {
+                                // For radio questions, exact match gives a point
+                                if (bpoOptions.has(userSelection)) {
+                                    score += 1;
+                                }
+                            }
+                        }
+                        return { ...bpo, score };
+                    });
+
+                    // 5. Sort by score and take top 3
+                    scoredBpos.sort((a, b) => b.score - a.score || Math.random() - 0.5); // Random tied breaker
+                    const selected = scoredBpos.slice(0, 3);
+
+                    // 6. Fetch logos for selected companies
                     const { data: logos } = await supabaseClient
                         .from('bpo_media')
                         .select('bpo_id, file_url')
                         .eq('media_type', 'logo')
-                        .eq('is_primary', true);
+                        .eq('is_primary', true)
+                        .in('bpo_id', selected.map(c => c.id));
 
                     const logoMap = {};
                     if (logos) {
                         logos.forEach(l => logoMap[l.bpo_id] = l.file_url);
-                    }
-
-                    const companiesWithLogos = companies.filter(c => logoMap[c.id]);
-                    const shuffled = companiesWithLogos.sort(() => 0.5 - Math.random());
-                    const selected = shuffled.slice(0, 3);
-
-                    if (selected.length < 3) {
-                        const remaining = companies.filter(c => !logoMap[c.id]).slice(0, 3 - selected.length);
-                        selected.push(...remaining);
                     }
 
                     // Cache results

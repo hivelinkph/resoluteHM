@@ -391,6 +391,7 @@
         <div class="tabs">
             <button class="tab active" onclick="switchTab('create')">Create Member</button>
             <button class="tab" onclick="switchTab('members')">Manage Members</button>
+            <button class="tab" onclick="switchTab('questionnaire')">Questionnaire</button>
         </div>
 
         <!-- Tab: Create Member -->
@@ -452,6 +453,20 @@
                         <tbody id="membersBody">
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Questionnaire Management -->
+        <div id="tab-questionnaire" class="tab-content">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2>Questionnaire Settings</h2>
+                    <button class="btn-primary" onclick="showAddQuestionModal()">+ Add New Question</button>
+                </div>
+
+                <div id="questionnaireList">
+                    <!-- Questions will be listed here -->
                 </div>
             </div>
         </div>
@@ -650,19 +665,197 @@
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-            // Add active class to clicked tab and corresponding content
-            const tabs = document.querySelectorAll('.tab');
-            if (tab === 'create') {
-                tabs[0].classList.add('active');
-            } else if (tab === 'members') {
-                tabs[1].classList.add('active');
-            }
+            // Find the tab button that matches the tab name
+            document.querySelectorAll('.tab').forEach(t => {
+                if (t.getAttribute('onclick').includes(`'${tab}'`)) {
+                    t.classList.add('active');
+                }
+            });
 
             document.getElementById(`tab-${tab}`).classList.add('active');
 
             if (tab === 'members') {
                 loadMembers();
+            } else if (tab === 'questionnaire') {
+                loadQuestionnaire();
             }
+        }
+
+        // --- Questionnaire Management ---
+        async function loadQuestionnaire() {
+            const list = document.getElementById('questionnaireList');
+            list.innerHTML = '<div class="loading">Loading questionnaire settings...</div>';
+
+            const { data: questions, error } = await window.supabaseClient
+                .from('questionnaire_questions')
+                .select(`
+                    *,
+                    questionnaire_options (*)
+                `)
+                .order('display_order');
+
+            if (error) {
+                list.innerHTML = `<div class="message error" style="display:block">Error loading questionnaire: ${error.message}</div>`;
+                return;
+            }
+
+            if (!questions || questions.length === 0) {
+                list.innerHTML = '<p>No questions set yet. Use the button above to add your first question.</p>';
+                return;
+            }
+
+            list.innerHTML = questions.map(q => `
+                <div class="card" style="border: 1px solid #E0E0E0; box-shadow: none; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h3 style="margin-bottom: 4px;">${q.question_text}</h3>
+                            <p style="font-size: 14px; color: #666; margin-bottom: 8px;">${q.question_subtitle || 'No subtitle'}</p>
+                            <span class="badge active" style="font-size: 10px;">${q.question_type}</span>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-small" onclick="moveQuestion('${q.id}', -1)" title="Move Up">↑</button>
+                            <button class="btn-small" onclick="moveQuestion('${q.id}', 1)" title="Move Down">↓</button>
+                            <button class="btn-small" onclick="editQuestion('${q.id}', \`${q.question_text.replace(/`/g, '\\`')}\`, \`${(q.question_subtitle || '').replace(/`/g, '\\`')}\`)">Edit</button>
+                            <button class="btn-small" onclick="deleteQuestion('${q.id}')">Delete</button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #F0F0F0;">
+                        <h4 style="font-size: 14px; margin-bottom: 12px;">Responses (Options)</h4>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+                            ${(q.questionnaire_options || []).sort((a, b) => a.display_order - b.display_order).map(o => `
+                                <div class="badge member" style="display: flex; align-items: center; gap: 8px;">
+                                    ${o.option_text}
+                                    <span style="cursor: pointer; opacity: 0.6;" onclick="deleteOption('${o.id}')">&times;</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="opt-input-${q.id}" placeholder="Add a response..." style="flex: 1; padding: 6px 12px; font-size: 14px;">
+                            <button class="btn-small" onclick="addOption('${q.id}')">Add</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function showAddQuestionModal() {
+            const text = prompt("Enter the question text:");
+            if (text === null) return;
+            const subtitle = prompt("Enter the question subtitle (optional):");
+            const type = confirm("Allow multiple selections? (Click 'OK' for Checkbox, 'Cancel' for Radio)") ? 'checkbox' : 'radio';
+
+            // Get the current max display_order
+            const { data: maxQ } = await window.supabaseClient
+                .from('questionnaire_questions')
+                .select('display_order')
+                .order('display_order', { ascending: false })
+                .limit(1)
+                .single();
+
+            const nextOrder = (maxQ?.display_order || 0) + 10;
+
+            const { data, error } = await window.supabaseClient
+                .from('questionnaire_questions')
+                .insert({
+                    question_text: text,
+                    question_subtitle: subtitle,
+                    question_type: type,
+                    display_order: nextOrder
+                })
+                .select()
+                .single();
+
+            if (error) {
+                alert("Error adding question: " + error.message);
+            } else {
+                loadQuestionnaire();
+            }
+        }
+
+        async function editQuestion(id, currentText, currentSubtitle) {
+            const text = prompt("Edit question text:", currentText);
+            if (text === null) return;
+            const subtitle = prompt("Edit question subtitle:", currentSubtitle);
+            if (subtitle === null) return;
+
+            const { error } = await window.supabaseClient
+                .from('questionnaire_questions')
+                .update({
+                    question_text: text,
+                    question_subtitle: subtitle
+                })
+                .eq('id', id);
+
+            if (error) {
+                alert("Error updating question: " + error.message);
+            } else {
+                loadQuestionnaire();
+            }
+        }
+
+        async function moveQuestion(id, direction) {
+            const { data: questions } = await window.supabaseClient
+                .from('questionnaire_questions')
+                .select('id, display_order')
+                .order('display_order');
+
+            const index = questions.findIndex(q => q.id === id);
+            const targetIndex = index + direction;
+
+            if (targetIndex >= 0 && targetIndex < questions.length) {
+                const current = questions[index];
+                const target = questions[targetIndex];
+
+                // Swap display_order
+                const { error: err1 } = await window.supabaseClient.from('questionnaire_questions').update({ display_order: target.display_order }).eq('id', current.id);
+                const { error: err2 } = await window.supabaseClient.from('questionnaire_questions').update({ display_order: current.display_order }).eq('id', target.id);
+
+                if (err1 || err2) alert("Error reordering");
+                else loadQuestionnaire();
+            }
+        }
+
+        async function deleteQuestion(id) {
+            if (!confirm("Are you sure? This will delete all options and member responses for this question.")) return;
+            const { error } = await window.supabaseClient
+                .from('questionnaire_questions')
+                .delete()
+                .eq('id', id);
+
+            if (error) alert("Error deleting: " + error.message);
+            else loadQuestionnaire();
+        }
+
+        async function addOption(questionId) {
+            const input = document.getElementById(`opt-input-${questionId}`);
+            const text = input.value.trim();
+            if (!text) return;
+
+            const { error } = await window.supabaseClient
+                .from('questionnaire_options')
+                .insert({
+                    question_id: questionId,
+                    option_text: text,
+                    display_order: 0
+                });
+
+            if (error) {
+                alert("Error adding option: " + error.message);
+            } else {
+                input.value = '';
+                loadQuestionnaire();
+            }
+        }
+
+        async function deleteOption(id) {
+            const { error } = await window.supabaseClient
+                .from('questionnaire_options')
+                .delete()
+                .eq('id', id);
+
+            if (error) alert("Error deleting option: " + error.message);
+            else loadQuestionnaire();
         }
 
         // Logout

@@ -532,6 +532,7 @@
                 <button class="tab-btn" onclick="switchTab('team')">Team</button>
                 <button class="tab-btn" onclick="switchTab('certifications')">Certifications</button>
                 <button class="tab-btn" onclick="switchTab('technology')">Technology</button>
+                <button class="tab-btn" onclick="switchTab('questionnaire')">Questionnaire</button>
             </div>
 
             <!-- Tab 1: Overview -->
@@ -785,6 +786,22 @@
                     <div id="techList" class="item-list"></div>
                 </div>
             </div>
+
+            <!-- Tab 8: Questionnaire -->
+            <div id="questionnaire" class="tab-content">
+                <div class="card">
+                    <h2>Profile Questionnaire</h2>
+                    <p style="margin-bottom: 24px; color: var(--text-light);">Complete this questionnaire to help
+                        potential clients find your business. Your responses will be used for matching in Resolute
+                        Connect.</p>
+                    <div class="message" id="questionnaireMessage"></div>
+                    <div id="memberQuestionnaireList">
+                        <!-- Questions will be loaded here -->
+                    </div>
+                    <button class="btn-primary" onclick="saveQuestionnaireResponses()" id="saveQuestionnaireBtn"
+                        style="margin-top: 24px;">Save All Responses</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -962,12 +979,17 @@
         // --- Tabs Logic ---
         function switchTab(tabName) {
             // Update buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${tabName}'`));
+            });
 
             // Update content
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.getElementById(tabName).classList.add('active');
+
+            if (tabName === 'questionnaire') {
+                loadQuestionnaire();
+            }
         }
 
         // --- Auth & Init ---
@@ -1402,9 +1424,9 @@
                     .upsert({
                         bpo_id: userBpoId,
                         media_type: 'logo',
-                        media_url: urlData.publicUrl,
+                        file_url: urlData.publicUrl,
                         is_primary: true
-                    }, { onConflict: 'bpo_id, media_type' }); // Ensure unique logo per bpo if needed or just add
+                    }, { onConflict: 'bpo_id, media_type' });
 
                 if (dbErr) throw dbErr;
 
