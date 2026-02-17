@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Philippine BPO Rankings | Resolute</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Graphik:wght@700&family=Roboto:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #363F4D;
+            /* Kyte Navy */
+            --accent: #2DD1AC;
+            /* Kyte Teal */
+            --white: #FFFFFF;
+            --text-dark: #363F4D;
+            --text-light: #5F6B7A;
+            --bg-light: #F9FAFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Graphik', sans-serif;
+            font-weight: 700;
+        }
+
+        .rankings-container {
+            display: flex;
+            flex: 1;
+            height: 100%;
+        }
+
+        /* Map Section */
+        .map-section {
+            flex: 2;
+            background: #1e293b;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .map-bg {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 60% 40%, #2d3748 0%, #0f172a 100%);
+            z-index: 0;
+        }
+
+        /* Map Representation */
+        .map-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: none;
+            /* Adjusted for maximum size */
+            z-index: 1;
+            /* Allow scaling */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* SVG Map Styles */
+        .ph-map-svg {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        .island-path {
+            fill: rgba(45, 209, 172, 0.1);
+            stroke: rgba(45, 209, 172, 0.4);
+            stroke-width: 0.5;
+            transition: all 0.3s ease;
+            filter: url(#glow);
+        }
+
+        .island-path:hover {
+            fill: rgba(45, 209, 172, 0.2);
+            stroke: rgba(45, 209, 172, 0.8);
+        }
+
+        .location-marker {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            /* Pulsing Red Style */
+            background: rgba(255, 61, 61, 0.2);
+            border: 2px solid #FF3D3D;
+            border-radius: 50%;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 15px rgba(255, 61, 61, 0.5);
+            animation: pulse-red 2s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .location-marker::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #FF3D3D;
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(255, 61, 61, 0.8);
+        }
+
+        .location-marker:hover {
+            transform: translate(-50%, -50%) scale(1.4);
+            background: rgba(255, 61, 61, 0.4);
+            box-shadow: 0 0 25px rgba(255, 61, 61, 0.7);
+            border-color: #fff;
+        }
+
+        .location-marker:hover::after {
+            background: #fff;
+        }
+
+        .location-label {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            font-weight: 500;
+            pointer-events: none;
+            transform: translate(25px, -50%);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+            background: transparent;
+            padding: 4px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .location-marker:hover+.location-label {
+            opacity: 1;
+            color: #fff;
+            transform: translate(25px, -50%);
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 61, 61, 0.6);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(255, 61, 61, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 61, 61, 0);
+            }
+        }
+
+        /* Sidebar Section */
+        .sidebar-section {
+            flex: 1;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #e2e8f0;
+            max-width: 500px;
+            min-width: 400px;
+            box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            background: var(--bg-light);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        /* NEW: Map Overlay UI */
+        .map-dropdown-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .map-dropdown {
+            background: rgba(30, 41, 59, 0.9);
+            color: #fff;
+            border: 1px solid #475569;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            min-width: 200px;
+            transition: border-color 0.2s;
+        }
+
+        .map-dropdown:hover,
+        .map-dropdown:focus {
+            border-color: var(--accent);
+        }
+
+        .location-info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 320px;
+            max-height: 400px;
+            background: rgba(15, 23, 42, 0.95);
+            color: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            z-index: 90;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .location-info-panel.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 5px;
+        }
+
+        .info-title {
+            font-family: 'Graphik', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1.2;
+        }
+
+        .info-dismiss {
+            cursor: pointer;
+            color: #64748b;
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .info-dismiss:hover {
+            color: #fff;
+        }
+
+        .info-subtitle {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+        }
+
+        .info-scroll {
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .info-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .info-scroll::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 2px;
+        }
+
+        .info-item {
+            margin-bottom: 16px;
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            font-size: 10px;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .info-text {
+            font-size: 13px;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .sidebar-header h2 {
+            font-size: 24px;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .sidebar-header p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .metrics-legend {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .metric-badge {
+            font-size: 11px;
+            background: #e2e8f0;
+            color: #475569;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .rankings-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .ranking-item {
+            padding: 20px 24px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .ranking-item:hover {
+            background: #f8fafc;
+        }
+
+        .rank-number {
+            font-size: 24px;
+            font-weight: 800;
+            color: #cbd5e1;
+            width: 40px;
+            text-align: center;
+            font-family: 'Graphik', sans-serif;
+        }
+
+        .ranking-item:nth-child(1) .rank-number {
+            color: #fbbf24;
+        }
+
+        /* Gold */
+        .ranking-item:nth-child(2) .rank-number {
+            color: #94a3b8;
+        }
+
+        /* Silver */
+        .ranking-item:nth-child(3) .rank-number {
+            color: #b45309;
+        }
+
+        /* Bronze */
+
+        .bpo-info {
+            flex: 1;
+        }
+
+        .bpo-info h3 {
+            font-size: 18px;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .bpo-location {
+            font-size: 13px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bpo-score-box {
+            text-align: right;
+        }
+
+        .overall-score {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--accent);
+            font-family: 'Graphik', sans-serif;
+        }
+
+        .score-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--text-light);
+            letter-spacing: 0.5px;
+        }
+
+        /* Controls */
+        .map-controls {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            z-index: 20;
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-control {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Graphik', sans-serif;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-control:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #24b896;
+        }
+
+        /* Modal for details */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: slide-up 0.3s ease-out;
+        }
+
+        @keyframes slide-up {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+
+        .modal-header {
+            margin-bottom: 24px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 28px;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .modal-subtitle {
+            color: var(--text-light);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .metric-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .metric-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        @media (max-width: 900px) {
+            .rankings-container {
+                flex-direction: column;
+                overflow: auto;
+            }
+
+            .map-section {
+                height: 50vh;
+                flex: none;
+            }
+
+            .sidebar-section {
+                height: auto;
+                max-width: 100%;
+                box-shadow: none;
+                overflow: visible;
+            }
+
+            body {
+                overflow: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="rankings-container">
+        <div class="map-section" id="mapSection">
+            <div class="map-bg"></div>
+
+            <div class="map-controls">
+                <a href="healthcare-bpo-landing.html" class="btn-control">
+                    ← Back
+                </a>
+                <button class="btn-control btn-primary" onclick="resetToNational()">
+                    National View
+                </button>
+            </div>
+
+            <!-- Top Right Dropdown -->
+            <div class="map-dropdown-container">
+                <select id="locationSelect" class="map-dropdown" onchange="dropdownSelect(this.value)">
+                    <option value="National" selected>Select Location...</option>
+                </select>
+            </div>
+
+            <!-- Bottom Left Info Panel -->
+            <div class="location-info-panel" id="locationInfoPanel">
+                <div class="info-header">
+                    <h3 class="info-title" id="infoTitle">Metro Manila</h3>
+                    <div class="info-dismiss" onclick="hideInfoPanel()">×</div>
+                </div>
+                <div class="info-subtitle">Regional Profile</div>
+
+                <div class="info-scroll">
+                    <div class="info-item">
+                        <span class="info-label">Geography</span>
+                        <div class="info-text" id="infoGeo">Coastal lowlands along Manila Bay, divided by the Pasig
+                            River.</div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Economy</span>
+                        <div class="info-text" id="infoEcon">The economic engine of the Philippines; hub for finance,
+                            commerce, and BPO.</div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Culture & Ethnicity</span>
+                        <div class="info-text" id="infoCulture">Cosmopolitan melting pot; predominantly Tagalog with
+                            diverse migrant populations.</div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Political Picture</span>
+                        <div class="info-text" id="infoPolitics">Seat of the national government (Malacañang Palace);
+                            independent LGUs within a region.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="map-wrapper" style="text-align: center;">
+                <!-- Map Image Background -->
+                <img src="ph_glow_map.png" alt="Philippine Map" class="ph-map-img"
+                    style="max-height: 100%; max-width: 100%; object-fit: contain; pointer-events: none;">
+
+                <!-- Metro Manila -->
+                <div class="location-marker" style="top: 33%; left: 47%;" onclick="selectLocation('Metro Manila')">
+                </div>
+                <div class="location-label" style="top: 33%; left: 47%;">Metro Manila</div>
+
+                <!-- Baguio City -->
+                <div class="location-marker" style="top: 20%; left: 45%;" onclick="selectLocation('Baguio')"></div>
+                <div class="location-label" style="top: 20%; left: 45%;">Baguio City</div>
+
+                <!-- Clark / Angeles -->
+                <div class="location-marker" style="top: 28%; left: 44%;" onclick="selectLocation('Clark')"></div>
+                <div class="location-label" style="top: 28%; left: 44%;">Clark / Angeles</div>
+
+                <!-- Subic Bay -->
+                <div class="location-marker" style="top: 32%; left: 43%;" onclick="selectLocation('Subic Bay')"></div>
+                <div class="location-label" style="top: 32%; left: 43%;">Subic Bay</div>
+
+                <!-- Cebu City -->
+                <div class="location-marker" style="top: 63%; left: 59%;" onclick="selectLocation('Cebu')"></div>
+                <div class="location-label" style="top: 63%; left: 59%;">Cebu City</div>
+
+                <!-- Iloilo City -->
+                <div class="location-marker" style="top: 60%; left: 53%;" onclick="selectLocation('Iloilo')"></div>
+                <div class="location-label" style="top: 60%; left: 53%;">Iloilo City</div>
+
+                <!-- Bacolod -->
+                <div class="location-marker" style="top: 62%; left: 55%;" onclick="selectLocation('Bacolod')"></div>
+                <div class="location-label" style="top: 62%; left: 55%;">Bacolod</div>
+
+                <!-- Roxas City -->
+                <div class="location-marker" style="top: 55%; left: 54%;" onclick="selectLocation('Roxas City')"></div>
+                <div class="location-label" style="top: 55%; left: 54%;">Roxas City</div>
+
+                <!-- Dumaguete -->
+                <div class="location-marker" style="top: 70%; left: 56%;" onclick="selectLocation('Dumaguete')"></div>
+                <div class="location-label" style="top: 70%; left: 56%;">Dumaguete</div>
+
+                <!-- Zamboanga City -->
+                <div class="location-marker" style="top: 84%; left: 51%;" onclick="selectLocation('Zamboanga')"></div>
+                <div class="location-label" style="top: 84%; left: 51%;">Zamboanga City</div>
+
+                <!-- Cagayan de Oro -->
+                <div class="location-marker" style="top: 75%; left: 62%;" onclick="selectLocation('Cagayan de Oro')">
+                </div>
+                <div class="location-label" style="top: 75%; left: 62%;">Cagayan de Oro</div>
+
+                <!-- Davao City -->
+                <div class="location-marker" style="top: 83%; left: 66%;" onclick="selectLocation('Davao')"></div>
+                <div class="location-label" style="top: 83%; left: 66%;">Davao City</div>
+
+                <!-- General Santos -->
+                <div class="location-marker" style="top: 91%; left: 64%;" onclick="selectLocation('General Santos')">
+                </div>
+                <div class="location-label" style="top: 91%; left: 64%;">General Santos</div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-header">
+                <h2 id="currentLocationTitle">National Rankings</h2>
+                <p id="currentLocationDesc">Top performing BPOs across all regions based on 8 key performance
+                    indicators.</p>
+
+                <div class="metrics-legend">
+                    <span class="metric-badge">Ops Performance</span>
+                    <span class="metric-badge">CX</span>
+                    <span class="metric-badge">Client Sat</span>
+                    <span class="metric-badge">Financial</span>
+                    <span class="metric-badge">HR</span>
+                    <span class="metric-badge">Scalability</span>
+                    <span class="metric-badge">Security</span>
+                    <span class="metric-badge">Innovation</span>
+                </div>
+            </div>
+
+            <div class="rankings-list" id="rankingsList">
+                <!-- Items injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Modal -->
+    <div class="modal-overlay" id="detailsModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">×</button>
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">BPO Name</h2>
+                <div class="modal-subtitle" id="modalLocation">Location</div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin-bottom: 10px; color: var(--text-dark);">Performance Breakdown</h4>
+                <div class="metrics-grid" id="modalMetrics">
+                    <!-- Metrics injected here -->
+                </div>
+            </div>
+
+            <div style="text-align: right; margin-top: 20px;">
+                <button onclick="closeModal()" class="btn-control"
+                    style="background: #f1f5f9; color: #333; border: 1px solid #ddd;">Close</button>
+                <a href="resolute-connect.html" class="btn-control btn-primary" style="text-decoration: none;">Contact
+                    Provider</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock Data Generation
+        const LOCATIONS = [
+            'Metro Manila', 'Cebu', 'Davao', 'Clark', 'Iloilo',
+            'Bacolod', 'Baguio', 'Cagayan de Oro', 'Subic Bay',
+            'General Santos', 'Roxas City', 'Dumaguete', 'Zamboanga'
+        ];
+
+
+        const BPO_NAMES = [
+            "Global Care Solutions", "Apex Healthcare BPO", "MediLink Services", "Vitality Support Ops",
+            "NextGen Health Connect", "PrimeCare Outsourcing", "Summit Health Services", "Unity BPO Solutions",
+            "SecureHealth Systems", "Visionary Care Global", "Optimum Medical Support", "LifeLine BPO",
+            "CoreMed Services", "HealthFirst Partners", "Dynamic Care Solutions", "Pinnacle Health Ops"
+        ];
+
+        // Generate consistent random data
+        const BPO_DATA = [];
+
+        function generateScore(min, max) {
+            return (Math.random() * (max - min) + min).toFixed(1);
+        }
+
+        // Create 50 mock entries distributed across locations
+        for (let i = 0; i < 50; i++) {
+            const name = BPO_NAMES[i % BPO_NAMES.length] + (Math.floor(i / BPO_NAMES.length) > 0 ? " " + (Math.floor(i / BPO_NAMES.length) + 1) : "");
+            const location = LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)];
+
+            BPO_DATA.push({
+                id: i,
+                name: name,
+                location: location,
+                metrics: {
+                    ops: generateScore(8.5, 9.9),
+                    cx: generateScore(8.0, 9.8),
+                    client: generateScore(8.8, 10.0),
+                    financial: generateScore(8.0, 9.5),
+                    hr: generateScore(7.5, 9.5),
+                    scalability: generateScore(7.0, 9.0),
+                    security: generateScore(9.0, 10.0), // Higher baseline for security
+                    innovation: generateScore(7.0, 9.5)
+                }
+            });
+        }
+
+        // Calculate overall score
+        BPO_DATA.forEach(bpo => {
+            const sum = Object.values(bpo.metrics).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+            bpo.overallScore = (sum / 8).toFixed(1);
+        });
+
+        // Current state
+        let currentFilter = 'National';
+
+        // NEW: Location Details Data
+        const LOCATION_DETAILS = {
+            'Metro Manila': {
+                geo: 'Located on the eastern shore of Manila Bay in Luzon.',
+                econ: 'The economic, political, and cultural center. Home to the CBDs of Makati, BGC, and Ortigas.',
+                culture: 'Cosmopolitan and fast-paced. Predominantly Tagalog but extremely diverse.',
+                politics: 'Seat of the national government. Divided into 16 highly urbanized cities.'
+            },
+            'Cebu': {
+                geo: 'Central Visayas. Includes Cebu City, Mandaue, and Lapu-Lapu.',
+                econ: 'The main economic hub outside Luzon. Major center for shipping, tourism, and IT-BPM.',
+                culture: 'Rich history (Magellan\'s landing). Speak Cebuano. Known for the Sinulog Festival.',
+                politics: 'Independent charter city, capital of the Cebu province.'
+            },
+            'Davao': {
+                geo: 'Southeastern Mindanao. Facing the Davao Gulf.',
+                econ: 'The "King City of the South". Centers on agriculture, trade, and rapidly growing BPO sector.',
+                culture: 'Multicultural melting pot of indigenous tribes, migrants, and expats. Safest city reputation.',
+                politics: 'Highly influential political center in Mindanao.'
+            },
+            'Clark': {
+                geo: 'Central Luzon (Pampanga/Tarlac). Former US Airbase.',
+                econ: 'Freeport Zone. Aviation, logistics, and industrial hub. Emerging "Next New City".',
+                culture: 'Kapampangan influence. Known for culinary excellence and expatriate community.',
+                politics: 'Managed by CDC (Clark Development Corp), distinct from local municipal rule.'
+            },
+            'Iloilo': {
+                geo: 'Southeastern Panay Island in Western Visayas.',
+                econ: 'Educational center of the region. Banking, trade, and a booming BPO destination.',
+                culture: 'The "City of Love". Known for Dinagyang Festival and heritage structures (Spanish colonial).',
+                politics: 'A highly urbanized city with a reputation for good governance.'
+            },
+            'Bacolod': {
+                geo: 'Northwestern Negros Island.',
+                econ: 'The "Sugar Bowl of the Philippines". diversifying into IT and BPO.',
+                culture: 'The "City of Smiles". Famous for the MassKara Festival and sweet cuisine.',
+                politics: 'Independent city, capital of Negros Occidental.'
+            },
+            'Baguio': {
+                geo: 'Northern Luzon mountains (Benguet). 1,500m above sea level.',
+                econ: 'Tourism and Education are key drivers. Also export processing (PEZA).',
+                culture: 'The "Summer Capital". Indigenous Cordilleran influence mixed with colonial history.',
+                politics: 'Chartered city with unique environmental governance due to its topography.'
+            },
+            'Cagayan de Oro': {
+                geo: 'Northern Mindanao coast.',
+                econ: 'The "Gateway to Northern Mindanao". Logistics, trade, and transshipment hub.',
+                culture: 'The "City of Golden Friendship". Warm hospitality and adventure tourism (whitewater rafting).',
+                politics: 'Regional center for Region X.'
+            },
+            'Subic Bay': {
+                geo: 'Zambales, Central Luzon. Deep natural harbor.',
+                econ: 'Freeport Zone like Clark. Shipbuilding, logistics, and tourism.',
+                culture: 'Disciplined traffic rules remain from US Navy days. Outdoor sports haven.',
+                politics: 'Administered by SBMA (Subic Bay Metropolitan Authority).'
+            },
+            'General Santos': {
+                geo: 'Southernmost Philippines (Soccsksargen).',
+                econ: 'The "Tuna Capital of the Philippines". Agro-industry and fishing.',
+                culture: 'Home of Manny Pacquiao. Strong Visayan and Indigenous influence.',
+                politics: 'Highly urbanized city independent of South Cotabato.'
+            },
+            'Roxas City': {
+                geo: 'North-central Panay Island.',
+                econ: 'The "Seafood Capital of the Philippines". Agriculture and aquaculture.',
+                culture: 'Relaxed provincial atmosphere. Known for strictly fresh seafood.',
+                politics: 'Component city and capital of Capiz province.'
+            },
+            'Dumaguete': {
+                geo: 'Southeastern Negros Island.',
+                econ: 'University Town ("Center of the South"). Education-driven economy + retirement haven.',
+                culture: 'The "City of Gentle People". Artistic, academic, and laid-back.',
+                politics: 'Capital of Negros Oriental.'
+            },
+            'Zamboanga': {
+                geo: 'Zamboanga Peninsula tip.',
+                econ: 'Sardine Capital. Trade link to BIMP-EAGA (Malaysia/Indonesia).',
+                culture: '"Asia\'s Latin City". Unique Chavacano language (Spanish creole).',
+                politics: 'Independent city with a complex, historic political tapestry.'
+            }
+        };
+
+        // Initialize Dropdown
+        window.addEventListener('DOMContentLoaded', () => {
+            const select = document.getElementById('locationSelect');
+            if (select) {
+                select.innerHTML = '<option value="National" selected>Select Location...</option>';
+                const sortedLocations = [...LOCATIONS].sort();
+                sortedLocations.forEach(loc => {
+                    const opt = document.createElement('option');
+                    opt.value = loc;
+                    opt.innerText = loc;
+                    select.appendChild(opt);
+                });
+            }
+            renderRankings('National');
+        });
+
+        function dropdownSelect(val) {
+            if (val === 'National') {
+                resetToNational();
+            } else {
+                selectLocation(val);
+            }
+        }
+
+        function updateInfoPanel(locationName) {
+            const panel = document.getElementById('locationInfoPanel');
+            const data = LOCATION_DETAILS[locationName] || LOCATION_DETAILS[locationName.replace(" City", "")];
+
+            if (data && panel) {
+                document.getElementById('infoTitle').textContent = locationName;
+                document.getElementById('infoGeo').textContent = data.geo;
+                document.getElementById('infoEcon').textContent = data.econ;
+                document.getElementById('infoCulture').textContent = data.culture;
+                document.getElementById('infoPolitics').textContent = data.politics;
+
+                panel.classList.add('active');
+            }
+        }
+
+        function hideInfoPanel() {
+            const panel = document.getElementById('locationInfoPanel');
+            if (panel) panel.classList.remove('active');
+        }
+
+        function renderRankings(location) {
+            const listContainer = document.getElementById('rankingsList');
+            const titleEl = document.getElementById('currentLocationTitle');
+            const descEl = document.getElementById('currentLocationDesc');
+
+            listContainer.innerHTML = ''; // Clear list
+
+            let filteredData = BPO_DATA;
+            if (location !== 'National') {
+                filteredData = BPO_DATA.filter(bpo => bpo.location.includes(location));
+                titleEl.textContent = `${location} Top Rankings`;
+                descEl.textContent = `Top performing BPOs in ${location} region based on performance metrics.`;
+            } else {
+                titleEl.textContent = 'National Rankings';
+                descEl.textContent = 'Top performing BPOs across all regions based on 8 key performance indicators.';
+            }
+
+            // Sort by overall score descending
+            filteredData.sort((a, b) => b.overallScore - a.overallScore);
+
+            // Take top 10
+            const top10 = filteredData.slice(0, 10);
+
+            if (top10.length === 0) {
+                listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No data available for this location.</div>';
+                return;
+            }
+
+            top10.forEach((bpo, index) => {
+                const item = document.createElement('div');
+                item.className = 'ranking-item';
+                item.onclick = () => openModal(bpo);
+
+                item.innerHTML = `
+        <div class="rank-number">${index + 1}</div>
+        <div class="bpo-info">
+            <h3>${bpo.name}</h3>
+            <div class="bpo-location">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                </svg>
+                ${bpo.location}
+            </div>
+        </div>
+        <div class="bpo-score-box">
+            <div class="overall-score">${bpo.overallScore}</div>
+            <div class="score-label">Score</div>
+        </div>
+        `;
+
+                listContainer.appendChild(item);
+            });
+        }
+
+        function selectLocation(loc) {
+            currentFilter = loc;
+            renderRankings(loc);
+
+            // Update Dropdown
+            const select = document.getElementById('locationSelect');
+            if (select) select.value = loc;
+
+            // Update Info Panel
+            updateInfoPanel(loc);
+
+            // Optional: meaningful marker highlight could be added here if markers had IDs
+        }
+
+        function resetToNational() {
+            currentFilter = 'National';
+            renderRankings('National');
+
+            // Reset Dropdown
+            const select = document.getElementById('locationSelect');
+            if (select) select.value = 'National';
+
+            // Hide Info Panel
+            hideInfoPanel();
+        }
+
+        function openModal(bpo) {
+            document.getElementById('modalTitle').textContent = bpo.name;
+            document.getElementById('modalLocation').textContent = bpo.location;
+
+            const metricsContainer = document.getElementById('modalMetrics');
+            metricsContainer.innerHTML = '';
+
+            const metricLabels = {
+                ops: 'Operational Performance',
+                cx: 'Customer Experience',
+                client: 'Client Satisfaction',
+                financial: 'Financial Stability',
+                hr: 'HR & Talent',
+                scalability: 'Scalability',
+                security: 'Data Security',
+                innovation: 'Innovation'
+            };
+
+            for (const [key, value] of Object.entries(bpo.metrics)) {
+                const div = document.createElement('div');
+                div.className = 'metric-item';
+                div.innerHTML = `
+                    <div class="metric-name">${metricLabels[key]}</div>
+                    <div class="metric-bar-bg">
+                        <div class="metric-bar-fill" style="width: ${value * 10}%"></div>
+                    </div>
+                    <div style="text-align: right; font-size: 12px; font-weight: bold;">${value}</div>
+                `;
+                metricsContainer.appendChild(div);
+            }
+
+            document.getElementById('detailsModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('detailsModal').classList.remove('active');
+        }
+
+        // Close modal on outside click
+        window.onclick = function (event) {
+            const modal = document.getElementById('detailsModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+    </script>
+</body>
+
+</html>
